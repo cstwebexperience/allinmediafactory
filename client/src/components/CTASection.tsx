@@ -11,7 +11,7 @@ export default function CTASection() {
       <div className="relative container text-center">
         <AnimatedSection>
           <h2 className="font-['Syne'] font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] mb-10 max-w-2xl mx-auto">
-            Gata cu planurile.
+            Vrei să crești în vânzări sau clienți?
             <br />
             <span className="text-white/30">Sună-ne.</span>
           </h2>
