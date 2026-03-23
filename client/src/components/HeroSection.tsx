@@ -208,8 +208,8 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <span className="inline-block px-5 py-2 rounded-full border border-white/15 bg-white/[0.06] text-white/80 text-sm font-medium tracking-wider mb-8 backdrop-blur-xl shadow-[0_0_30px_rgba(30,144,255,0.1)]">
-            AGENȚIE DE MARKETING DIGITAL
+          <span className="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] text-white/60 text-xs font-medium tracking-widest mb-6 backdrop-blur-xl shadow-[0_0_20px_rgba(30,144,255,0.08)] uppercase">
+            Marketing Digital Premium
           </span>
         </motion.div>
 
@@ -217,11 +217,12 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4 }}
-          className="font-['Syne'] font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] mb-6"
+          className="font-['Syne'] font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-[1.2] mb-6 tracking-tight"
         >
-          <span className="text-white drop-shadow-[0_2px_30px_rgba(0,0,0,0.8)]">
-            Creștem vizibilitatea{" "}
+          <span className="text-white drop-shadow-[0_2px_20px_rgba(0,0,0,0.6)]">
+            Transformăm prezența ta online în
           </span>
+          <br />
           <span
             className="bg-clip-text text-transparent"
             style={{
@@ -230,21 +231,7 @@ export default function HeroSection() {
               animation: "fluidGradient 6s ease infinite",
             }}
           >
-            afacerii tale
-          </span>
-          <span className="text-white drop-shadow-[0_2px_30px_rgba(0,0,0,0.8)]">
-            {" "}și îți aducem{" "}
-          </span>
-          <span
-            className="bg-clip-text text-transparent"
-            style={{
-              backgroundImage: "linear-gradient(135deg, #00d4aa, #1e90ff, #f97316, #8b5cf6)",
-              backgroundSize: "300% 300%",
-              animation: "fluidGradient 6s ease infinite",
-              animationDelay: "1s",
-            }}
-          >
-            clienți reali
+            rezultate concrete
           </span>
         </motion.h1>
 
@@ -252,10 +239,9 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed"
+          className="text-sm md:text-base text-white/50 max-w-xl mx-auto mb-12 leading-relaxed font-light"
         >
-          Social media, video marketing și strategii care convertesc.
-          Transformăm prezența ta online în rezultate concrete.
+          Strategii de social media, video marketing și campanii care convertesc
         </motion.p>
 
         <motion.div
