@@ -1,3 +1,7 @@
+/*
+ * Video: Arrogant-Elegant. Let the work speak.
+ */
+
 import AnimatedSection from "./AnimatedSection";
 import { Play } from "lucide-react";
 import { useState } from "react";
@@ -13,20 +17,13 @@ function ShortEmbed({ id, title }: { id: string; title: string }) {
 
   return (
     <div className="relative group">
-      <div className="aspect-[9/16] rounded-2xl overflow-hidden border border-white/[0.06] hover:border-[#7B2FBE]/30 transition-all duration-500 bg-[#0a0a12]">
+      <div className="aspect-[9/16] rounded-2xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500 bg-[#0a0a12]">
         {!loaded ? (
-          <button
-            onClick={() => setLoaded(true)}
-            className="w-full h-full relative"
-          >
-            <img
-              src={`https://img.youtube.com/vi/${id}/0.jpg`}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-colors duration-300">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#2D1B69] to-[#7B2FBE] flex items-center justify-center shadow-[0_0_30px_rgba(123,47,190,0.5)] group-hover:scale-110 transition-transform duration-300">
-                <Play size={28} className="text-white ml-1" fill="white" />
+          <button onClick={() => setLoaded(true)} className="w-full h-full relative">
+            <img src={`https://img.youtube.com/vi/${id}/0.jpg`} alt={title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center group-hover:bg-black/30 transition-colors duration-300">
+              <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/20">
+                <Play size={24} className="text-white ml-0.5" fill="white" />
               </div>
             </div>
           </button>
@@ -40,54 +37,41 @@ function ShortEmbed({ id, title }: { id: string; title: string }) {
           />
         )}
       </div>
-      <p className="text-center text-white/40 text-sm mt-3 font-medium">
-        {title}
-      </p>
     </div>
   );
 }
 
 export default function VideoSection() {
   return (
-    <section id="video" className="relative py-24 md:py-32">
+    <section id="video" className="relative py-28 md:py-36">
       <div className="container">
         <AnimatedSection>
-          <div className="text-center mb-16">
-            <span className="inline-block px-3 py-1 rounded-full border border-[#7B2FBE]/30 bg-[#7B2FBE]/5 text-[#c4a0f0] text-xs font-medium tracking-widest uppercase mb-6">
-              Video
-            </span>
-            <h2 className="font-['Syne'] font-bold text-3xl md:text-4xl lg:text-5xl mb-4">
-              Vezi cum{" "}
-              <span className="bg-gradient-to-r from-[#7B2FBE] to-[#a855f7] bg-clip-text text-transparent">
-                lucrăm
-              </span>
+          <div className="mb-16">
+            <div className="w-8 h-[1px] bg-white/15 mb-12" />
+            <h2 className="font-['Syne'] font-bold text-3xl md:text-4xl lg:text-5xl leading-[1.1]">
+              Apasă play.
             </h2>
-            <p className="text-white/40 text-lg max-w-xl mx-auto">
-              Conținut video care captează atenția și generează milioane de vizualizări
-            </p>
           </div>
         </AnimatedSection>
 
-        {/* YouTube Shorts Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto mb-10">
           {shorts.map((short, i) => (
-            <AnimatedSection key={short.id} delay={i * 0.15}>
+            <AnimatedSection key={short.id} delay={i * 0.1}>
               <ShortEmbed id={short.id} title={short.title} />
             </AnimatedSection>
           ))}
         </div>
 
-        {/* YouTube Channel Link */}
         <AnimatedSection delay={0.3}>
           <div className="text-center">
             <a
               href="https://youtube.com/@liviucontsecret"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 text-white/60 hover:text-white hover:border-[#7B2FBE]/30 hover:bg-white/[0.03] transition-all duration-300"
+              className="inline-flex items-center gap-2 text-white/30 hover:text-white/60 text-xs tracking-[0.15em] uppercase font-light transition-colors duration-300"
             >
-              <Play size={16} />
-              Vezi toate videoclipurile pe YouTube
+              <Play size={12} />
+              Mai multe pe YouTube
             </a>
           </div>
         </AnimatedSection>

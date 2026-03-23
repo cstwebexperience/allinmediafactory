@@ -1,3 +1,7 @@
+/*
+ * Results: Arrogant-Elegant. Let screenshots do the talking.
+ */
+
 import AnimatedSection from "./AnimatedSection";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,63 +10,43 @@ import { X, ZoomIn } from "lucide-react";
 const CDN = "https://d2xsxph8kpxj0f.cloudfront.net/310519663467826404/BAAaAcGTQZunD92h83RUvR";
 
 const results = [
-  { src: `${CDN}/766aab24-170e-459c-bb6c-c8b1d54802ad_41461e55.jpg`, label: "Instagram Stats — +49% vizualizări", category: "Analytics" },
-  { src: `${CDN}/82efae06-1241-47e0-8775-1b9f3baac0cb_1cdbb7d0.jpg`, label: "Facebook Stats — +256% vizualizări", category: "Analytics" },
-  { src: `${CDN}/3264dfc0-5c3e-45cc-a88c-64b4f872efc2_d84c16a4.jpg`, label: "TikTok Stats — 1.6M vizualizări", category: "Analytics" },
-  { src: `${CDN}/80c213d6-a3f2-451e-9f34-1e5f766b22ea_7b39eb4b.jpg`, label: "Molini Pizza — 7.488 urmăritori", category: "Client" },
-  { src: `${CDN}/02883aa0-43fc-43c4-885a-21c2d062293b_c50d8174.jpg`, label: "Facebook Ads — Campanii active", category: "Ads" },
-  { src: `${CDN}/5a1d9355-da2f-41cc-a97d-4caee6da9016_054faa9e.jpg`, label: "Video viral — 1.3M vizualizări", category: "Viral" },
-  { src: `${CDN}/2732a66f-77e8-44ae-9e57-5d51fcf2968d_05c50749.jpg`, label: "Conținut viral — 1.1M + 48.4K", category: "Viral" },
-  { src: `${CDN}/98ab02a6-2a0f-4ca3-85df-6a6f4e313019_59bada64.jpg`, label: "Grid viral — 288K, 329K vizualizări", category: "Viral" },
-  { src: `${CDN}/d2fdd268-1970-4bb5-ba74-47d9eaa35225_d6034b1c.jpg`, label: "Video viral — 193K vizualizări", category: "Viral" },
-  { src: `${CDN}/03f74dfe-abfd-4e78-a841-beb661cb0d4a_f09d84a7.jpg`, label: "Video viral — 202K vizualizări", category: "Viral" },
-  { src: `${CDN}/5d5256cc-beac-486a-8688-e452cb3a4252_161e53ae.jpg`, label: "Conținut viral — 70.7K + 206K", category: "Viral" },
-  { src: `${CDN}/4ac9d72b-37d5-44e6-a649-aea3e4a25d70_3b751881.jpg`, label: "YouTube — 453K + 347K vizualizări", category: "YouTube" },
+  { src: `${CDN}/766aab24-170e-459c-bb6c-c8b1d54802ad_41461e55.jpg`, label: "+49% vizualizări", category: "Instagram" },
+  { src: `${CDN}/82efae06-1241-47e0-8775-1b9f3baac0cb_1cdbb7d0.jpg`, label: "+256% vizualizări", category: "Facebook" },
+  { src: `${CDN}/3264dfc0-5c3e-45cc-a88c-64b4f872efc2_d84c16a4.jpg`, label: "1.6M vizualizări", category: "TikTok" },
+  { src: `${CDN}/80c213d6-a3f2-451e-9f34-1e5f766b22ea_7b39eb4b.jpg`, label: "7.488 urmăritori", category: "Client" },
+  { src: `${CDN}/02883aa0-43fc-43c4-885a-21c2d062293b_c50d8174.jpg`, label: "Campanii active", category: "Ads" },
+  { src: `${CDN}/5a1d9355-da2f-41cc-a97d-4caee6da9016_054faa9e.jpg`, label: "1.3M vizualizări", category: "Viral" },
+  { src: `${CDN}/2732a66f-77e8-44ae-9e57-5d51fcf2968d_05c50749.jpg`, label: "1.1M + 48.4K", category: "Viral" },
+  { src: `${CDN}/98ab02a6-2a0f-4ca3-85df-6a6f4e313019_59bada64.jpg`, label: "288K + 329K", category: "Viral" },
+  { src: `${CDN}/d2fdd268-1970-4bb5-ba74-47d9eaa35225_d6034b1c.jpg`, label: "193K vizualizări", category: "Viral" },
+  { src: `${CDN}/03f74dfe-abfd-4e78-a841-beb661cb0d4a_f09d84a7.jpg`, label: "202K vizualizări", category: "Viral" },
+  { src: `${CDN}/5d5256cc-beac-486a-8688-e452cb3a4252_161e53ae.jpg`, label: "70.7K + 206K", category: "Viral" },
+  { src: `${CDN}/4ac9d72b-37d5-44e6-a649-aea3e4a25d70_3b751881.jpg`, label: "453K + 347K", category: "YouTube" },
 ];
 
 export default function ResultsSection() {
   const [selected, setSelected] = useState<number | null>(null);
 
   return (
-    <section
-      id="rezultate"
-      className="relative py-24 md:py-32"
-    >
-      {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url(https://d2xsxph8kpxj0f.cloudfront.net/310519663467826404/BAAaAcGTQZunD92h83RUvR/results-bg-UgGzV8LBS9j3zR3fQJSxVy.webp)`,
-        }}
-      />
-      <div className="absolute inset-0 bg-[#050507]/85" />
-
-      <div className="relative container">
+    <section id="rezultate" className="relative py-28 md:py-36">
+      <div className="container">
         <AnimatedSection>
-          <div className="text-center mb-16">
-            <span className="inline-block px-3 py-1 rounded-full border border-[#7B2FBE]/30 bg-[#7B2FBE]/5 text-[#c4a0f0] text-xs font-medium tracking-widest uppercase mb-6">
-              Portofoliu
-            </span>
-            <h2 className="font-['Syne'] font-bold text-3xl md:text-4xl lg:text-5xl mb-4">
-              Rezultate{" "}
-              <span className="bg-gradient-to-r from-[#7B2FBE] to-[#a855f7] bg-clip-text text-transparent">
-                reale
-              </span>{" "}
-              pentru clienți reali
+          <div className="mb-16">
+            <div className="w-8 h-[1px] bg-white/15 mb-12" />
+            <h2 className="font-['Syne'] font-bold text-3xl md:text-4xl lg:text-5xl leading-[1.1]">
+              Dovezi.
+              <br />
+              <span className="text-white/30">Nu vorbe.</span>
             </h2>
-            <p className="text-white/40 text-lg max-w-xl mx-auto">
-              Numere care vorbesc de la sine — milioane de vizualizări și mii de interacțiuni
-            </p>
           </div>
         </AnimatedSection>
 
-        {/* Results Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
           {results.map((item, i) => (
-            <AnimatedSection key={i} delay={i * 0.05}>
+            <AnimatedSection key={i} delay={i * 0.04}>
               <button
                 onClick={() => setSelected(i)}
-                className="group relative w-full aspect-[4/5] rounded-xl overflow-hidden border border-white/[0.06] hover:border-[#7B2FBE]/40 transition-all duration-500 hover:shadow-[0_0_30px_rgba(123,47,190,0.15)]"
+                className="group relative w-full aspect-[4/5] rounded-xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500"
               >
                 <img
                   src={item.src}
@@ -70,20 +54,15 @@ export default function ResultsSection() {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   loading="lazy"
                 />
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050507] via-[#050507]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
-                {/* Zoom icon */}
-                <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100">
-                  <ZoomIn size={14} className="text-white" />
+                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100">
+                  <ZoomIn size={12} className="text-white" />
                 </div>
 
-                {/* Label */}
                 <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                  <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-[#7B2FBE]/30 text-[#d4b5f7] mb-1">
-                    {item.category}
-                  </span>
-                  <p className="text-white text-xs font-medium leading-tight">{item.label}</p>
+                  <span className="text-white/50 text-[10px] tracking-[0.1em] uppercase">{item.category}</span>
+                  <p className="text-white text-xs font-semibold">{item.label}</p>
                 </div>
               </button>
             </AnimatedSection>
@@ -120,14 +99,6 @@ export default function ResultsSection() {
                 alt={results[selected].label}
                 className="w-full h-auto max-h-[85vh] object-contain rounded-xl"
               />
-              <div className="text-center mt-4">
-                <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#7B2FBE]/30 text-[#d4b5f7] mr-2">
-                  {results[selected].category}
-                </span>
-                <span className="text-white/50 text-sm">
-                  {results[selected].label}
-                </span>
-              </div>
             </motion.div>
           </motion.div>
         )}
