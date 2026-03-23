@@ -4,6 +4,7 @@
  * - Floating marketing icons cycling through (camera, megaphone, bolt, dollar)
  * - Dark background with colorful organic motion
  * - Glassmorphism text overlay
+ * - Text color syncs with icon changes
  */
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,10 +12,10 @@ import { ArrowDown, MessageCircle, Camera, Megaphone, Zap, DollarSign } from "lu
 import { useState, useEffect } from "react";
 
 const icons = [
-  { Icon: Camera, label: "Content" },
-  { Icon: Zap, label: "Marketing" },
-  { Icon: Megaphone, label: "Advertising" },
-  { Icon: DollarSign, label: "Revenue" },
+  { Icon: Camera, label: "Content", color: "#1e90ff", accentColor: "#00d4aa" },
+  { Icon: Zap, label: "Marketing", color: "#00d4aa", accentColor: "#8b5cf6" },
+  { Icon: Megaphone, label: "Advertising", color: "#8b5cf6", accentColor: "#f97316" },
+  { Icon: DollarSign, label: "Revenue", color: "#f97316", accentColor: "#1e90ff" },
 ];
 
 function FluidBlob({
@@ -56,16 +57,7 @@ function FluidBlob({
   );
 }
 
-function FloatingIcon() {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % icons.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
+function FloatingIcon({ index }: { index: number }) {
   const { Icon } = icons[index];
 
   return (
@@ -86,6 +78,18 @@ function FloatingIcon() {
 }
 
 export default function HeroSection() {
+  const [iconIndex, setIconIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIconIndex((prev) => (prev + 1) % icons.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentColor = icons[iconIndex].color;
+  const currentAccent = icons[iconIndex].accentColor;
+
   return (
     <section
       id="hero"
@@ -159,7 +163,7 @@ export default function HeroSection() {
       </div>
 
       {/* Floating marketing icons (subtle, large, background) */}
-      <FloatingIcon />
+      <FloatingIcon index={iconIndex} />
 
       {/* Subtle noise/grain overlay for texture */}
       <div
@@ -223,16 +227,20 @@ export default function HeroSection() {
             Transformă-ți prezența online în
           </span>
           <br />
-          <span
-            className="bg-clip-text text-transparent font-extrabold"
+          <motion.span
+            key={`text-${iconIndex}`}
+            className="bg-clip-text text-transparent font-extrabold inline-block"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
             style={{
-              backgroundImage: "linear-gradient(135deg, #1e90ff, #00d4aa, #8b5cf6, #1e90ff)",
+              backgroundImage: `linear-gradient(135deg, ${currentColor}, ${currentAccent}, #8b5cf6, ${currentColor})`,
               backgroundSize: "300% 300%",
               animation: "fluidGradient 6s ease infinite",
             }}
           >
             rezultate reale
-          </span>
+          </motion.span>
         </motion.h1>
 
         <motion.p
