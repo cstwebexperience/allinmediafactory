@@ -22,9 +22,11 @@ export default function CollaborationSection() {
                 </span>
                 <h3 className="font-['Syne'] font-bold text-2xl md:text-3xl mb-4">
                   Colaborare cu{" "}
-                  <span className="bg-gradient-to-r from-[#7B2FBE] to-[#a855f7] bg-clip-text text-transparent">
-                    BeeZ Pixel
-                  </span>
+                  <a href="http://agentieseo.net/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                    <span className="bg-gradient-to-r from-[#7B2FBE] to-[#a855f7] bg-clip-text text-transparent hover:from-[#9d4edd] hover:to-[#c77dff]">
+                      BeeZ Pixel
+                    </span>
+                  </a>
                 </h3>
                 <p className="text-white/50 text-lg leading-relaxed">
                   Colaborăm cu agenția BeeZ Pixel pentru servicii avansate de SEO, astfel încât clienții noștri să beneficieze de vizibilitate maximă pe Google. Împreună, acoperim tot spectrul de marketing digital.
