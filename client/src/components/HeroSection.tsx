@@ -208,8 +208,8 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <span className="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] text-white/60 text-xs font-medium tracking-widest mb-6 backdrop-blur-xl shadow-[0_0_20px_rgba(30,144,255,0.08)] uppercase">
-            Marketing Digital Premium
+          <span className="inline-block px-3 py-1 rounded-full border border-white/8 bg-white/[0.03] text-white/50 text-[10px] font-light tracking-[0.15em] mb-4 backdrop-blur-xl shadow-[0_0_15px_rgba(30,144,255,0.05)] uppercase">
+            Premium Marketing
           </span>
         </motion.div>
 
@@ -217,21 +217,21 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4 }}
-          className="font-['Syne'] font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-[1.2] mb-6 tracking-tight"
+          className="font-['Syne'] font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-[1.3] mb-5 tracking-tight"
         >
-          <span className="text-white drop-shadow-[0_2px_20px_rgba(0,0,0,0.6)]">
-            Transformăm prezența ta online în
+          <span className="text-white/95 drop-shadow-[0_1px_15px_rgba(0,0,0,0.5)]">
+            Transformă-ți prezența online în
           </span>
           <br />
           <span
-            className="bg-clip-text text-transparent"
+            className="bg-clip-text text-transparent font-extrabold"
             style={{
               backgroundImage: "linear-gradient(135deg, #1e90ff, #00d4aa, #8b5cf6, #1e90ff)",
               backgroundSize: "300% 300%",
               animation: "fluidGradient 6s ease infinite",
             }}
           >
-            rezultate concrete
+            rezultate reale
           </span>
         </motion.h1>
 
@@ -239,9 +239,9 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="text-sm md:text-base text-white/50 max-w-xl mx-auto mb-12 leading-relaxed font-light"
+          className="text-xs md:text-sm text-white/40 max-w-lg mx-auto mb-10 leading-relaxed font-light tracking-wide"
         >
-          Strategii de social media, video marketing și campanii care convertesc
+          Social media • Video marketing • Strategii de creștere
         </motion.p>
 
         <motion.div
