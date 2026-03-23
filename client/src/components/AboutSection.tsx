@@ -73,9 +73,9 @@ export default function AboutSection() {
             <div className="grid grid-cols-2 gap-x-12 gap-y-10">
               {[
                 { target: "2.3M", suffix: "+", label: "Facebook" },
-                { target: "304K", suffix: "+", label: "Instagram" },
-                { target: "1.6M", suffix: "+", label: "TikTok" },
-                { target: "125K", suffix: "+", label: "Aprecieri" },
+                { target: "10M", suffix: "+", label: "Instagram" },
+                { target: "30M", suffix: "+", label: "TikTok" },
+                { target: "10M", suffix: "+", label: "Aprecieri" },
               ].map((stat) => (
                 <div key={stat.label}>
                   <div className="text-3xl md:text-4xl font-['Syne'] font-bold text-white mb-1">
