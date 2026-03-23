@@ -6,7 +6,8 @@ export default function CollaborationSection() {
     <section className="relative py-20 md:py-28">
       <div className="container">
         <AnimatedSection>
-          <div className="relative max-w-4xl mx-auto p-8 md:p-12 rounded-3xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06] overflow-hidden">
+          <a href="http://agentieseo.net/" target="_blank" rel="noopener noreferrer" className="block group">
+            <div className="relative max-w-4xl mx-auto p-8 md:p-12 rounded-3xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06] overflow-hidden hover:border-white/[0.12] hover:from-white/[0.06] hover:to-white/[0.02] transition-all duration-300 cursor-pointer">
             {/* Glow accent */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#7B2FBE]/10 rounded-full blur-[100px]" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#2D1B69]/10 rounded-full blur-[80px]" />
@@ -34,6 +35,7 @@ export default function CollaborationSection() {
               </div>
             </div>
           </div>
+          </a>
         </AnimatedSection>
       </div>
     </section>
