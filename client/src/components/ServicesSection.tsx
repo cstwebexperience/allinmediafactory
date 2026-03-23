@@ -32,7 +32,7 @@ const services = [
   },
   {
     icon: Search,
-    title: "SEO",
+    title: "Meta Ads",
     tagline: "Pagina 1. Mereu.",
     gradient: "from-[#2D1B69] to-[#6366f1]",
   },

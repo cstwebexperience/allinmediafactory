@@ -26,7 +26,7 @@ export default function CollaborationSection() {
                     </span>
                   </h3>
                   <p className="text-white/30 text-sm font-light mt-1">
-                    Pagina 1 pe Google. Noi ne ocupăm de restul.
+                    Pagina 1 pe Google. Web Design. Automatizari.
                   </p>
                 </div>
               </div>
