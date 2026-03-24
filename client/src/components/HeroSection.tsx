@@ -187,7 +187,7 @@ export default function HeroSection() {
             }}
           >
             <MessageCircle size={16} />
-            Vreau sa îmi cresc vînzările
+            Vreau sa îmi cresc vânzările
           </a>
         </motion.div>
       </div>
