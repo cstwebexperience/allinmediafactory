@@ -33,7 +33,7 @@ const services = [
   {
     icon: Search,
     title: "Meta Ads",
-    tagline: "Pagina 1. Mereu.",
+    tagline: "Clienți noi. Constant.",
     gradient: "from-[#2D1B69] to-[#6366f1]",
   },
 ];
