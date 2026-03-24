@@ -52,25 +52,50 @@ export default function ResultsSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {results.map((item, i) => (
             <AnimatedSection key={i} delay={i * 0.04}>
-              <button
-                onClick={() => setSelected(i)}
-                className="group relative w-full rounded-xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500 block"
-              >
-                <img
-                  src={item.src}
-                  alt={item.label}
-                  className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
-                {/* Subtle overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* Special larger layout for 5th item (Ads) */}
+              {i === 4 ? (
+                <button
+                  onClick={() => setSelected(i)}
+                  className="group relative w-full rounded-xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500 block md:col-span-2"
+                >
+                  <div className="bg-black rounded-xl overflow-hidden">
+                    <img
+                      src={item.src}
+                      alt={item.label}
+                      className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105 py-4 px-4"
+                      loading="lazy"
+                    />
+                  </div>
+                  {/* Subtle overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                {/* Category + label on hover */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                  <span className="text-white/50 text-[10px] tracking-[0.1em] uppercase">{item.category}</span>
-                  <p className="text-white text-xs font-semibold">{item.label}</p>
-                </div>
-              </button>
+                  {/* Category + label on hover */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <span className="text-white/50 text-[10px] tracking-[0.1em] uppercase">{item.category}</span>
+                    <p className="text-white text-xs font-semibold">{item.label}</p>
+                  </div>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setSelected(i)}
+                  className="group relative w-full rounded-xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500 block"
+                >
+                  <img
+                    src={item.src}
+                    alt={item.label}
+                    className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  {/* Subtle overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  {/* Category + label on hover */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <span className="text-white/50 text-[10px] tracking-[0.1em] uppercase">{item.category}</span>
+                    <p className="text-white text-xs font-semibold">{item.label}</p>
+                  </div>
+                </button>
+              )}
             </AnimatedSection>
           ))}
         </div>
