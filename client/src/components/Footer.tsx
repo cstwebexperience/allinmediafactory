@@ -16,7 +16,7 @@ export default function Footer() {
               className="w-8 h-8 rounded-lg object-cover"
             />
             <span className="font-['Syne'] font-bold text-sm tracking-[0.1em] text-white/60 uppercase">
-              All In Media
+              All In Media Factory
             </span>
           </div>
 
