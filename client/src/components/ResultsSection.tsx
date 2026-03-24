@@ -1,11 +1,11 @@
 /*
- * Results: Arrogant-Elegant. Let screenshots do the talking.
+ * Results: Arrogant-Elegant. Full original screenshots — let the numbers speak.
  */
 
 import AnimatedSection from "./AnimatedSection";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ZoomIn } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const CDN = "https://d2xsxph8kpxj0f.cloudfront.net/310519663467826404/BAAaAcGTQZunD92h83RUvR";
 
@@ -27,6 +27,13 @@ const results = [
 export default function ResultsSection() {
   const [selected, setSelected] = useState<number | null>(null);
 
+  const goNext = () => {
+    if (selected !== null) setSelected((selected + 1) % results.length);
+  };
+  const goPrev = () => {
+    if (selected !== null) setSelected((selected - 1 + results.length) % results.length);
+  };
+
   return (
     <section id="rezultate" className="relative py-28 md:py-36">
       <div className="container">
@@ -41,25 +48,24 @@ export default function ResultsSection() {
           </div>
         </AnimatedSection>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
+        {/* Grid — original aspect ratio, no cropping */}
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
           {results.map((item, i) => (
             <AnimatedSection key={i} delay={i * 0.04}>
               <button
                 onClick={() => setSelected(i)}
-                className="group relative w-full aspect-[4/5] rounded-xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500"
+                className="group relative w-full rounded-xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500 break-inside-avoid block"
               >
                 <img
                   src={item.src}
                   alt={item.label}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100">
-                  <ZoomIn size={12} className="text-white" />
-                </div>
+                {/* Subtle overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
+                {/* Category + label on hover */}
                 <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                   <span className="text-white/50 text-[10px] tracking-[0.1em] uppercase">{item.category}</span>
                   <p className="text-white text-xs font-semibold">{item.label}</p>
@@ -70,7 +76,7 @@ export default function ResultsSection() {
         </div>
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox with navigation */}
       <AnimatePresence>
         {selected !== null && (
           <motion.div
@@ -80,12 +86,29 @@ export default function ResultsSection() {
             className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setSelected(null)}
           >
+            {/* Prev button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); goPrev(); }}
+              className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all z-10"
+            >
+              <ChevronLeft size={24} />
+            </button>
+
+            {/* Next button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); goNext(); }}
+              className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all z-10"
+            >
+              <ChevronRight size={24} />
+            </button>
+
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              key={selected}
+              initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
+              exit={{ scale: 0.85, opacity: 0 }}
               transition={{ type: "spring", damping: 25 }}
-              className="relative max-w-3xl max-h-[90vh] w-full"
+              className="relative max-w-4xl max-h-[90vh] w-full"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -99,6 +122,14 @@ export default function ResultsSection() {
                 alt={results[selected].label}
                 className="w-full h-auto max-h-[85vh] object-contain rounded-xl"
               />
+              {/* Info bar below image */}
+              <div className="mt-4 flex items-center justify-between">
+                <div>
+                  <span className="text-white/40 text-xs tracking-[0.1em] uppercase">{results[selected].category}</span>
+                  <p className="text-white text-sm font-semibold mt-0.5">{results[selected].label}</p>
+                </div>
+                <span className="text-white/20 text-xs">{selected + 1} / {results.length}</span>
+              </div>
             </motion.div>
           </motion.div>
         )}
