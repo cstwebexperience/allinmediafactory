@@ -42,7 +42,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-6 border-t border-white/[0.03] text-center">
           <p className="text-white/15 text-[10px] tracking-[0.15em] uppercase">
-            all in media factory
+            © ALL IN MEDIA FACTORY 2026
           </p>
         </div>
       </div>
