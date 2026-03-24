@@ -48,13 +48,13 @@ export default function ResultsSection() {
           </div>
         </AnimatedSection>
 
-        {/* Grid — original aspect ratio, no cropping */}
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
+        {/* Grid — 2 columns, large images, original aspect ratio */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {results.map((item, i) => (
             <AnimatedSection key={i} delay={i * 0.04}>
               <button
                 onClick={() => setSelected(i)}
-                className="group relative w-full rounded-xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500 break-inside-avoid block"
+                className="group relative w-full rounded-xl overflow-hidden border border-white/[0.04] hover:border-white/[0.15] transition-all duration-500 block"
               >
                 <img
                   src={item.src}
