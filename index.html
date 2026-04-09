@@ -699,10 +699,13 @@
 
     /* White edge glow on hover */
     .mask-fragment:hover {
+      z-index: 20 !important;
       filter:
-        drop-shadow(0 0 6px  rgba(255,255,255,0.95))
-        drop-shadow(0 0 18px rgba(255,255,255,0.55))
-        drop-shadow(0 0 40px rgba(255,255,255,0.22));
+        drop-shadow(0 0 2px  rgba(255,255,255,1.00))
+        drop-shadow(0 0 8px  rgba(255,255,255,1.00))
+        drop-shadow(0 0 22px rgba(255,255,255,0.80))
+        drop-shadow(0 0 55px rgba(255,255,255,0.50))
+        drop-shadow(0 0 90px rgba(255,255,255,0.25)) !important;
     }
 
     /* When a fragment is active (clicked) — violet glow */
