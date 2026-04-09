@@ -260,6 +260,362 @@
       background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
     }
 
+    /* ── Service Overlay ────────────────────────────────── */
+    #service-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: #050507;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #service-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Blurred ghost fragment anchored to its screen corner */
+    #overlay-ghost {
+      position: absolute;
+      width: 120vw;
+      aspect-ratio: 16 / 9;
+      background-image: url('masca-despicata.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      filter: blur(24px) brightness(0.28);
+      opacity: 0;
+      transform: scale(0.12);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #service-overlay.open #overlay-ghost {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+
+    #overlay-ghost.ghost-left-eye {
+      top: -5%; left: -5%; right: auto; bottom: auto;
+      transform-origin: 36% 28%;
+      clip-path: polygon(49.4% 24.6%, 48.6% 15.2%, 47.6% 7.4%, 45.1% 1.5%,
+        41.1% 0.3%, 37.6% 0.5%, 32.0% 3.3%,
+        26.7% 7.6%, 24.6% 14.4%, 23.8% 22.2%, 23.8% 29.5%,
+        24.3% 36.7%, 25.8% 45.3%, 27.3% 50.8%, 30.1% 53.4%,
+        33.6% 51.2%, 37.3% 50.2%, 41.1% 46.3%, 44.6% 40.7%,
+        46.7% 34.3%, 47.7% 28.7%);
+    }
+    #overlay-ghost.ghost-right-eye {
+      top: -5%; right: -5%; left: auto; bottom: auto;
+      transform-origin: 67% 25%;
+      clip-path: polygon(65.0% 0.9%, 62.2% 4.0%, 59.9% 9.6%,
+        58.4% 14.0%, 57.1% 20.0%, 56.2% 26.5%,
+        57.2% 32.7%, 58.7% 38.3%, 60.3% 43.1%,
+        63.1% 48.2%, 66.4% 50.8%, 69.6% 51.4%,
+        73.0% 50.6%, 74.1% 48.0%, 76.3% 40.5%,
+        76.6% 33.7%, 77.4% 26.7%, 78.9% 23.4%,
+        79.0% 16.0%, 77.0% 8.0%, 73.0% 3.0%, 69.0% 1.0%);
+    }
+    #overlay-ghost.ghost-nose {
+      top: -15%; left: -10%; right: auto; bottom: auto;
+      transform-origin: 52% 50%;
+      clip-path: polygon(51.4% 30.5%, 50.0% 32.3%, 47.4% 37.5%, 44.0% 45.1%,
+        42.0% 51.4%, 43.8% 56.2%, 45.4% 63.2%, 48.0% 70.5%,
+        51.9% 69.3%, 56.8% 68.5%, 61.3% 63.4%, 61.1% 56.8%,
+        60.2% 51.4%, 59.8% 48.4%, 58.7% 44.7%, 56.8% 40.7%,
+        55.9% 36.7%, 53.7% 31.5%);
+    }
+    #overlay-ghost.ghost-left-mouth {
+      bottom: -5%; left: -5%; right: auto; top: auto;
+      transform-origin: 38% 77%;
+      clip-path: polygon(24.9% 60.8%, 25.6% 57.2%, 28.8% 57.8%, 31.3% 56.6%,
+        34.2% 55.8%, 36.7% 57.4%, 38.9% 59.0%, 40.7% 61.8%,
+        42.7% 63.4%, 48.4% 75.7%, 49.7% 80.7%, 50.4% 87.1%,
+        50.8% 95.2%, 44.1% 97.2%, 39.8% 95.8%, 35.8% 91.6%,
+        32.9% 85.9%, 28.7% 82.9%, 26.4% 78.3%, 26.3% 71.3%,
+        25.1% 66.4%);
+    }
+    #overlay-ghost.ghost-right-mouth {
+      bottom: -5%; right: -5%; left: auto; top: auto;
+      transform-origin: 67% 76%;
+      clip-path: polygon(64.0% 62.6%, 61.6% 67.6%, 60.1% 70.9%, 58.6% 74.5%,
+        56.9% 80.3%, 55.9% 85.3%, 54.9% 90.8%, 55.1% 96.0%,
+        57.6% 97.8%, 61.6% 98.4%, 65.4% 94.8%, 69.6% 88.5%,
+        72.9% 80.9%, 75.8% 74.5%, 77.3% 69.5%, 78.2% 65.0%,
+        79.1% 59.2%, 79.3% 52.2%, 75.6% 49.8%, 74.0% 53.6%,
+        71.4% 54.6%, 68.1% 52.6%, 66.4% 54.2%, 65.1% 58.6%);
+    }
+
+    /* Close button */
+    #overlay-close {
+      position: fixed;
+      top: 2rem;
+      right: 2.5rem;
+      z-index: 210;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.35);
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      padding: 10px 0;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: color 0.2s ease,
+                  opacity 0.4s ease 0.35s,
+                  transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s;
+    }
+    #service-overlay.open #overlay-close {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #overlay-close:hover { color: rgba(255,255,255,0.9); }
+    #overlay-close .close-x {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    /* Service panes */
+    .service-pane {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .service-pane.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .pane-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 720px;
+      width: 90vw;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Stagger base */
+    .content-stagger {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0.32s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.46s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.58s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.70s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.80s; }
+
+    /* Typography inside panes */
+    .pane-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .pane-h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(38px, 6.5vw, 88px);
+      line-height: 0.90;
+      color: #fff;
+      text-align: center;
+      letter-spacing: -0.025em;
+      margin-bottom: 18px;
+    }
+    .pane-sub {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.2vw, 16px);
+      color: rgba(255,255,255,0.42);
+      text-align: center;
+      max-width: 460px;
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+
+    /* iPhone Carousel */
+    .iphone-carousel {
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 0 28px;
+      margin-bottom: 28px;
+      cursor: grab;
+      user-select: none;
+    }
+    .iphone-carousel::-webkit-scrollbar { display: none; }
+    .iphone-carousel.dragging { cursor: grabbing; }
+    .iphone-track {
+      display: flex;
+      gap: 24px;
+      width: max-content;
+      padding: 0 calc(50% - 282px);
+      align-items: center;
+    }
+    .iphone-mockup {
+      transform: rotate(var(--rot, 0deg));
+      filter: drop-shadow(0 36px 72px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(139,92,246,0.07));
+      flex-shrink: 0;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.35s ease;
+    }
+    .iphone-mockup:hover {
+      transform: rotate(var(--rot, 0deg)) translateY(-10px) scale(1.03);
+      filter: drop-shadow(0 50px 90px rgba(0,0,0,0.9)) drop-shadow(0 0 60px rgba(139,92,246,0.14));
+    }
+    .iphone-frame {
+      width: 155px;
+      aspect-ratio: 9 / 19.5;
+      background: linear-gradient(145deg, #2d2d33 0%, #1c1c20 100%);
+      border-radius: 42px;
+      padding: 14px 9px 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035),
+                  inset 2px 0 8px rgba(255,255,255,0.025);
+      position: relative;
+    }
+    /* Dynamic Island */
+    .iphone-frame::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 74px;
+      height: 22px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 3;
+    }
+    .iphone-screen {
+      width: 100%;
+      height: 100%;
+      background: #0a0a0f;
+      border-radius: 33px;
+      overflow: hidden;
+      position: relative;
+    }
+    .yt-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #111128 0%, #0a0a18 50%, #060610 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .yt-play-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .yt-play-icon::after {
+      content: '';
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 6px 0 6px 10px;
+      border-color: transparent transparent transparent rgba(255,255,255,0.5);
+      margin-left: 2px;
+    }
+    .yt-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 8.5px;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    /* Screenshot grid */
+    .screenshot-grid { width: 100%; }
+    .grid-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .grid-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .screenshot-card {
+      width: 180px;
+      height: 102px;
+      background: rgba(255,255,255,0.035);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.065);
+      position: relative;
+      overflow: hidden;
+    }
+    .screenshot-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.65) 100%);
+    }
+    .views-badge {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      z-index: 2;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 2px 9px;
+      border-radius: 20px;
+    }
+
+    /* Placeholder cards (other services) */
+    .placeholder-cards {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .placeholder-card {
+      width: 220px;
+      height: 130px;
+      background: rgba(255,255,255,0.025);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.055);
+    }
+
     /* ── Nav link hover underline ─────────────────────── */
     .nav-link {
       position: relative;
@@ -872,52 +1228,138 @@
       <div class="mask-fragment" id="frag-right-mouth" data-service="Automatizări Business"
         data-desc="Fluxuri automate care economisesc timp și cresc profitul." data-panel-pos="right-bottom"></div>
 
-      <!-- Service Info Panels (one per fragment, positioned accordingly) -->
-      <div class="service-panel" id="panel-left-top" style="top: 8%; left: -5%; transform-origin: left top;">
-        <div class="service-panel-inner">
-          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">01</p>
-          <h3 class="text-lg font-bold text-white" id="panel-title-left-top"></h3>
-          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-left-top"></p>
-        </div>
-      </div>
-
-      <div class="service-panel" id="panel-right-top" style="top: 8%; right: -5%; transform-origin: right top;">
-        <div class="service-panel-inner">
-          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">02</p>
-          <h3 class="text-lg font-bold text-white" id="panel-title-right-top"></h3>
-          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-right-top"></p>
-        </div>
-      </div>
-
-      <div class="service-panel" id="panel-center"
-        style="top: 50%; left: 50%; transform: translate(-50%, -50%); transform-origin: center;">
-        <div class="service-panel-inner text-center">
-          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">03</p>
-          <h3 class="text-lg font-bold text-white" id="panel-title-center"></h3>
-          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-center"></p>
-        </div>
-      </div>
-
-      <div class="service-panel" id="panel-left-bottom" style="bottom: 2%; left: -5%; transform-origin: left bottom;">
-        <div class="service-panel-inner">
-          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">04</p>
-          <h3 class="text-lg font-bold text-white" id="panel-title-left-bottom"></h3>
-          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-left-bottom"></p>
-        </div>
-      </div>
-
-      <div class="service-panel" id="panel-right-bottom"
-        style="bottom: 2%; right: -5%; transform-origin: right bottom;">
-        <div class="service-panel-inner">
-          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">05</p>
-          <h3 class="text-lg font-bold text-white" id="panel-title-right-bottom"></h3>
-          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-right-bottom"></p>
-        </div>
-      </div>
-
     </div>
   </section>
 
+
+  <!-- ═══════════════════════════════════════════════════
+       SERVICE OVERLAY — Full-screen zoom per fragment
+       ═══════════════════════════════════════════════════ -->
+  <div id="service-overlay" aria-modal="true" role="dialog" aria-label="Detalii serviciu">
+
+    <!-- Blurred ghost fragment (position class set by JS) -->
+    <div id="overlay-ghost"></div>
+
+    <!-- Close -->
+    <button id="overlay-close" aria-label="Închide">
+      <span class="close-x">×</span>
+      <span>CLOSE</span>
+    </button>
+
+    <!-- ── 01 Videoclipuri Premium ── -->
+    <div class="service-pane" id="pane-left-eye">
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">01 — Videoclipuri Premium</p>
+        <h2 class="content-stagger pane-h2">Editare care<br>opreşte thumb-ul.</h2>
+        <p class="content-stagger pane-sub">Facem videoclipuri care generează milioane de vizualizări — de la concept la livrare finală.</p>
+
+        <!-- iPhone mockup carousel -->
+        <div class="content-stagger iphone-carousel" id="iphone-carousel">
+          <div class="iphone-track">
+            <div class="iphone-mockup" style="--rot:-5deg">
+              <div class="iphone-frame">
+                <div class="iphone-screen">
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="iphone-mockup" style="--rot:0deg">
+              <div class="iphone-frame">
+                <div class="iphone-screen">
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="iphone-mockup" style="--rot:5deg">
+              <div class="iphone-frame">
+                <div class="iphone-screen">
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #3</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screenshot grid -->
+        <div class="content-stagger screenshot-grid">
+          <p class="grid-eyebrow">Rezultatele noastre</p>
+          <div class="grid-row">
+            <div class="screenshot-card">
+              <div class="views-badge">2.4M views</div>
+            </div>
+            <div class="screenshot-card">
+              <div class="views-badge">1.8M views</div>
+            </div>
+            <div class="screenshot-card">
+              <div class="views-badge">3.1M views</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 02 Meta ADS ── -->
+    <div class="service-pane" id="pane-right-eye">
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">02 — Meta ADS</p>
+        <h2 class="content-stagger pane-h2">Campanii care<br>convertesc.</h2>
+        <p class="content-stagger pane-sub">Facebook & Instagram optimizate pentru ROI maxim — fiecare leu investit lucrează pentru tine.</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 03 Web Design ── -->
+    <div class="service-pane" id="pane-nose">
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">03 — Web Design + Site-uri</p>
+        <h2 class="content-stagger pane-h2">Site-uri care<br>vând.</h2>
+        <p class="content-stagger pane-sub">Website-uri premium, rapide și optimizate pentru conversie — prima impresie care nu se uită.</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 04 SEO + Google ── -->
+    <div class="service-pane" id="pane-left-mouth">
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">04 — SEO + Google</p>
+        <h2 class="content-stagger pane-h2">Vizibilitate<br>organică maximă.</h2>
+        <p class="content-stagger pane-sub">Optimizare organică și campanii Google Ads cu impact real — brandul tău acolo unde îl caută clienții.</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 05 Automatizări Business ── -->
+    <div class="service-pane" id="pane-right-mouth">
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">05 — Automatizări Business</p>
+        <h2 class="content-stagger pane-h2">Sisteme care<br>lucrează pentru tine.</h2>
+        <p class="content-stagger pane-sub">Fluxuri automate care economisesc timp și cresc profitul — afacerea ta pe pilot automat.</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#service-overlay -->
 
   <!-- PLACEHOLDER SECTIONS -->
   <section id="portofoliu" class="relative min-h-screen flex items-center justify-center px-6">
@@ -1061,58 +1503,104 @@
     })();
 
 
-    // ── Mask Fragments Interaction ────────────────────────
+    // ── Mask Fragments → Full-screen Overlay ─────────────
     (function () {
-      const canvas = document.getElementById('fragments-canvas');
-      const fragments = canvas.querySelectorAll('.mask-fragment');
-      let activeFragment = null;
+      const overlay  = document.getElementById('service-overlay');
+      const ghost    = document.getElementById('overlay-ghost');
+      const closeBtn = document.getElementById('overlay-close');
+      const fragments = document.querySelectorAll('.mask-fragment');
 
+      const FRAGMENT_MAP = {
+        'frag-left-eye':    { ghost: 'ghost-left-eye',   pane: 'pane-left-eye' },
+        'frag-right-eye':   { ghost: 'ghost-right-eye',  pane: 'pane-right-eye' },
+        'frag-nose':        { ghost: 'ghost-nose',        pane: 'pane-nose' },
+        'frag-left-mouth':  { ghost: 'ghost-left-mouth',  pane: 'pane-left-mouth' },
+        'frag-right-mouth': { ghost: 'ghost-right-mouth', pane: 'pane-right-mouth' },
+      };
+
+      let currentPane = null;
+      let isOpen = false;
+      let closeTimer = null;
+
+      function openService(fragId) {
+        const cfg = FRAGMENT_MAP[fragId];
+        if (!cfg) return;
+
+        if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+
+        // Reset ghost
+        ghost.className = '';
+        // Remove previous active pane
+        if (currentPane) currentPane.classList.remove('active');
+
+        // Apply ghost position class
+        ghost.classList.add(cfg.ghost);
+
+        // Lock scroll
+        document.body.style.overflow = 'hidden';
+
+        // Open overlay (fade in + ghost zoom in)
+        overlay.classList.add('open');
+        isOpen = true;
+
+        // Activate pane content (stagger starts via CSS transition-delay)
+        currentPane = document.getElementById(cfg.pane);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (currentPane) currentPane.classList.add('active');
+        }));
+      }
+
+      function closeService() {
+        if (!isOpen) return;
+        // Fade pane content out first
+        if (currentPane) currentPane.classList.remove('active');
+
+        closeTimer = setTimeout(() => {
+          overlay.classList.remove('open');
+          document.body.style.overflow = '';
+          // Cleanup after overlay fully fades
+          closeTimer = setTimeout(() => {
+            ghost.className = '';
+            currentPane = null;
+            isOpen = false;
+          }, 550);
+        }, 160);
+      }
+
+      // Fragment clicks → open overlay
       fragments.forEach(frag => {
-        frag.addEventListener('click', (e) => {
+        frag.addEventListener('click', e => {
           e.stopPropagation();
-          const panelPos = frag.dataset.panelPos;
-          const service = frag.dataset.service;
-          const desc = frag.dataset.desc;
-
-          // If clicking the already active fragment, deactivate
-          if (activeFragment === frag) {
-            deactivate();
-            return;
-          }
-
-          // Deactivate previous
-          deactivate();
-
-          // Activate this fragment
-          activeFragment = frag;
-          frag.classList.add('active');
-          canvas.classList.add('has-active');
-
-          // Show service panel
-          const panel = document.getElementById('panel-' + panelPos);
-          const titleEl = document.getElementById('panel-title-' + panelPos);
-          const descEl = document.getElementById('panel-desc-' + panelPos);
-          if (titleEl) titleEl.textContent = service;
-          if (descEl) descEl.textContent = desc;
-          if (panel) panel.classList.add('visible');
+          openService(frag.id);
         });
       });
 
-      // Clicking outside fragments deactivates
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.mask-fragment') && !e.target.closest('.service-panel')) {
-          deactivate();
-        }
+      // Close button
+      closeBtn.addEventListener('click', closeService);
+
+      // ESC key
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && isOpen) closeService();
       });
 
-      function deactivate() {
-        if (activeFragment) {
-          activeFragment.classList.remove('active');
-          activeFragment = null;
-        }
-        canvas.classList.remove('has-active');
-        // Hide all panels
-        canvas.querySelectorAll('.service-panel').forEach(p => p.classList.remove('visible'));
+      // Drag-to-scroll on iPhone carousel
+      const carousel = document.getElementById('iphone-carousel');
+      if (carousel) {
+        let isDown = false, startX = 0, scrollLeft = 0;
+        carousel.addEventListener('mousedown', e => {
+          isDown = true;
+          carousel.classList.add('dragging');
+          startX = e.pageX - carousel.offsetLeft;
+          scrollLeft = carousel.scrollLeft;
+        });
+        carousel.addEventListener('mouseleave', () => { isDown = false; carousel.classList.remove('dragging'); });
+        carousel.addEventListener('mouseup', () => { isDown = false; carousel.classList.remove('dragging'); });
+        carousel.addEventListener('mousemove', e => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - carousel.offsetLeft;
+          carousel.scrollLeft = scrollLeft - (x - startX) * 1.4;
+        });
       }
     })();
 
