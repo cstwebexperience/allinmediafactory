@@ -283,14 +283,14 @@
       background-image: url('masca-despicata.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
-      filter: blur(24px) brightness(0.28);
+      filter: blur(10px) brightness(0.48);
       opacity: 0;
       transform: scale(0.12);
       transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
                   transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
     }
     #service-overlay.open #overlay-ghost {
-      opacity: 0.6;
+      opacity: 0.82;
       transform: scale(1);
     }
 
@@ -403,11 +403,18 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      max-width: 720px;
-      width: 90vw;
+      max-width: 620px;
+      width: 80vw;
       position: relative;
       z-index: 10;
     }
+
+    /* Shift content away from ghost corner so they don't overlap */
+    #pane-left-eye   .pane-content { margin-left: 30vw; margin-top: 20vh; }
+    #pane-right-eye  .pane-content { margin-right: 30vw; margin-top: 20vh; }
+    #pane-nose       .pane-content { margin-top: 28vh; }
+    #pane-left-mouth .pane-content { margin-left: 30vw; margin-bottom: 20vh; }
+    #pane-right-mouth .pane-content { margin-right: 30vw; margin-bottom: 20vh; }
 
     /* Stagger base */
     .content-stagger {
