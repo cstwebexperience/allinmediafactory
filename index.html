@@ -1684,7 +1684,11 @@ function tick() {
   lights[0].position.y = 2 + Math.cos(t*0.4)*0.4;
   lights[1].position.x = -3 + Math.sin(t*0.25)*0.4;
 
-  if (heroEl) heroEl.style.opacity = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
+  if (heroEl) {
+    const op = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
+    heroEl.style.opacity = op;
+    heroEl.style.pointerEvents = op < 0.02 ? 'none' : '';
+  }
 
   renderer.render(scene, camera);
 }
