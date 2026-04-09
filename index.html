@@ -76,7 +76,7 @@
 
     /* ── Three.js Hero ─────────────────────────────────── */
     .scroll-container {
-      height: 500vh;
+      height: 200vh;
       position: relative;
     }
 
@@ -849,6 +849,7 @@
     /* ── Scroll-Scrub Stage ────────────────────────────── */
     #scroll-scrub-container {
       position: relative;
+      z-index: 2;
     }
 
     #stage {
@@ -1596,7 +1597,7 @@ window.addEventListener('mousemove', e => {
 });
 
 let scrollP = 0;
-const scrollHeight = window.innerHeight * 4;
+const scrollHeight = window.innerHeight;
 window.addEventListener('scroll', () => {
   scrollP = Math.min(Math.max(window.scrollY / scrollHeight, 0), 1);
 }, { passive: true });
