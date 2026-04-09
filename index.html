@@ -671,9 +671,24 @@
       background-size: 100% 100%;
       background-repeat: no-repeat;
       cursor: pointer;
-      transition: filter .5s cubic-bezier(.4, 0, .2, 1);
-      will-change: transform, filter;
+      transition: filter .5s cubic-bezier(.4, 0, .2, 1),
+                  transform .65s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity .5s ease;
+      will-change: transform, filter, opacity;
     }
+
+    /* Fragment flies toward its corner when clicked */
+    .mask-fragment.flying {
+      animation: none !important;
+      z-index: 50 !important;
+      pointer-events: none;
+      cursor: default;
+    }
+    #frag-left-eye.flying   { transform: translate(-60vw, -58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-right-eye.flying  { transform: translate( 60vw, -58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-nose.flying       { transform: translate(   0,  -62vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-left-mouth.flying { transform: translate(-60vw,  58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-right-mouth.flying{ transform: translate( 60vw,  58vh) scale(3.5) !important; opacity: 0 !important; }
 
     /* Glow on hover */
     .mask-fragment:hover {
@@ -1518,7 +1533,9 @@
         'frag-right-mouth': { ghost: 'ghost-right-mouth', pane: 'pane-right-mouth' },
       };
 
+      const canvas = document.getElementById('fragments-canvas');
       let currentPane = null;
+      let currentFragEl = null;
       let isOpen = false;
       let closeTimer = null;
 
@@ -1528,10 +1545,20 @@
 
         if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
 
-        // Reset ghost
+        // Reset previous flying fragment immediately
+        if (currentFragEl) {
+          currentFragEl.classList.remove('flying', 'active');
+        }
         ghost.className = '';
-        // Remove previous active pane
         if (currentPane) currentPane.classList.remove('active');
+        if (canvas) canvas.classList.remove('has-active');
+
+        // Fly the clicked fragment toward its corner
+        currentFragEl = document.getElementById(fragId);
+        if (currentFragEl) {
+          currentFragEl.classList.add('flying', 'active');
+          if (canvas) canvas.classList.add('has-active');
+        }
 
         // Apply ghost position class
         ghost.classList.add(cfg.ghost);
@@ -1539,26 +1566,34 @@
         // Lock scroll
         document.body.style.overflow = 'hidden';
 
-        // Open overlay (fade in + ghost zoom in)
-        overlay.classList.add('open');
-        isOpen = true;
-
-        // Activate pane content (stagger starts via CSS transition-delay)
-        currentPane = document.getElementById(cfg.pane);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          if (currentPane) currentPane.classList.add('active');
-        }));
+        // Open overlay simultaneously with fragment flying out
+        requestAnimationFrame(() => {
+          overlay.classList.add('open');
+          isOpen = true;
+          currentPane = document.getElementById(cfg.pane);
+          // Stagger content in after ghost appears
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            if (currentPane) currentPane.classList.add('active');
+          }));
+        });
       }
 
       function closeService() {
         if (!isOpen) return;
-        // Fade pane content out first
+        // Fade pane content out
         if (currentPane) currentPane.classList.remove('active');
 
         closeTimer = setTimeout(() => {
           overlay.classList.remove('open');
           document.body.style.overflow = '';
-          // Cleanup after overlay fully fades
+
+          // Return fragment back to mask
+          if (currentFragEl) {
+            currentFragEl.classList.remove('flying', 'active');
+            if (canvas) canvas.classList.remove('has-active');
+            currentFragEl = null;
+          }
+
           closeTimer = setTimeout(() => {
             ghost.className = '';
             currentPane = null;
