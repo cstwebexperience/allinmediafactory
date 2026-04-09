@@ -76,7 +76,7 @@
       flex-direction: column;
     }
 
-    /* Animated blobs */
+    /* ── Background blobs — CSS only, no JS ──────────── */
     .hero-blobs {
       position: absolute;
       inset: 0;
@@ -87,112 +87,57 @@
     .blob {
       position: absolute;
       border-radius: 50%;
-      filter: blur(240px);
+      filter: blur(260px);
       will-change: transform;
+      opacity: 0.2;
     }
 
+    /* Violet principal */
     .blob-1 {
-      width: 70vw;
-      height: 70vw;
-      max-width: 800px;
-      max-height: 800px;
-      background: radial-gradient(circle, oklch(0.55 0.25 280 / 0.22) 0%, transparent 70%);
-      top: -20%;
-      left: -15%;
-      animation: blobFloat1 55s ease-in-out infinite;
+      width: 75vw; height: 75vw;
+      max-width: 900px; max-height: 900px;
+      background: radial-gradient(circle, oklch(0.55 0.25 280 / 0.90) 0%, transparent 70%);
+      top: -25%; left: -20%;
+      animation: blobFloat1 58s ease-in-out infinite;
     }
 
+    /* Indigo profund */
     .blob-2 {
-      width: 55vw;
-      height: 55vw;
-      max-width: 650px;
-      max-height: 650px;
-      background: radial-gradient(circle, oklch(0.40 0.20 280 / 0.18) 0%, transparent 70%);
-      bottom: -10%;
-      right: -10%;
-      animation: blobFloat2 70s ease-in-out infinite;
+      width: 60vw; height: 60vw;
+      max-width: 720px; max-height: 720px;
+      background: radial-gradient(circle, oklch(0.40 0.20 280 / 0.85) 0%, transparent 70%);
+      bottom: -15%; right: -15%;
+      animation: blobFloat2 72s ease-in-out infinite;
     }
 
+    /* Accent violet tertiar */
     .blob-3 {
-      width: 40vw;
-      height: 40vw;
-      max-width: 500px;
-      max-height: 500px;
-      background: radial-gradient(circle, oklch(0.50 0.22 290 / 0.14) 0%, transparent 70%);
-      top: 30%;
-      left: 55%;
-      animation: blobFloat3 45s ease-in-out infinite 8s;
+      width: 45vw; height: 45vw;
+      max-width: 560px; max-height: 560px;
+      background: radial-gradient(circle, oklch(0.50 0.22 290 / 0.70) 0%, transparent 70%);
+      top: 28%; left: 52%;
+      animation: blobFloat3 47s ease-in-out infinite 6s;
     }
 
     @keyframes blobFloat1 {
-
-      0%,
-      100% {
-        transform: translate(0, 0) scale(1);
-      }
-
-      25% {
-        transform: translate(8vw, 5vh) scale(1.05);
-      }
-
-      50% {
-        transform: translate(4vw, 12vh) scale(0.95);
-      }
-
-      75% {
-        transform: translate(-4vw, 6vh) scale(1.08);
-      }
+      0%, 100% { transform: translate(0,0) scale(1); }
+      25%       { transform: translate(8vw, 6vh) scale(1.04); }
+      50%       { transform: translate(3vw, 13vh) scale(0.96); }
+      75%       { transform: translate(-5vw, 7vh) scale(1.07); }
     }
-
     @keyframes blobFloat2 {
-
-      0%,
-      100% {
-        transform: translate(0, 0) scale(1);
-      }
-
-      30% {
-        transform: translate(-6vw, -8vh) scale(1.06);
-      }
-
-      60% {
-        transform: translate(-10vw, -4vh) scale(0.94);
-      }
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33%       { transform: translate(-7vw, -9vh) scale(1.05); }
+      66%       { transform: translate(-11vw, -3vh) scale(0.93); }
     }
-
     @keyframes blobFloat3 {
-
-      0%,
-      100% {
-        transform: translate(0, 0) scale(1);
-      }
-
-      40% {
-        transform: translate(-5vw, 8vh) scale(1.1);
-      }
-
-      70% {
-        transform: translate(4vw, 3vh) scale(0.92);
-      }
+      0%, 100% { transform: translate(0,0) scale(1); }
+      40%       { transform: translate(-6vw, 9vh) scale(1.09); }
+      70%       { transform: translate(5vw, 2vh) scale(0.91); }
     }
 
-    /* Off-screen canvas for text rendering */
-    #hero-text-canvas {
-      display: none;
-    }
-
-    /* Main WebGL canvas */
-    #hero-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    /* Fallback text (shown if WebGL fails or canvas is loading) */
-    #hero-text-fallback {
+    /* ── Text layer — real text behind glass ─────────── */
+    #hero-text-layer {
       position: absolute;
       inset: 0;
       z-index: 1;
@@ -202,19 +147,67 @@
       pointer-events: none;
     }
 
-    #hero-text-fallback h1 {
+    #hero-title {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
       font-style: italic;
       font-size: clamp(60px, 12vw, 180px);
       letter-spacing: -0.02em;
-      line-height: 0.9;
-      color: #fff;
+      line-height: 0.88;
+      color: #ffffff;
       text-align: center;
       text-shadow: 0 0 80px rgba(130, 80, 255, 0.15);
+      user-select: none;
     }
 
-    /* Hero UI overlay (nav + subtitle + scroll) */
+    /* ── Glass pane — invisible, clips refracted clones ─ */
+    #glass-pane {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      /* ~500×300 on desktop, scales with viewport */
+      width:  clamp(320px, 52vw, 680px);
+      height: clamp(180px, 30vw, 380px);
+      overflow: hidden;
+      z-index: 2;
+      pointer-events: none;
+      /* NO border, NO background — pure clip zone */
+    }
+
+    /* Each channel: fills the pane, positioned to match real text */
+    .gc {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* Channel filters */
+    #gc-r { filter: url(#glass-r); }
+    #gc-g { filter: url(#glass-g); }
+    #gc-b { filter: url(#glass-b); }
+
+    /* Cloned title inside each channel */
+    .gc-t {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: clamp(60px, 12vw, 180px);
+      letter-spacing: -0.02em;
+      line-height: 0.88;
+      text-align: center;
+      position: absolute;
+      /* Aligned to real title via JS */
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    /* R: red fringe, displaced most */
+    #gc-r .gc-t { color: rgba(255, 55, 55, 0.55); }
+    /* G: white main — most visible */
+    #gc-g .gc-t { color: rgba(255, 255, 255, 0.92); text-shadow: 0 0 80px rgba(130, 80, 255, 0.15); }
+    /* B: blue fringe, displaced least */
+    #gc-b .gc-t { color: rgba(55, 55, 255, 0.55); }
+
+    /* ── Hero UI overlay ─────────────────────────────── */
     #hero-ui {
       position: relative;
       z-index: 10;
@@ -223,40 +216,26 @@
       height: 100%;
       pointer-events: none;
     }
+    #hero-ui > * { pointer-events: auto; }
 
-    #hero-ui>* {
-      pointer-events: auto;
-    }
-
-    /* Subtitle block */
+    /* ── Subtitle ─────────────────────────────────────── */
     .hero-subtitle {
       position: absolute;
       bottom: clamp(100px, 14vh, 160px);
-      left: 0;
-      right: 0;
+      left: 0; right: 0;
       text-align: center;
       pointer-events: none;
     }
-
     .hero-subtitle p {
       font-family: 'DM Sans', sans-serif;
       font-size: 13px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
     }
+    .hero-subtitle .line1 { color: rgba(255,255,255,0.4); font-weight: 400; margin-bottom: 8px; }
+    .hero-subtitle .line2 { color: rgba(255,255,255,0.6); font-weight: 500; }
 
-    .hero-subtitle .line1 {
-      color: rgba(255, 255, 255, 0.4);
-      font-weight: 400;
-      margin-bottom: 8px;
-    }
-
-    .hero-subtitle .line2 {
-      color: rgba(255, 255, 255, 0.6);
-      font-weight: 500;
-    }
-
-    /* Scroll indicator */
+    /* ── Scroll indicator ─────────────────────────────── */
     .scroll-indicator {
       position: absolute;
       bottom: 40px;
@@ -268,45 +247,34 @@
       gap: 10px;
       pointer-events: none;
     }
-
     .scroll-indicator span {
       font-size: 9px;
       letter-spacing: 0.4em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.2);
+      color: rgba(255,255,255,0.2);
       font-family: 'DM Sans', sans-serif;
     }
-
     .scroll-line {
       width: 1px;
       height: 48px;
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), transparent);
+      background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
     }
 
-    /* Nav link animated underline ──────────────────── */
+    /* ── Nav link hover underline ─────────────────────── */
     .nav-link {
       position: relative;
       transition: color .3s ease;
     }
-
     .nav-link::after {
       content: '';
       position: absolute;
-      left: 0;
-      bottom: -4px;
-      width: 0;
-      height: 1.5px;
+      left: 0; bottom: -4px;
+      width: 0; height: 1.5px;
       background: linear-gradient(90deg, #8b5cf6, #a78bfa);
-      transition: width .35s cubic-bezier(.4, 0, .2, 1);
+      transition: width .35s cubic-bezier(.4,0,.2,1);
     }
-
-    .nav-link:hover::after {
-      width: 100%;
-    }
-
-    .nav-link:hover {
-      color: #c4b5fd;
-    }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link:hover { color: #c4b5fd; }
 
     /* ── Mask Fragments ───────────────────────────────── */
     .fragments-section {
@@ -755,50 +723,41 @@
       <div class="blob blob-3"></div>
     </div>
 
-    <!-- SVG filter definitions – smooth thick-glass refraction -->
+    <!--
+      SVG Displacement filters — three separate for R/G/B chromatic aberration.
+      R: scale 24 (most displaced), G: scale 20 (center), B: scale 16 (least).
+      Mouse updates baseFrequency of all three simultaneously → changes refraction angle.
+    -->
     <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
       <defs>
-        <!-- Three separate filters for R, G, B channels (chromatic aberration) -->
-        <filter id="glass-r" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-          <feTurbulence id="turb-r" type="fractalNoise" baseFrequency="0.004" numOctaves="1" seed="3" result="n" />
-          <feGaussianBlur stdDeviation="6" in="n" result="sn" />
-          <feDisplacementMap id="disp-r" in="SourceGraphic" in2="sn" scale="22" xChannelSelector="R"
-            yChannelSelector="G" />
+        <filter id="glass-r" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+          <feTurbulence id="turb-r" type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="1" seed="5" result="n"/>
+          <feGaussianBlur stdDeviation="5" in="n" result="sn"/>
+          <feDisplacementMap id="disp-r" in="SourceGraphic" in2="sn" scale="24" xChannelSelector="R" yChannelSelector="G"/>
         </filter>
-        <filter id="glass-g" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-          <feTurbulence id="turb-g" type="fractalNoise" baseFrequency="0.004" numOctaves="1" seed="3" result="n" />
-          <feGaussianBlur stdDeviation="6" in="n" result="sn" />
-          <feDisplacementMap id="disp-g" in="SourceGraphic" in2="sn" scale="19" xChannelSelector="R"
-            yChannelSelector="G" />
+        <filter id="glass-g" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+          <feTurbulence id="turb-g" type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="1" seed="5" result="n"/>
+          <feGaussianBlur stdDeviation="5" in="n" result="sn"/>
+          <feDisplacementMap id="disp-g" in="SourceGraphic" in2="sn" scale="20" xChannelSelector="R" yChannelSelector="G"/>
         </filter>
-        <filter id="glass-b" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-          <feTurbulence id="turb-b" type="fractalNoise" baseFrequency="0.004" numOctaves="1" seed="3" result="n" />
-          <feGaussianBlur stdDeviation="6" in="n" result="sn" />
-          <feDisplacementMap id="disp-b" in="SourceGraphic" in2="sn" scale="16" xChannelSelector="R"
-            yChannelSelector="G" />
+        <filter id="glass-b" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+          <feTurbulence id="turb-b" type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="1" seed="5" result="n"/>
+          <feGaussianBlur stdDeviation="5" in="n" result="sn"/>
+          <feDisplacementMap id="disp-b" in="SourceGraphic" in2="sn" scale="16" xChannelSelector="R" yChannelSelector="G"/>
         </filter>
       </defs>
     </svg>
 
-    <!-- Text layer — renders behind glass, visible everywhere -->
+    <!-- Real text layer — visible outside glass, undistorted -->
     <div id="hero-text-layer">
       <h1 id="hero-title">ALL IN<br>MEDIA</h1>
     </div>
 
-    <!-- Glass pane — invisible container, clips refracted content -->
+    <!-- Glass pane — invisible clipping zone, shows refracted clones -->
     <div id="glass-pane" aria-hidden="true">
-      <!-- Red channel (shifted left slightly) -->
-      <div class="glass-channel" id="gc-r">
-        <h1 class="glass-clone gc-title">ALL IN<br>MEDIA</h1>
-      </div>
-      <!-- Green channel (center) -->
-      <div class="glass-channel" id="gc-g">
-        <h1 class="glass-clone gc-title">ALL IN<br>MEDIA</h1>
-      </div>
-      <!-- Blue channel (shifted right slightly) -->
-      <div class="glass-channel" id="gc-b">
-        <h1 class="glass-clone gc-title">ALL IN<br>MEDIA</h1>
-      </div>
+      <div class="gc" id="gc-r"><h1 class="gc-t">ALL IN<br>MEDIA</h1></div>
+      <div class="gc" id="gc-g"><h1 class="gc-t">ALL IN<br>MEDIA</h1></div>
+      <div class="gc" id="gc-b"><h1 class="gc-t">ALL IN<br>MEDIA</h1></div>
     </div>
 
     <!-- UI overlay: nav + subtitle + scroll indicator -->
@@ -1158,124 +1117,117 @@
     })();
 
 
-    // ── Hero Refraction Effect ────────────────────────────
+    // ── Hero Glass Refraction ─────────────────────────────
     (function () {
-      const hero = document.getElementById('hero');
-      const textLayer = document.getElementById('hero-text-layer');
-      const glassPane = document.getElementById('glass-pane');
-      const glassInner = document.getElementById('glass-inner');
-      const clone = document.getElementById('hero-title-clone');
-      const turbulence = document.getElementById('glass-turbulence');
-      const dispMap = document.getElementById('glass-disp');
+      const hero       = document.getElementById('hero');
+      const textLayer  = document.getElementById('hero-text-layer');
+      const glassPane  = document.getElementById('glass-pane');
+      const realTitle  = document.getElementById('hero-title');
+      const blobs      = document.querySelectorAll('.blob');
+      const heroNav    = document.getElementById('hero-nav');
 
-      if (!hero || !glassPane || !glassInner || !turbulence) return;
+      // All three turbulence + displacement elements
+      const turbR = document.getElementById('turb-r');
+      const turbG = document.getElementById('turb-g');
+      const turbB = document.getElementById('turb-b');
+      const dispR = document.getElementById('disp-r');
+      const dispG = document.getElementById('disp-g');
+      const dispB = document.getElementById('disp-b');
 
-      // Lerp mouse position
-      let targetX = 0, targetY = 0;
-      let currentX = 0, currentY = 0;
-      // Base turbulence frequencies
-      const BASE_FX = 0.006, BASE_FY = 0.009;
-      const MAX_DELTA = 0.003; // how much mouse shifts frequency
-      let rafId = null;
+      if (!hero || !glassPane || !turbR) return;
 
-      // ── Align glass-inner so the clone overlays the real title ──
-      function alignInner() {
-        const paneRect = glassPane.getBoundingClientRect();
-        const titleRect = document.getElementById('hero-title').getBoundingClientRect();
-
-        // Position glass-inner so cloned title sits exactly on top of real title
-        const offsetX = titleRect.left - paneRect.left;
-        const offsetY = titleRect.top - paneRect.top;
-
-        glassInner.style.left = offsetX + 'px';
-        glassInner.style.top = offsetY + 'px';
-        glassInner.style.width = titleRect.width + 'px';
-        glassInner.style.height = titleRect.height + 'px';
-      }
-
-      // ── Mouse tracking ──
-      window.addEventListener('mousemove', (e) => {
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
-        // Normalise -1 → +1
-        targetX = (e.clientX - cx) / cx;
-        targetY = (e.clientY - cy) / cy;
-      }, { passive: true });
-
-      // ── Gyroscope for mobile ──
-      if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', (e) => {
-          if (e.gamma !== null) {
-            targetX = Math.max(-1, Math.min(1, e.gamma / 30));
-            targetY = Math.max(-1, Math.min(1, e.beta / 30));
-          }
-        }, { passive: true });
-      }
-
-      // ── Animation loop ──
-      function tick() {
-        // Lerp (smooth follow)
-        const ease = 0.04;
-        currentX += (targetX - currentX) * ease;
-        currentY += (targetY - currentY) * ease;
-
-        // Shift turbulence baseFrequency based on mouse — creates refraction angle change
-        const fx = BASE_FX + currentX * MAX_DELTA;
-        const fy = BASE_FY + currentY * MAX_DELTA;
-        turbulence.setAttribute('baseFrequency', `${fx.toFixed(5)} ${fy.toFixed(5)}`);
-
-        // Shift displacement scale slightly too
-        const scaleShift = 18 + currentX * 3 + currentY * 2;
-        dispMap.setAttribute('scale', scaleShift.toFixed(1));
-
-        // Chromatic aberration intensifies toward edges
-        const caAmount = (Math.abs(currentX) + Math.abs(currentY)) * 1.2;
-        clone.style.setProperty('--ca-r', `-${(caAmount + 1.0).toFixed(2)}px`);
-        clone.style.setProperty('--ca-b', `${(caAmount + 1.0).toFixed(2)}px`);
-
-        rafId = requestAnimationFrame(tick);
-      }
-
-      // ── Scroll: parallax + fade ──
-      window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
-        const heroH = hero.offsetHeight;
-        const progress = Math.min(1, scrollY / heroH);
-
-        // Fade out
-        hero.style.opacity = 1 - progress * 1.2;
-        // Parallax lift
-        const lift = scrollY * 0.28;
-        textLayer.style.transform = `translateY(-${lift}px)`;
-        glassPane.style.transform = `translate(-50%, calc(-50% - ${lift}px))`;
-
-        // Blobs intensify subtly
-        const blobOp = 0.2 + progress * 0.2;
-        document.querySelectorAll('.blob').forEach(b => {
-          b.style.opacity = blobOp;
+      // ── Align cloned titles to match real title position ──
+      function alignClones() {
+        const paneRect  = glassPane.getBoundingClientRect();
+        const titleRect = realTitle.getBoundingClientRect();
+        const ox = titleRect.left - paneRect.left;
+        const oy = titleRect.top  - paneRect.top;
+        document.querySelectorAll('.gc-t').forEach(el => {
+          el.style.left   = ox + 'px';
+          el.style.top    = oy + 'px';
+          el.style.width  = titleRect.width  + 'px';
+          el.style.height = titleRect.height + 'px';
         });
+      }
+
+      // ── Smooth mouse tracking (lerp) ──────────────────────
+      const BASE_FX = 0.006, BASE_FY = 0.009;
+      const MAX_DELTA = 0.0028;
+      let tx = 0, ty = 0, cx = 0, cy = 0;
+
+      window.addEventListener('mousemove', e => {
+        tx = (e.clientX - window.innerWidth  / 2) / (window.innerWidth  / 2); // -1..+1
+        ty = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2); // -1..+1
       }, { passive: true });
 
-      // ── Fix: update scroll-scrub nav selector (old `nav` → `#hero-nav`) ──
-      const heroNav = document.getElementById('hero-nav');
-      if (heroNav) {
-        window.addEventListener('scroll', () => {
-          if (window.scrollY > 80) {
-            heroNav.style.background = 'rgba(5,5,7,0.7)';
-            heroNav.style.backdropFilter = 'blur(16px)';
-          } else {
-            heroNav.style.background = '';
-            heroNav.style.backdropFilter = '';
+      // Gyroscope fallback for mobile
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', e => {
+          if (e.gamma != null) {
+            tx = Math.max(-1, Math.min(1, e.gamma / 28));
+            ty = Math.max(-1, Math.min(1, (e.beta - 45) / 28));
           }
         }, { passive: true });
       }
 
-      // ── Init ──
-      window.addEventListener('load', () => {
-        alignInner();
-        tick();
-      });
-      window.addEventListener('resize', alignInner, { passive: true });
+      // ── RAF animation loop ────────────────────────────────
+      function tick() {
+        const ease = 0.042;
+        cx += (tx - cx) * ease;
+        cy += (ty - cy) * ease;
+
+        // Update all three turbulences with same angle → different scales = chromatic aberration
+        const fx = (BASE_FX + cx * MAX_DELTA).toFixed(5);
+        const fy = (BASE_FY + cy * MAX_DELTA).toFixed(5);
+        const freq = `${fx} ${fy}`;
+        turbR.setAttribute('baseFrequency', freq);
+        turbG.setAttribute('baseFrequency', freq);
+        turbB.setAttribute('baseFrequency', freq);
+
+        // Subtly modulate displacement scales based on mouse intensity
+        const intensity = Math.sqrt(cx*cx + cy*cy); // 0..~1.41
+        dispR.setAttribute('scale', (24 + intensity * 3).toFixed(1));
+        dispG.setAttribute('scale', (20 + intensity * 2).toFixed(1));
+        dispB.setAttribute('scale', (16 + intensity * 1).toFixed(1));
+
+        requestAnimationFrame(tick);
+      }
+
+      // ── Scroll: fade + parallax 0.28x + blobs intensify ──
+      window.addEventListener('scroll', () => {
+        const sy = window.scrollY;
+        const heroH = hero.offsetHeight;
+        const p = Math.min(1, sy / heroH);
+
+        // Hero fade
+        hero.style.opacity = Math.max(0, 1 - p * 1.25).toFixed(3);
+
+        // Parallax lift (text layer + glass pane move up together)
+        const lift = sy * 0.28;
+        textLayer.style.transform  = `translateY(-${lift}px)`;
+        glassPane.style.transform  = `translate(-50%, calc(-50% - ${lift}px))`;
+
+        // Blobs intensify 0.2 → 0.4 as user scrolls
+        const blobOp = (0.20 + p * 0.20).toFixed(3);
+        blobs.forEach(b => b.style.opacity = blobOp);
+
+        // Nav frosted glass after 80px
+        if (heroNav) {
+          if (sy > 80) {
+            heroNav.style.background      = 'rgba(5,5,7,0.72)';
+            heroNav.style.backdropFilter  = 'blur(18px)';
+            heroNav.style.borderBottom    = '1px solid rgba(255,255,255,0.06)';
+          } else {
+            heroNav.style.background     = '';
+            heroNav.style.backdropFilter = '';
+            heroNav.style.borderBottom   = '';
+          }
+        }
+      }, { passive: true });
+
+      // ── Init on load + resize ─────────────────────────────
+      window.addEventListener('load', () => { alignClones(); tick(); });
+      window.addEventListener('resize', alignClones, { passive: true });
 
     })();
 
