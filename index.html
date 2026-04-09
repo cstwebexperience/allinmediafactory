@@ -103,6 +103,7 @@
       text-align: center;
       pointer-events: none;
       user-select: none;
+      opacity: 0; /* loader reveal will set this to 1 */
     }
     .hero-title-block h1 {
       font-family: 'DM Sans', sans-serif;
@@ -1269,6 +1270,8 @@
       </svg>
 
     </div>
+    <!-- Section fade-out at bottom of fragments → contact -->
+    <div class="section-fade-bottom" style="height:180px; z-index:6;"></div>
   </section>
 
 
@@ -1404,6 +1407,8 @@
   <!-- CONTACT ANIMATION SECTION -->
   <div id="contact" class="contact-scroll-area">
     <div id="contact-stage">
+      <!-- Section fade-in at top of contact → from fragments -->
+      <div class="section-fade-top" style="height:180px; z-index:6;"></div>
       <canvas id="contact-canvas"></canvas>
       <div class="contact-label" id="contact-clipLabel"><span>Click pentru a ne contacta</span></div>
       <div class="contact-label" id="contact-waLabel"><span>WhatsApp</span></div>
@@ -1566,6 +1571,7 @@
 
         // Lock scroll
         document.body.style.overflow = 'hidden';
+        window._lenis?.stop();
 
         // Open overlay simultaneously with fragment flying out
         requestAnimationFrame(() => {
@@ -1574,7 +1580,28 @@
           currentPane = document.getElementById(cfg.pane);
           // Stagger content in after ghost appears
           requestAnimationFrame(() => requestAnimationFrame(() => {
-            if (currentPane) currentPane.classList.add('active');
+            if (currentPane) {
+              currentPane.classList.add('active');
+              // SplitType char reveal on pane h2
+              const h2 = currentPane.querySelector('.pane-h2');
+              if (h2 && window.SplitType) {
+                if (h2._st) { h2._st.revert(); delete h2._st; }
+                const st = new SplitType(h2, { types: 'chars' });
+                h2._st = st;
+                gsap.from(st.chars, {
+                  y: 45, opacity: 0, rotateX: -40,
+                  duration: 0.7, stagger: 0.022,
+                  ease: 'power3.out', delay: 0.38,
+                  transformPerspective: 600,
+                });
+              }
+              // Eyebrow SplitType
+              const ey = currentPane.querySelector('.pane-eyebrow');
+              if (ey && window.SplitType && !ey._st) {
+                const stE = new SplitType(ey, { types: 'chars' });
+                ey._st = stE;
+              }
+            }
           }));
         });
       }
@@ -1587,6 +1614,7 @@
         closeTimer = setTimeout(() => {
           overlay.classList.remove('open');
           document.body.style.overflow = '';
+          window._lenis?.start();
 
           // Return fragment back to mask
           if (currentFragEl) {
@@ -1772,7 +1800,7 @@ function tick() {
   const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20, 0.50));
   const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
 
-  if (titleEl) {
+  if (titleEl && window._loaderDone) {
     titleEl.style.opacity   = 1 - easeInOut(mapRange(scrollP, 0.03, 0.20));
     titleEl.style.transform = `translateY(${scrollP * -40}px)`;
   }
@@ -1947,8 +1975,8 @@ const formOverlay = document.getElementById('contactFormOverlay');
 const cfCloseBtn  = document.getElementById('cfCloseBtn');
 const cfForm      = document.getElementById('cfForm');
 
-function openCF() { cfOpen=true; formOverlay.classList.add('active'); }
-function closeCF() { cfOpen=false; formOverlay.classList.remove('active'); }
+function openCF() { cfOpen=true; formOverlay.classList.add('active'); window._lenis?.stop(); }
+function closeCF() { cfOpen=false; formOverlay.classList.remove('active'); window._lenis?.start(); }
 cfCloseBtn.addEventListener('click', closeCF);
 formOverlay.addEventListener('click', e => { if (e.target===formOverlay) closeCF(); });
 cfForm.addEventListener('submit', async (e) => {
@@ -2128,18 +2156,29 @@ gsap.ticker.lagSmoothing(0);
   setTimeout(complete, 4000);
 
   function revealPage() {
-    // Hero title character reveal after loader
-    const h1 = document.querySelector('.hero-title-block h1');
+    window._loaderDone = true;
+    const titleBlock = document.getElementById('hero-title-block');
+    const h1  = document.querySelector('.hero-title-block h1');
     const sub = document.querySelector('.hero-title-block .sub');
+
+    // Ensure title block is visible for GSAP to animate
+    if (titleBlock) titleBlock.style.opacity = '1';
+
     if (h1 && window.SplitType) {
       const split = new SplitType(h1, { types: 'chars' });
       gsap.from(split.chars, {
-        y: 40, opacity: 0, duration: 0.7,
-        stagger: 0.035, ease: 'power3.out', delay: 0.1,
+        y: 50, opacity: 0, rotateX: -40,
+        duration: 0.75, stagger: 0.03,
+        ease: 'power3.out', delay: 0.08,
+        transformPerspective: 500,
+        onComplete: () => {
+          // Revert split so Three.js opacity control works cleanly
+          split.revert();
+        }
       });
     }
     if (sub) {
-      gsap.from(sub, { opacity: 0, y: 12, duration: 0.8, ease: 'power2.out', delay: 0.6 });
+      gsap.from(sub, { opacity: 0, y: 14, duration: 0.9, ease: 'power2.out', delay: 0.55 });
     }
   }
 })();
@@ -2181,55 +2220,132 @@ gsap.ticker.lagSmoothing(0);
 
 // ── 4. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
 (function () {
-  // Eyebrow text in fragments section
+  // ── Eyebrow text in fragments section — char reveal
   const eyebrow = document.querySelector('#servicii > p');
   if (eyebrow && window.SplitType) {
-    const split = new SplitType(eyebrow, { types: 'chars,words' });
+    const split = new SplitType(eyebrow, { types: 'chars' });
     gsap.from(split.chars, {
-      scrollTrigger: { trigger: eyebrow, start: 'top 85%', once: true },
-      y: 20, opacity: 0, duration: 0.5,
-      stagger: 0.025, ease: 'power3.out',
+      scrollTrigger: { trigger: eyebrow, start: 'top 88%', once: true },
+      y: 22, opacity: 0, duration: 0.55,
+      stagger: 0.028, ease: 'power3.out',
     });
   }
 
-  // Annotation groups — stagger reveal when fragments section enters
-  const annGroups = document.querySelectorAll('.ann-group');
-  if (annGroups.length) {
-    gsap.from(annGroups, {
-      scrollTrigger: { trigger: '#servicii', start: 'top 70%', once: true },
-      opacity: 0, duration: 0.6,
-      stagger: 0.12, ease: 'power2.out',
-    });
-  }
+  // ── Fragments canvas — subtle parallax on scroll through section
+  gsap.to('.fragments-canvas', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 1.8,
+    },
+    y: -55, ease: 'none',
+  });
 
-  // Contact section "Alege un serviciu" label fade
-  const contactStage = document.getElementById('contact-stage');
-  if (contactStage) {
-    gsap.from(contactStage, {
-      scrollTrigger: { trigger: '#contact', start: 'top 80%', once: true },
-      opacity: 0, duration: 0.8, ease: 'power2.out',
-    });
-  }
+  // ── Annotation SVG — opposite parallax (slower)
+  gsap.to('.ann-svg', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 2.5,
+    },
+    y: -25, ease: 'none',
+  });
+
+  // ── Fragments section scale reveal (already CSS, add GSAP fallback)
+  gsap.from('#servicii', {
+    scrollTrigger: { trigger: '#servicii', start: 'top 80%', once: true },
+    opacity: 0, scale: 0.94, duration: 1.1,
+    ease: 'power3.out', clearProps: 'all',
+  });
+
+  // ── Contact section entrance — from bottom
+  gsap.from('#contact-stage', {
+    scrollTrigger: { trigger: '#contact', start: 'top 90%', once: true },
+    opacity: 0, y: 40, duration: 1, ease: 'power2.out',
+  });
+
+  // ── Contact labels slide in on scroll
+  ['contact-clipLabel', 'contact-waLabel'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      gsap.from(el, {
+        scrollTrigger: { trigger: '#contact', start: 'top 70%', once: true },
+        opacity: 0, y: 15, duration: 0.6,
+        delay: i * 0.15, ease: 'power2.out',
+      });
+    }
+  });
 })();
 
 
-// ── 5. FRAGMENT CARD 3D TILT ────────────────────────
+// ── 5. MICRO-INTERACTIONS ────────────────────────────
 (function () {
+  // Fragment 3D tilt on mouse move
   document.querySelectorAll('.mask-fragment').forEach(el => {
     el.addEventListener('mousemove', e => {
       const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width  - 0.5;
       const y = (e.clientY - r.top)  / r.height - 0.5;
       gsap.to(el, {
-        rotateY: x * 10, rotateX: -y * 8,
-        duration: 0.4, ease: 'power2.out',
-        transformPerspective: 800, transformOrigin: 'center center',
+        rotateY: x * 12, rotateX: -y * 9,
+        duration: 0.35, ease: 'power2.out',
+        transformPerspective: 900, transformOrigin: 'center center',
       });
     });
     el.addEventListener('mouseleave', () => {
-      gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power3.out' });
+      gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.7, ease: 'power3.out' });
     });
   });
+
+  // Submit button GSAP hover glow
+  document.querySelectorAll('.cf-submit').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      gsap.to(btn, {
+        scale: 1.025,
+        boxShadow: '0 0 30px rgba(110,60,200,0.45), 0 0 60px rgba(110,60,200,0.2)',
+        duration: 0.35, ease: 'power2.out',
+      });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, {
+        scale: 1, boxShadow: '0 0 0px rgba(110,60,200,0)',
+        duration: 0.4, ease: 'power3.out',
+      });
+    });
+  });
+
+  // Link underline reveal — clip-path left→right
+  // Applied to any .pane-sub links if they exist
+  document.querySelectorAll('a:not([class])').forEach(a => {
+    a.style.position = 'relative';
+    a.style.textDecoration = 'none';
+    const line = document.createElement('span');
+    line.style.cssText = `
+      position:absolute; bottom:-1px; left:0; width:100%; height:1px;
+      background:currentColor; transform:scaleX(0); transform-origin:left;
+      transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    `;
+    a.appendChild(line);
+    a.addEventListener('mouseenter', () => { line.style.transform = 'scaleX(1)'; });
+    a.addEventListener('mouseleave', () => {
+      line.style.transformOrigin = 'right';
+      line.style.transform = 'scaleX(0)';
+      setTimeout(() => { line.style.transformOrigin = 'left'; }, 350);
+    });
+  });
+
+  // Overlay close button hover
+  const overlayClose = document.getElementById('overlay-close');
+  if (overlayClose) {
+    overlayClose.addEventListener('mouseenter', () => {
+      gsap.to(overlayClose, { scale: 1.1, rotation: 90, duration: 0.3, ease: 'power2.out' });
+    });
+    overlayClose.addEventListener('mouseleave', () => {
+      gsap.to(overlayClose, { scale: 1, rotation: 0, duration: 0.4, ease: 'power3.out' });
+    });
+  }
 })();
 
 
