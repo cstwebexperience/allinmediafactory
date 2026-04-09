@@ -1,22 +1,1286 @@
 <!DOCTYPE html>
 <html lang="ro">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>All In Media Factory</title>
-    <meta name="description" content="Creative Media Production · Strategy · Vision" />
-    <!-- Barlow Condensed: matches logo typography (bold italic condensed) -->
-    <!-- DM Mono: technical labels & metadata -->
-    <!-- DM Sans: body copy -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700;1,900&family=DM+Mono:wght@300;400&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALL IN MEDIA FACTORY — Agenție de Marketing & Media</title>
+  <meta name="description"
+    content="ALL IN MEDIA FACTORY — Agenție de top specializată în marketing digital, strategie media, branding și producție vizuală de impact.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Base & Scroll ────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #050507;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ── Hero ──────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 100vh;
+      background: #050507;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Animated blobs */
+    .hero-blobs {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(240px);
+      will-change: transform;
+    }
+
+    .blob-1 {
+      width: 70vw;
+      height: 70vw;
+      max-width: 800px;
+      max-height: 800px;
+      background: radial-gradient(circle, oklch(0.55 0.25 280 / 0.22) 0%, transparent 70%);
+      top: -20%;
+      left: -15%;
+      animation: blobFloat1 55s ease-in-out infinite;
+    }
+
+    .blob-2 {
+      width: 55vw;
+      height: 55vw;
+      max-width: 650px;
+      max-height: 650px;
+      background: radial-gradient(circle, oklch(0.40 0.20 280 / 0.18) 0%, transparent 70%);
+      bottom: -10%;
+      right: -10%;
+      animation: blobFloat2 70s ease-in-out infinite;
+    }
+
+    .blob-3 {
+      width: 40vw;
+      height: 40vw;
+      max-width: 500px;
+      max-height: 500px;
+      background: radial-gradient(circle, oklch(0.50 0.22 290 / 0.14) 0%, transparent 70%);
+      top: 30%;
+      left: 55%;
+      animation: blobFloat3 45s ease-in-out infinite 8s;
+    }
+
+    @keyframes blobFloat1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(8vw, 5vh) scale(1.05);
+      }
+
+      50% {
+        transform: translate(4vw, 12vh) scale(0.95);
+      }
+
+      75% {
+        transform: translate(-4vw, 6vh) scale(1.08);
+      }
+    }
+
+    @keyframes blobFloat2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      30% {
+        transform: translate(-6vw, -8vh) scale(1.06);
+      }
+
+      60% {
+        transform: translate(-10vw, -4vh) scale(0.94);
+      }
+    }
+
+    @keyframes blobFloat3 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      40% {
+        transform: translate(-5vw, 8vh) scale(1.1);
+      }
+
+      70% {
+        transform: translate(4vw, 3vh) scale(0.92);
+      }
+    }
+
+    /* Off-screen canvas for text rendering */
+    #hero-text-canvas {
+      display: none;
+    }
+
+    /* Main WebGL canvas */
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Fallback text (shown if WebGL fails or canvas is loading) */
+    #hero-text-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    #hero-text-fallback h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: clamp(60px, 12vw, 180px);
+      letter-spacing: -0.02em;
+      line-height: 0.9;
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 0 80px rgba(130, 80, 255, 0.15);
+    }
+
+    /* Hero UI overlay (nav + subtitle + scroll) */
+    #hero-ui {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #hero-ui>* {
+      pointer-events: auto;
+    }
+
+    /* Subtitle block */
+    .hero-subtitle {
+      position: absolute;
+      bottom: clamp(100px, 14vh, 160px);
+      left: 0;
+      right: 0;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .hero-subtitle p {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .hero-subtitle .line1 {
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .hero-subtitle .line2 {
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .scroll-indicator span {
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.2);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), transparent);
+    }
+
+    /* Nav link animated underline ──────────────────── */
+    .nav-link {
+      position: relative;
+      transition: color .3s ease;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0;
+      height: 1.5px;
+      background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+      transition: width .35s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-link:hover {
+      color: #c4b5fd;
+    }
+
+    /* ── Mask Fragments ───────────────────────────────── */
+    .fragments-section {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #050505;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* Start hidden – JS will reveal */
+      opacity: 0;
+      transform: scale(.92);
+      transition: opacity .8s cubic-bezier(.16, 1, .3, 1),
+        transform 1s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .fragments-section.revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Stage fade-out driven by JS */
+    #stage {
+      transition: opacity .3s ease;
+    }
+
+    .fragments-canvas {
+      position: relative;
+      width: min(90vw, 900px);
+      aspect-ratio: 16 / 9;
+    }
+
+    .mask-fragment {
+      position: absolute;
+      inset: 0;
+      background-image: url('masca-despicata.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      transition: filter .5s cubic-bezier(.4, 0, .2, 1);
+      will-change: transform, filter;
+    }
+
+    /* Glow on hover */
+    .mask-fragment:hover {
+      filter: drop-shadow(0 0 18px rgba(139, 92, 246, .55)) drop-shadow(0 0 40px rgba(139, 92, 246, .25));
+    }
+
+    /* When a fragment is active (clicked) */
+    .mask-fragment.active {
+      filter: drop-shadow(0 0 22px rgba(139, 92, 246, .7)) drop-shadow(0 0 50px rgba(139, 92, 246, .3)) !important;
+      z-index: 10;
+    }
+
+    /* When any fragment is active, blur the rest */
+    .fragments-canvas.has-active .mask-fragment:not(.active) {
+      filter: blur(5px) brightness(.45);
+    }
+
+    .fragments-canvas.has-active .mask-fragment:not(.active):hover {
+      filter: blur(3px) brightness(.55) drop-shadow(0 0 12px rgba(139, 92, 246, .3));
+    }
+
+    /* Clip paths – calibrated manually on the image */
+    #frag-left-eye {
+      clip-path: polygon(49.4% 24.6%, 48.6% 15.2%, 47.6% 7.4%, 45.1% 1.5%,
+          41.1% 0.3%, 37.6% 0.5%, 32.0% 3.3%,
+          26.7% 7.6%, 24.6% 14.4%, 23.8% 22.2%, 23.8% 29.5%,
+          24.3% 36.7%, 25.8% 45.3%, 27.3% 50.8%, 30.1% 53.4%,
+          33.6% 51.2%, 37.3% 50.2%, 41.1% 46.3%, 44.6% 40.7%,
+          46.7% 34.3%, 47.7% 28.7%);
+      transform-origin: 36% 28%;
+    }
+
+    #frag-right-eye {
+      clip-path: polygon(65.0% 0.9%, 62.2% 4.0%, 59.9% 9.6%,
+          58.4% 14.0%, 57.1% 20.0%, 56.2% 26.5%,
+          57.2% 32.7%, 58.7% 38.3%, 60.3% 43.1%,
+          63.1% 48.2%, 66.4% 50.8%, 69.6% 51.4%,
+          73.0% 50.6%, 74.1% 48.0%, 76.3% 40.5%,
+          76.6% 33.7%, 77.4% 26.7%, 78.9% 23.4%,
+          79.0% 16.0%, 77.0% 8.0%, 73.0% 3.0%, 69.0% 1.0%);
+      transform-origin: 67% 28%;
+    }
+
+    #frag-nose {
+      clip-path: polygon(51.4% 30.5%, 50.0% 32.3%, 47.4% 37.5%, 44.0% 45.1%,
+          42.0% 51.4%, 43.8% 56.2%, 45.4% 63.2%, 48.0% 70.5%,
+          51.9% 69.3%, 56.8% 68.5%, 61.3% 63.4%, 61.1% 56.8%,
+          60.2% 51.4%, 59.8% 48.4%, 58.7% 44.7%, 56.8% 40.7%,
+          55.9% 36.7%, 53.7% 31.5%);
+      transform-origin: 52% 50%;
+    }
+
+    #frag-left-mouth {
+      clip-path: polygon(24.9% 60.8%, 25.6% 57.2%, 28.8% 57.8%, 31.3% 56.6%,
+          34.2% 55.8%, 36.7% 57.4%, 38.9% 59.0%, 40.7% 61.8%,
+          42.7% 63.4%, 48.4% 75.7%, 49.7% 80.7%, 50.4% 87.1%,
+          50.8% 95.2%, 44.1% 97.2%, 39.8% 95.8%, 35.8% 91.6%,
+          32.9% 85.9%, 28.7% 82.9%, 26.4% 78.3%, 26.3% 71.3%,
+          25.1% 66.4%);
+      transform-origin: 38% 76%;
+    }
+
+    #frag-right-mouth {
+      clip-path: polygon(64.0% 62.6%, 61.6% 67.6%, 60.1% 70.9%, 58.6% 74.5%,
+          56.9% 80.3%, 55.9% 85.3%, 54.9% 90.8%, 55.1% 96.0%,
+          57.6% 97.8%, 61.6% 98.4%, 65.4% 94.8%, 69.6% 88.5%,
+          72.9% 80.9%, 75.8% 74.5%, 77.3% 69.5%, 78.2% 65.0%,
+          79.1% 59.2%, 79.3% 52.2%, 75.6% 49.8%, 74.0% 53.6%,
+          71.4% 54.6%, 68.1% 52.6%, 66.4% 54.2%, 65.1% 58.6%);
+      transform-origin: 67% 74%;
+    }
+
+    /* Breathing animations – subtle, organic, independent per fragment.
+       Uses micro-drift (±1-2px), gentle scale, and soft opacity pulse.
+       Long durations (8-12s) for a calm, living feel. */
+    @keyframes breathe1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(-4px, -5px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(2px, -8px) scale(1.025);
+      }
+
+      75% {
+        transform: translate(-3px, -3px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(5px, -4px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(3px, -7px) scale(1.03);
+      }
+
+      75% {
+        transform: translate(4px, -2px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe3 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      30% {
+        transform: translate(2px, -6px) scale(1.025);
+      }
+
+      60% {
+        transform: translate(-2px, -4px) scale(1.015);
+      }
+
+      85% {
+        transform: translate(1px, -7px) scale(1.02);
+      }
+    }
+
+    @keyframes breathe4 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(-4px, 4px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(-6px, 2px) scale(1.025);
+      }
+
+      75% {
+        transform: translate(-2px, 5px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe5 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(4px, 3px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(6px, 1px) scale(1.03);
+      }
+
+      75% {
+        transform: translate(3px, 5px) scale(1.01);
+      }
+    }
+
+    #frag-left-eye {
+      animation: breathe1 7s ease-in-out infinite;
+    }
+
+    #frag-right-eye {
+      animation: breathe2 8s ease-in-out infinite 0.8s;
+    }
+
+    #frag-nose {
+      animation: breathe3 6.5s ease-in-out infinite 0.4s;
+    }
+
+    #frag-left-mouth {
+      animation: breathe4 8.5s ease-in-out infinite 1.5s;
+    }
+
+    #frag-right-mouth {
+      animation: breathe5 9s ease-in-out infinite 1s;
+    }
+
+    /* Service info panel */
+    .service-panel {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .4s ease, transform .4s ease;
+      z-index: 20;
+    }
+
+    .service-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .service-panel-inner {
+      background: rgba(10, 10, 10, .85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(139, 92, 246, .25);
+      border-radius: 16px;
+      padding: 20px 28px;
+      min-width: 220px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .5), 0 0 30px rgba(139, 92, 246, .1);
+    }
+
+
+    /* ── Scroll-Scrub Stage ────────────────────────────── */
+    #scroll-scrub-container {
+      position: relative;
+    }
+
+    #stage {
+      position: sticky;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #stage canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── Entrance animations ──────────────────────────── */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-up {
+      animation: fadeSlideUp .9s cubic-bezier(.16, 1, .3, 1) forwards;
+      opacity: 0;
+    }
+
+    .delay-100 {
+      animation-delay: .1s;
+    }
+
+    .delay-200 {
+      animation-delay: .2s;
+    }
+
+    .delay-300 {
+      animation-delay: .3s;
+    }
+
+    .delay-400 {
+      animation-delay: .4s;
+    }
+
+    .delay-500 {
+      animation-delay: .5s;
+    }
+
+    .delay-600 {
+      animation-delay: .6s;
+    }
+
+    /* ── Mobile menu ──────────────────────────────────── */
+    .mobile-menu {
+      transform: translateY(-100%);
+      transition: transform .4s cubic-bezier(.4, 0, .2, 1), opacity .3s ease;
+      opacity: 0;
+    }
+
+    .mobile-menu.open {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ── Hero Glass & Text ────────────────────────────── */
+    #hero-nav {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 24px clamp(24px, 5vw, 80px);
+    }
+
+    /* Shared title styles */
+    #hero-title,
+    #hero-title-clone {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: clamp(60px, 12vw, 180px);
+      letter-spacing: -0.02em;
+      line-height: 0.88;
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 0 80px rgba(130, 80, 255, 0.15);
+      user-select: none;
+    }
+
+    /* Base text layer — clean, sits below glass */
+    #hero-text-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    /* Glass pane — invisible container, sits above text */
+    #glass-pane {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(360px, 55vw, 700px);
+      height: clamp(220px, 35vw, 420px);
+      z-index: 2;
+      pointer-events: none;
+      overflow: hidden;
+      /* No border, no background — fully invisible */
+    }
+
+    /* Inner of glass pane: positions the cloned text so it aligns with the real text,
+       then applies the displacement filter */
+    #glass-inner {
+      position: absolute;
+      /* Will be positioned via JS to align with real text */
+      pointer-events: none;
+      filter: url(#glass-refract);
+      /* Chromatic aberration via CSS multi-layer trick */
+      --ca: 0px;
+    }
+
+    /* Chromatic aberration on the clone using pseudo-elements */
+    #hero-title-clone {
+      position: relative;
+    }
+
+    #hero-title-clone::before,
+    #hero-title-clone::after {
+      content: 'ALL IN\AMEDIA';
+      white-space: pre;
+      position: absolute;
+      inset: 0;
+      font: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #hero-title-clone::before {
+      color: rgba(255, 60, 60, 0.35);
+      transform: translateX(var(--ca-r, -2px));
+      mix-blend-mode: screen;
+    }
+
+    #hero-title-clone::after {
+      color: rgba(60, 60, 255, 0.35);
+      transform: translateX(var(--ca-b, 2px));
+      mix-blend-mode: screen;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO SECTION -->
+  <section id="hero">
+
+    <!-- Animated background blobs (CSS-animated, no JS) -->
+    <div class="hero-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+
+    <!-- SVG filter definitions – smooth thick-glass refraction -->
+    <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+      <defs>
+        <!-- Three separate filters for R, G, B channels (chromatic aberration) -->
+        <filter id="glass-r" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+          <feTurbulence id="turb-r" type="fractalNoise" baseFrequency="0.004" numOctaves="1" seed="3" result="n" />
+          <feGaussianBlur stdDeviation="6" in="n" result="sn" />
+          <feDisplacementMap id="disp-r" in="SourceGraphic" in2="sn" scale="22" xChannelSelector="R"
+            yChannelSelector="G" />
+        </filter>
+        <filter id="glass-g" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+          <feTurbulence id="turb-g" type="fractalNoise" baseFrequency="0.004" numOctaves="1" seed="3" result="n" />
+          <feGaussianBlur stdDeviation="6" in="n" result="sn" />
+          <feDisplacementMap id="disp-g" in="SourceGraphic" in2="sn" scale="19" xChannelSelector="R"
+            yChannelSelector="G" />
+        </filter>
+        <filter id="glass-b" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+          <feTurbulence id="turb-b" type="fractalNoise" baseFrequency="0.004" numOctaves="1" seed="3" result="n" />
+          <feGaussianBlur stdDeviation="6" in="n" result="sn" />
+          <feDisplacementMap id="disp-b" in="SourceGraphic" in2="sn" scale="16" xChannelSelector="R"
+            yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+
+    <!-- Text layer — renders behind glass, visible everywhere -->
+    <div id="hero-text-layer">
+      <h1 id="hero-title">ALL IN<br>MEDIA</h1>
+    </div>
+
+    <!-- Glass pane — invisible container, clips refracted content -->
+    <div id="glass-pane" aria-hidden="true">
+      <!-- Red channel (shifted left slightly) -->
+      <div class="glass-channel" id="gc-r">
+        <h1 class="glass-clone gc-title">ALL IN<br>MEDIA</h1>
+      </div>
+      <!-- Green channel (center) -->
+      <div class="glass-channel" id="gc-g">
+        <h1 class="glass-clone gc-title">ALL IN<br>MEDIA</h1>
+      </div>
+      <!-- Blue channel (shifted right slightly) -->
+      <div class="glass-channel" id="gc-b">
+        <h1 class="glass-clone gc-title">ALL IN<br>MEDIA</h1>
+      </div>
+    </div>
+
+    <!-- UI overlay: nav + subtitle + scroll indicator -->
+    <div id="hero-ui">
+
+      <!-- Navigation -->
+      <nav id="hero-nav">
+        <!-- Logo -->
+        <a href="#hero" id="nav-logo" class="flex items-center gap-3 group">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700
+                      flex items-center justify-center shadow-lg shadow-brand-500/20
+                      transition-transform duration-300 group-hover:scale-110">
+            <span class="text-white font-black text-sm leading-none tracking-tighter">AIM</span>
+          </div>
+          <span class="hidden sm:inline text-sm font-semibold tracking-widest uppercase
+                       text-white/70 transition-colors duration-300 group-hover:text-white">
+            All In Media
+          </span>
+        </a>
+
+        <!-- Desktop links -->
+        <ul class="hidden md:flex items-center gap-10 text-sm font-medium tracking-wide text-white/50">
+          <li><a href="#servicii" id="nav-servicii" class="nav-link">Servicii</a></li>
+          <li><a href="#portofoliu" id="nav-portofoliu" class="nav-link">Portofoliu</a></li>
+          <li><a href="#contact" id="nav-contact" class="nav-link">Contact</a></li>
+          <li>
+            <a href="#contact" id="nav-cta" class="ml-2 px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider
+                      bg-gradient-to-r from-brand-600 to-brand-500 text-white
+                      shadow-lg shadow-brand-500/25
+                      hover:shadow-brand-500/40 hover:scale-105
+                      transition-all duration-300">
+              Hai să vorbim
+            </a>
+          </li>
+        </ul>
+
+        <!-- Mobile hamburger -->
+        <button id="menu-toggle" class="md:hidden relative z-30 w-10 h-10 flex flex-col
+               items-center justify-center gap-1.5" aria-label="Meniu navigație">
+          <span class="hamburger-line w-6 h-[2px] bg-white rounded transition-all duration-300"></span>
+          <span class="hamburger-line w-6 h-[2px] bg-white rounded transition-all duration-300"></span>
+          <span
+            class="hamburger-line w-4 h-[2px] bg-white rounded transition-all duration-300 self-end mr-[2px]"></span>
+        </button>
+      </nav>
+
+      <!-- Mobile menu overlay -->
+      <div id="mobile-menu" class="mobile-menu fixed inset-0 z-20 bg-black/95
+           backdrop-blur-xl flex flex-col items-center justify-center gap-8 md:hidden">
+        <a href="#servicii" class="text-2xl font-semibold text-white/80 hover:text-white
+           transition-colors" onclick="closeMobileMenu()">Servicii</a>
+        <a href="#portofoliu" class="text-2xl font-semibold text-white/80 hover:text-white
+           transition-colors" onclick="closeMobileMenu()">Portofoliu</a>
+        <a href="#contact" class="text-2xl font-semibold text-white/80 hover:text-white
+           transition-colors" onclick="closeMobileMenu()">Contact</a>
+        <a href="#contact" class="mt-4 px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest
+                  bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/30"
+          onclick="closeMobileMenu()">Hai să vorbim</a>
+      </div>
+
+      <!-- Subtitle -->
+      <div class="hero-subtitle">
+        <p class="line1">Your brand is invisible.</p>
+        <p class="line2">We fix that.</p>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+
+    </div><!-- /hero-ui -->
+
+  </section>
+
+
+
+  <!-- SCROLL SCRUB SECTION -->
+  <div id="scroll-scrub-container" style="height: 500vh;">
+    <!-- SCROLL SCRUB ACTIVE ZONE – aici se va renderiza animația controlată prin scroll -->
+    <div id="stage">
+      <canvas id="c"></canvas>
+    </div>
+  </div>
+
+
+  <!-- MASK FRAGMENTS INTERACTIVE SECTION -->
+  <section id="servicii" class="fragments-section">
+
+    <!-- Eyebrow -->
+    <p
+      class="absolute top-12 left-1/2 -translate-x-1/2 text-xs font-medium tracking-[.35em] uppercase text-brand-400/50 z-20">
+      Alege un serviciu
+    </p>
+
+    <div class="fragments-canvas" id="fragments-canvas">
+
+      <!-- 5 Mask Fragments -->
+      <div class="mask-fragment" id="frag-left-eye" data-service="Videoclipuri Premium"
+        data-desc="Producție video cinematică, de la concept la livrare." data-panel-pos="left-top"></div>
+
+      <div class="mask-fragment" id="frag-right-eye" data-service="Meta ADS"
+        data-desc="Campanii Facebook & Instagram optimizate pentru ROI maxim." data-panel-pos="right-top"></div>
+
+      <div class="mask-fragment" id="frag-nose" data-service="Web Design + Site-uri"
+        data-desc="Website-uri premium, rapide și optimizate pentru conversie." data-panel-pos="center"></div>
+
+      <div class="mask-fragment" id="frag-left-mouth" data-service="SEO + Google"
+        data-desc="Optimizare organică și campanii Google Ads cu impact." data-panel-pos="left-bottom"></div>
+
+      <div class="mask-fragment" id="frag-right-mouth" data-service="Automatizări Business"
+        data-desc="Fluxuri automate care economisesc timp și cresc profitul." data-panel-pos="right-bottom"></div>
+
+      <!-- Service Info Panels (one per fragment, positioned accordingly) -->
+      <div class="service-panel" id="panel-left-top" style="top: 8%; left: -5%; transform-origin: left top;">
+        <div class="service-panel-inner">
+          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">01</p>
+          <h3 class="text-lg font-bold text-white" id="panel-title-left-top"></h3>
+          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-left-top"></p>
+        </div>
+      </div>
+
+      <div class="service-panel" id="panel-right-top" style="top: 8%; right: -5%; transform-origin: right top;">
+        <div class="service-panel-inner">
+          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">02</p>
+          <h3 class="text-lg font-bold text-white" id="panel-title-right-top"></h3>
+          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-right-top"></p>
+        </div>
+      </div>
+
+      <div class="service-panel" id="panel-center"
+        style="top: 50%; left: 50%; transform: translate(-50%, -50%); transform-origin: center;">
+        <div class="service-panel-inner text-center">
+          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">03</p>
+          <h3 class="text-lg font-bold text-white" id="panel-title-center"></h3>
+          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-center"></p>
+        </div>
+      </div>
+
+      <div class="service-panel" id="panel-left-bottom" style="bottom: 2%; left: -5%; transform-origin: left bottom;">
+        <div class="service-panel-inner">
+          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">04</p>
+          <h3 class="text-lg font-bold text-white" id="panel-title-left-bottom"></h3>
+          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-left-bottom"></p>
+        </div>
+      </div>
+
+      <div class="service-panel" id="panel-right-bottom"
+        style="bottom: 2%; right: -5%; transform-origin: right bottom;">
+        <div class="service-panel-inner">
+          <p class="text-[10px] font-semibold tracking-[.25em] uppercase text-brand-400 mb-1">05</p>
+          <h3 class="text-lg font-bold text-white" id="panel-title-right-bottom"></h3>
+          <p class="text-sm text-white/45 mt-1 leading-relaxed" id="panel-desc-right-bottom"></p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- PLACEHOLDER SECTIONS -->
+  <section id="portofoliu" class="relative min-h-screen flex items-center justify-center px-6">
+    <div class="text-center">
+      <p class="text-xs font-medium tracking-[.3em] uppercase text-brand-400/60 mb-4">Lucrările Noastre</p>
+      <h2 class="text-4xl sm:text-5xl font-bold text-white/90">Portofoliu</h2>
+      <p class="mt-4 text-white/30 text-sm max-w-md mx-auto">Secțiune în dezvoltare — conținut disponibil în curând.</p>
+    </div>
+  </section>
+
+  <section id="contact" class="relative min-h-screen flex items-center justify-center px-6">
+    <div class="text-center">
+      <p class="text-xs font-medium tracking-[.3em] uppercase text-brand-400/60 mb-4">Contactează-ne</p>
+      <h2 class="text-4xl sm:text-5xl font-bold text-white/90">Contact</h2>
+      <p class="mt-4 text-white/30 text-sm max-w-md mx-auto">Secțiune în dezvoltare — conținut disponibil în curând.</p>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       SCRIPTS
+       ═══════════════════════════════════════════════════ -->
+  <script>
+    // ── Mobile Menu ──────────────────────────────────────
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    let menuOpen = false;
+
+    menuToggle.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open', menuOpen);
+      document.body.style.overflow = menuOpen ? 'hidden' : '';
+      // Animate hamburger lines
+      const lines = menuToggle.querySelectorAll('.hamburger-line');
+      if (menuOpen) {
+        lines[0].style.transform = 'rotate(45deg) translate(4px, 4px)';
+        lines[1].style.opacity = '0';
+        lines[2].style.transform = 'rotate(-45deg) translate(3px, -3px)';
+        lines[2].style.width = '1.5rem';
+      } else {
+        lines[0].style.transform = '';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = '';
+        lines[2].style.width = '1rem';
+      }
+    });
+
+    function closeMobileMenu() {
+      menuOpen = false;
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+      const lines = menuToggle.querySelectorAll('.hamburger-line');
+      lines[0].style.transform = '';
+      lines[1].style.opacity = '1';
+      lines[2].style.transform = '';
+      lines[2].style.width = '1rem';
+    }
+
+    // ── Navbar background on scroll ──────────────────────
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 80) {
+        nav.classList.add('bg-black/60', 'backdrop-blur-lg', 'shadow-lg', 'shadow-black/20');
+      } else {
+        nav.classList.remove('bg-black/60', 'backdrop-blur-lg', 'shadow-lg', 'shadow-black/20');
+      }
+    }, { passive: true });
+
+
+    // ── Scroll-Scrub Frame Animation ─────────────────────
+    (function () {
+      const TOTAL_FRAMES = 576;
+      const canvas = document.getElementById('c');
+      const ctx = canvas.getContext('2d');
+      const container = document.getElementById('scroll-scrub-container');
+      const images = new Array(TOTAL_FRAMES);
+      let currentFrame = -1;
+
+      function pad(i) { return String(i).padStart(4, '0'); }
+
+      function drawFrame(index) {
+        index = Math.max(0, Math.min(TOTAL_FRAMES - 1, index));
+        if (index === currentFrame) return;
+        const img = images[index];
+        if (!img || !img.complete) return;
+        if (canvas.width !== img.naturalWidth) {
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+        }
+        ctx.drawImage(img, 0, 0);
+        currentFrame = index;
+      }
+
+      // References for crossfade
+      const stage = document.getElementById('stage');
+      const fragmentsSection = document.getElementById('servicii');
+      const FADE_START = 0.82;  // Start fading stage at 82%
+      const FADE_END = 0.97;  // Stage fully gone at 97%
+
+      function onScroll() {
+        const containerRect = container.getBoundingClientRect();
+        const containerTop = window.scrollY + containerRect.top;
+        const containerHeight = container.offsetHeight - window.innerHeight;
+        const scrolled = window.scrollY - containerTop;
+        const progress = Math.max(0, Math.min(1, scrolled / containerHeight));
+        drawFrame(Math.round(progress * (TOTAL_FRAMES - 1)));
+
+        // ── Crossfade: stage out → fragments in ──
+        if (progress >= FADE_START) {
+          const fadeProgress = Math.min(1, (progress - FADE_START) / (FADE_END - FADE_START));
+          stage.style.opacity = 1 - fadeProgress;
+
+          if (fadeProgress > 0.3) {
+            fragmentsSection.classList.add('revealed');
+          }
+        } else {
+          stage.style.opacity = 1;
+          fragmentsSection.classList.remove('revealed');
+        }
+      }
+
+      // Pre-load all frames
+      for (let i = 0; i < TOTAL_FRAMES; i++) {
+        const img = new Image();
+        img.onload = (function (idx) {
+          return function () {
+            if (idx === 0) {
+              canvas.width = this.naturalWidth;
+              canvas.height = this.naturalHeight;
+              ctx.drawImage(this, 0, 0);
+              currentFrame = 0;
+            }
+          };
+        })(i);
+        img.src = 'frames/frame_' + pad(i + 1) + '.webp';
+        images[i] = img;
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.scrollTo(0, 0);
+    })();
+
+
+    // ── Mask Fragments Interaction ────────────────────────
+    (function () {
+      const canvas = document.getElementById('fragments-canvas');
+      const fragments = canvas.querySelectorAll('.mask-fragment');
+      let activeFragment = null;
+
+      fragments.forEach(frag => {
+        frag.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const panelPos = frag.dataset.panelPos;
+          const service = frag.dataset.service;
+          const desc = frag.dataset.desc;
+
+          // If clicking the already active fragment, deactivate
+          if (activeFragment === frag) {
+            deactivate();
+            return;
+          }
+
+          // Deactivate previous
+          deactivate();
+
+          // Activate this fragment
+          activeFragment = frag;
+          frag.classList.add('active');
+          canvas.classList.add('has-active');
+
+          // Show service panel
+          const panel = document.getElementById('panel-' + panelPos);
+          const titleEl = document.getElementById('panel-title-' + panelPos);
+          const descEl = document.getElementById('panel-desc-' + panelPos);
+          if (titleEl) titleEl.textContent = service;
+          if (descEl) descEl.textContent = desc;
+          if (panel) panel.classList.add('visible');
+        });
+      });
+
+      // Clicking outside fragments deactivates
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.mask-fragment') && !e.target.closest('.service-panel')) {
+          deactivate();
+        }
+      });
+
+      function deactivate() {
+        if (activeFragment) {
+          activeFragment.classList.remove('active');
+          activeFragment = null;
+        }
+        canvas.classList.remove('has-active');
+        // Hide all panels
+        canvas.querySelectorAll('.service-panel').forEach(p => p.classList.remove('visible'));
+      }
+    })();
+
+
+    // ── Hero Refraction Effect ────────────────────────────
+    (function () {
+      const hero = document.getElementById('hero');
+      const textLayer = document.getElementById('hero-text-layer');
+      const glassPane = document.getElementById('glass-pane');
+      const glassInner = document.getElementById('glass-inner');
+      const clone = document.getElementById('hero-title-clone');
+      const turbulence = document.getElementById('glass-turbulence');
+      const dispMap = document.getElementById('glass-disp');
+
+      if (!hero || !glassPane || !glassInner || !turbulence) return;
+
+      // Lerp mouse position
+      let targetX = 0, targetY = 0;
+      let currentX = 0, currentY = 0;
+      // Base turbulence frequencies
+      const BASE_FX = 0.006, BASE_FY = 0.009;
+      const MAX_DELTA = 0.003; // how much mouse shifts frequency
+      let rafId = null;
+
+      // ── Align glass-inner so the clone overlays the real title ──
+      function alignInner() {
+        const paneRect = glassPane.getBoundingClientRect();
+        const titleRect = document.getElementById('hero-title').getBoundingClientRect();
+
+        // Position glass-inner so cloned title sits exactly on top of real title
+        const offsetX = titleRect.left - paneRect.left;
+        const offsetY = titleRect.top - paneRect.top;
+
+        glassInner.style.left = offsetX + 'px';
+        glassInner.style.top = offsetY + 'px';
+        glassInner.style.width = titleRect.width + 'px';
+        glassInner.style.height = titleRect.height + 'px';
+      }
+
+      // ── Mouse tracking ──
+      window.addEventListener('mousemove', (e) => {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        // Normalise -1 → +1
+        targetX = (e.clientX - cx) / cx;
+        targetY = (e.clientY - cy) / cy;
+      }, { passive: true });
+
+      // ── Gyroscope for mobile ──
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', (e) => {
+          if (e.gamma !== null) {
+            targetX = Math.max(-1, Math.min(1, e.gamma / 30));
+            targetY = Math.max(-1, Math.min(1, e.beta / 30));
+          }
+        }, { passive: true });
+      }
+
+      // ── Animation loop ──
+      function tick() {
+        // Lerp (smooth follow)
+        const ease = 0.04;
+        currentX += (targetX - currentX) * ease;
+        currentY += (targetY - currentY) * ease;
+
+        // Shift turbulence baseFrequency based on mouse — creates refraction angle change
+        const fx = BASE_FX + currentX * MAX_DELTA;
+        const fy = BASE_FY + currentY * MAX_DELTA;
+        turbulence.setAttribute('baseFrequency', `${fx.toFixed(5)} ${fy.toFixed(5)}`);
+
+        // Shift displacement scale slightly too
+        const scaleShift = 18 + currentX * 3 + currentY * 2;
+        dispMap.setAttribute('scale', scaleShift.toFixed(1));
+
+        // Chromatic aberration intensifies toward edges
+        const caAmount = (Math.abs(currentX) + Math.abs(currentY)) * 1.2;
+        clone.style.setProperty('--ca-r', `-${(caAmount + 1.0).toFixed(2)}px`);
+        clone.style.setProperty('--ca-b', `${(caAmount + 1.0).toFixed(2)}px`);
+
+        rafId = requestAnimationFrame(tick);
+      }
+
+      // ── Scroll: parallax + fade ──
+      window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        const heroH = hero.offsetHeight;
+        const progress = Math.min(1, scrollY / heroH);
+
+        // Fade out
+        hero.style.opacity = 1 - progress * 1.2;
+        // Parallax lift
+        const lift = scrollY * 0.28;
+        textLayer.style.transform = `translateY(-${lift}px)`;
+        glassPane.style.transform = `translate(-50%, calc(-50% - ${lift}px))`;
+
+        // Blobs intensify subtly
+        const blobOp = 0.2 + progress * 0.2;
+        document.querySelectorAll('.blob').forEach(b => {
+          b.style.opacity = blobOp;
+        });
+      }, { passive: true });
+
+      // ── Fix: update scroll-scrub nav selector (old `nav` → `#hero-nav`) ──
+      const heroNav = document.getElementById('hero-nav');
+      if (heroNav) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 80) {
+            heroNav.style.background = 'rgba(5,5,7,0.7)';
+            heroNav.style.backdropFilter = 'blur(16px)';
+          } else {
+            heroNav.style.background = '';
+            heroNav.style.backdropFilter = '';
+          }
+        }, { passive: true });
+      }
+
+      // ── Init ──
+      window.addEventListener('load', () => {
+        alignInner();
+        tick();
+      });
+      window.addEventListener('resize', alignInner, { passive: true });
+
+    })();
+
+  </script>
+
+</body>
+
 </html>
