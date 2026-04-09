@@ -1049,10 +1049,118 @@
     .cf-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(100,50,180,0.25); background-position: 100% 0; }
     .cf-success { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.7); font-size: 15px; letter-spacing: 0.1em; }
     .cf-success .cf-check { font-size: 52px; display: block; margin-bottom: 20px; color: rgba(37,211,102,0.7); }
+
+    /* ── Loading Screen ──────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0; z-index: 10000;
+      background: #030305;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0;
+    }
+    #loader-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 2.5vw, 22px);
+      font-weight: 300;
+      letter-spacing: 0.6em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 36px;
+    }
+    #loader-bar-track {
+      width: clamp(180px, 28vw, 360px);
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    #loader-bar-fill {
+      position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+      background: linear-gradient(90deg, transparent, rgba(140,90,255,0.7), rgba(180,130,255,1));
+    }
+    #loader-percent {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; letter-spacing: 0.35em;
+      color: rgba(255,255,255,0.2);
+      margin-top: 14px;
+    }
+
+    /* ── Custom Cursor ───────────────────────────────────── */
+    * { cursor: none !important; }
+    #cursor-dot {
+      position: fixed; z-index: 9998;
+      top: 0; left: 0;
+      width: 6px; height: 6px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+      will-change: transform;
+    }
+    #cursor-ring {
+      position: fixed; z-index: 9997;
+      top: 0; left: 0;
+      width: 28px; height: 28px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      mix-blend-mode: difference;
+      will-change: transform;
+      transition: width 0.25s cubic-bezier(0.16,1,0.3,1),
+                  height 0.25s cubic-bezier(0.16,1,0.3,1),
+                  border-color 0.25s;
+    }
+    body.cur-hover #cursor-dot {
+      width: 4px; height: 4px;
+      background: rgba(255,255,255,0.5);
+    }
+    body.cur-hover #cursor-ring {
+      width: 52px; height: 52px;
+      border-color: rgba(255,255,255,0.7);
+    }
+
+    /* ── Section transition overlays ────────────────────── */
+    .section-fade-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 120px; pointer-events: none; z-index: 4;
+      background: linear-gradient(to bottom, #030305 0%, transparent 100%);
+    }
+    .section-fade-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 120px; pointer-events: none; z-index: 4;
+      background: linear-gradient(to top, #030305 0%, transparent 100%);
+    }
+
+    /* ── GSAP text reveal helpers ────────────────────────── */
+    .char { display: inline-block; overflow: hidden; }
+    .split-hidden .word, .split-hidden .char { opacity: 0; transform: translateY(60%); }
   </style>
+
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- SplitType -->
+  <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
 </head>
 
 <body>
+
+  <!-- Loading Screen -->
+  <div id="loader">
+    <div id="loader-logo">All In Media</div>
+    <div id="loader-bar-track">
+      <div id="loader-bar-fill"></div>
+    </div>
+    <div id="loader-percent">0%</div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
 
   <!-- HERO SECTION: Three.js metallic sphere -->
   <div class="scroll-container" id="hero-scroll-container">
@@ -1398,6 +1506,7 @@
               canvas.height = this.naturalHeight;
               ctx.drawImage(this, 0, 0);
               currentFrame = 0;
+              window.dispatchEvent(new Event('loaderAssetReady'));
             }
           };
         })(i);
@@ -1547,22 +1656,6 @@
     })();
 
 
-    // ── Infinite loop — when sentinel enters view, jump to top ──
-    (function () {
-      let looping = false;
-      const sentinel = document.getElementById('loop-sentinel');
-      if (!sentinel) return;
-      const obs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && !looping) {
-            looping = true;
-            window.scrollTo({ top: 0, behavior: 'instant' });
-            setTimeout(() => { looping = false; }, 500);
-          }
-        });
-      }, { threshold: 0.5 });
-      obs.observe(sentinel);
-    })();
 
   </script>
 
@@ -1965,6 +2058,202 @@ function tick2() {
   renderer2.render(scene2, camera2);
 }
 tick2();
+</script>
+
+
+<script>
+/* ═══════════════════════════════════════════════════
+   INIT: Lenis · GSAP · Cursor · Loader · SplitType
+   ═══════════════════════════════════════════════════ */
+
+// ── 1. LENIS SMOOTH SCROLL ──────────────────────────
+const lenis = new Lenis({
+  duration: 1.2,
+  smoothWheel: true,
+  orientation: 'vertical',
+  gestureOrientation: 'vertical',
+});
+window._lenis = lenis;
+
+gsap.registerPlugin(ScrollTrigger);
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+gsap.ticker.lagSmoothing(0);
+
+
+// ── 2. LOADING SCREEN ───────────────────────────────
+(function () {
+  const loader   = document.getElementById('loader');
+  const fill     = document.getElementById('loader-bar-fill');
+  const pctEl    = document.getElementById('loader-percent');
+  let progress   = 0;
+  let finished   = false;
+
+  // Ease progress up to 88% organically
+  const tick = setInterval(() => {
+    if (finished) return;
+    const step = Math.max(0.4, (88 - progress) * 0.03 + Math.random() * 1.8);
+    progress = Math.min(progress + step, 88);
+    fill.style.width = progress + '%';
+    pctEl.textContent = Math.floor(progress) + '%';
+  }, 70);
+
+  function complete() {
+    if (finished) return;
+    finished = true;
+    clearInterval(tick);
+    // Sprint 88 → 100
+    gsap.to({ p: progress }, {
+      p: 100, duration: 0.6, ease: 'power2.out',
+      onUpdate: function () {
+        const v = Math.floor(this.targets()[0].p);
+        fill.style.width = v + '%';
+        pctEl.textContent = v + '%';
+      },
+      onComplete: () => {
+        gsap.to(loader, {
+          opacity: 0, duration: 0.7, delay: 0.25,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            loader.style.display = 'none';
+            revealPage();
+          }
+        });
+      }
+    });
+  }
+
+  window.addEventListener('loaderAssetReady', complete, { once: true });
+  // Fallback — hide after 4s no matter what
+  setTimeout(complete, 4000);
+
+  function revealPage() {
+    // Hero title character reveal after loader
+    const h1 = document.querySelector('.hero-title-block h1');
+    const sub = document.querySelector('.hero-title-block .sub');
+    if (h1 && window.SplitType) {
+      const split = new SplitType(h1, { types: 'chars' });
+      gsap.from(split.chars, {
+        y: 40, opacity: 0, duration: 0.7,
+        stagger: 0.035, ease: 'power3.out', delay: 0.1,
+      });
+    }
+    if (sub) {
+      gsap.from(sub, { opacity: 0, y: 12, duration: 0.8, ease: 'power2.out', delay: 0.6 });
+    }
+  }
+})();
+
+
+// ── 3. CUSTOM CURSOR ────────────────────────────────
+(function () {
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+
+  let mx = 0, my = 0;
+  let rx = 0, ry = 0;
+
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  // Dot follows instantly, ring lerps
+  gsap.ticker.add(() => {
+    dot.style.transform  = `translate(calc(${mx}px - 50%), calc(${my}px - 50%))`;
+    rx += (mx - rx) * 0.10;
+    ry += (my - ry) * 0.10;
+    ring.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
+  });
+
+  // Hover state on interactive elements
+  const hoverSel = 'a, button, [role="button"], .mask-fragment, .cf-submit, #contact-canvas, .ann-group';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(hoverSel)) document.body.classList.add('cur-hover');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(hoverSel)) document.body.classList.remove('cur-hover');
+  });
+
+  // Hide cursor when mouse leaves window
+  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = ''; ring.style.opacity = ''; });
+})();
+
+
+// ── 4. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
+(function () {
+  // Eyebrow text in fragments section
+  const eyebrow = document.querySelector('#servicii > p');
+  if (eyebrow && window.SplitType) {
+    const split = new SplitType(eyebrow, { types: 'chars,words' });
+    gsap.from(split.chars, {
+      scrollTrigger: { trigger: eyebrow, start: 'top 85%', once: true },
+      y: 20, opacity: 0, duration: 0.5,
+      stagger: 0.025, ease: 'power3.out',
+    });
+  }
+
+  // Annotation groups — stagger reveal when fragments section enters
+  const annGroups = document.querySelectorAll('.ann-group');
+  if (annGroups.length) {
+    gsap.from(annGroups, {
+      scrollTrigger: { trigger: '#servicii', start: 'top 70%', once: true },
+      opacity: 0, duration: 0.6,
+      stagger: 0.12, ease: 'power2.out',
+    });
+  }
+
+  // Contact section "Alege un serviciu" label fade
+  const contactStage = document.getElementById('contact-stage');
+  if (contactStage) {
+    gsap.from(contactStage, {
+      scrollTrigger: { trigger: '#contact', start: 'top 80%', once: true },
+      opacity: 0, duration: 0.8, ease: 'power2.out',
+    });
+  }
+})();
+
+
+// ── 5. FRAGMENT CARD 3D TILT ────────────────────────
+(function () {
+  document.querySelectorAll('.mask-fragment').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      gsap.to(el, {
+        rotateY: x * 10, rotateX: -y * 8,
+        duration: 0.4, ease: 'power2.out',
+        transformPerspective: 800, transformOrigin: 'center center',
+      });
+    });
+    el.addEventListener('mouseleave', () => {
+      gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power3.out' });
+    });
+  });
+})();
+
+
+// ── 6. INFINITE LOOP — use Lenis for clean jump ──────
+(function () {
+  let looping = false;
+  const sentinel = document.getElementById('loop-sentinel');
+  if (!sentinel) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !looping) {
+        looping = true;
+        if (window._lenis) {
+          window._lenis.scrollTo(0, { immediate: true });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        setTimeout(() => { looping = false; }, 600);
+      }
+    });
+  }, { threshold: 0.5 });
+  obs.observe(sentinel);
+})();
+
 </script>
 
 </body>
