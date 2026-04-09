@@ -1,0 +1,56 @@
+import { useEffect } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Lenis from 'lenis'
+import 'lenis/dist/lenis.css'
+
+import CustomCursor    from './components/CustomCursor'
+import Navbar          from './components/Navbar'
+import HeroSection     from './components/HeroSection'
+import VideoSection    from './components/VideoSection'
+import ServicesSection from './components/ServicesSection'
+import PortfolioSection from './components/PortfolioSection'
+import Footer          from './components/Footer'
+
+gsap.registerPlugin(ScrollTrigger)
+
+export default function App() {
+  useEffect(() => {
+    // ── Lenis smooth scroll ───────────────────────────────────────────────
+    // autoRaf: false → GSAP controlează loop-ul RAF, nu Lenis singur.
+    // Fără asta, Lenis v1.3+ pornește propriul RAF care intră în conflict
+    // cu gsap.ticker și poate bloca animațiile ScrollTrigger.
+    const lenis = new Lenis({
+      lerp:        0.08,
+      smoothWheel: true,
+      autoRaf:     false,  // CRITICAL pentru integrarea GSAP+Lenis v1.3+
+    })
+
+    // Bridge: transmite poziția scroll-ului Lenis către ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update)
+
+    // Folosim ticker-ul GSAP ca driver RAF pentru Lenis
+    const onTick = (time) => lenis.raf(time * 1000)
+    gsap.ticker.add(onTick)
+    gsap.ticker.lagSmoothing(0)
+
+    return () => {
+      lenis.destroy()
+      gsap.ticker.remove(onTick)
+      ScrollTrigger.getAll().forEach((t) => t.kill())
+    }
+  }, [])
+
+  return (
+    <div className="bg-[#06060E] text-white overflow-x-hidden">
+      <div className="grain-overlay" aria-hidden="true" />
+      <CustomCursor />
+      <Navbar />
+      <HeroSection />
+      <VideoSection />
+      <ServicesSection />
+      <PortfolioSection />
+      <Footer />
+    </div>
+  )
+}
