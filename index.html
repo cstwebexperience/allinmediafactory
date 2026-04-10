@@ -532,6 +532,8 @@
     }
 
     /* ── Mask Fragments ───────────────────────────────── */
+    /* Always fully visible — no scale-in, opacity fade or blur. The
+       mask is the most important section so we never dim it. */
     .fragments-section {
       position: relative;
       min-height: 100vh;
@@ -540,16 +542,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* Start hidden – JS will reveal */
-      opacity: 0;
-      transform: scale(.92);
-      transition: opacity .8s cubic-bezier(.16, 1, .3, 1),
-        transform 1s cubic-bezier(.16, 1, .3, 1);
-    }
-
-    .fragments-section.revealed {
-      opacity: 1;
-      transform: scale(1);
     }
 
     /* Stage fade-out driven by JS */
@@ -621,23 +613,6 @@
       transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .ann-group.lit {
-      opacity: 1;
-    }
-    /* Animate in when section is revealed */
-    .fragments-section.revealed .ann-group {
-      animation: annFadeIn 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
-    }
-    .fragments-section.revealed #ann-left-eye   { animation-delay: 0.1s; }
-    .fragments-section.revealed #ann-right-eye  { animation-delay: 0.25s; }
-    .fragments-section.revealed #ann-nose       { animation-delay: 0.4s; }
-    .fragments-section.revealed #ann-left-mouth { animation-delay: 0.55s; }
-    .fragments-section.revealed #ann-right-mouth{ animation-delay: 0.7s; }
-    @keyframes annFadeIn {
-      from { opacity: 0; }
-      to   { opacity: 0.32; }
-    }
-    .fragments-section.revealed .ann-group.lit {
-      animation: none;
       opacity: 1;
     }
 
@@ -1098,18 +1073,6 @@
       margin-top: 14px;
     }
 
-    /* ── Section transition overlays ────────────────────── */
-    .section-fade-top {
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 120px; pointer-events: none; z-index: 4;
-      background: linear-gradient(to bottom, #030305 0%, transparent 100%);
-    }
-    .section-fade-bottom {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      height: 120px; pointer-events: none; z-index: 4;
-      background: linear-gradient(to top, #030305 0%, transparent 100%);
-    }
-
     /* ── GSAP text reveal helpers ────────────────────────── */
     .char { display: inline-block; overflow: hidden; }
     .split-hidden .word, .split-hidden .char { opacity: 0; transform: translateY(60%); }
@@ -1124,36 +1087,6 @@
                   inset 0 0 12px rgba(120,70,220,0.04);
     }
 
-    /* ── Section Displacement Transition ─────────────────── */
-    .section-displace {
-      position: absolute; left: 0; right: 0;
-      height: 200px; z-index: 5; pointer-events: none;
-      background: linear-gradient(to bottom,
-        transparent 0%, rgba(5,5,7,0.3) 30%,
-        rgba(5,5,7,0.8) 60%, #050507 100%);
-      filter: blur(1px);
-    }
-
-    /* ── Page Loop Fade ─────────────────────────────────── */
-    /* Smooth fade-to-black used by the infinite-loop handler when the
-       user reaches the bottom of the page, hiding the scrollTo(0) jump. */
-    #page-loop-fade {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #030305;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.55s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    #page-loop-fade.in {
-      opacity: 1;
-      pointer-events: all;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #page-loop-fade { display: none !important; }
-    }
-
     /* ── prefers-reduced-motion ─────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -1162,7 +1095,6 @@
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
       }
-      .section-fade-top, .section-fade-bottom { display: none; }
       #loader { display: none !important; }
       .hero-title-block { opacity: 1 !important; }
     }
@@ -1178,9 +1110,6 @@
 </head>
 
 <body>
-
-  <!-- Page-loop fade overlay -->
-  <div id="page-loop-fade" aria-hidden="true"></div>
 
   <!-- Loading Screen -->
   <div id="loader">
@@ -1296,7 +1225,6 @@
 
     </div>
     <!-- Section fade-out at bottom of fragments → contact -->
-    <div class="section-fade-bottom" style="height:180px; z-index:6;"></div>
   </section>
 
 
@@ -1432,8 +1360,6 @@
   <!-- CONTACT ANIMATION SECTION -->
   <div id="contact" class="contact-scroll-area">
     <div id="contact-stage">
-      <!-- Section fade-in at top of contact → from fragments -->
-      <div class="section-fade-top" style="height:180px; z-index:6;"></div>
       <canvas id="contact-canvas"></canvas>
       <div class="contact-label" id="contact-clipLabel"><span>Click pentru a ne contacta</span></div>
       <div class="contact-label" id="contact-waLabel"><span>WhatsApp</span></div>
@@ -1481,7 +1407,6 @@
       const canvas = document.getElementById('c');
       const ctx = canvas.getContext('2d');
       const stage = document.getElementById('stage');
-      const fragmentsSection = document.getElementById('servicii');
       const images = new Array(TOTAL_FRAMES);
       const loaded = new Uint8Array(TOTAL_FRAMES);
       let currentFrame = -1;
@@ -1559,11 +1484,9 @@
                 stage.style.opacity = 1 - eased;
                 const blurAmt = Math.sin(fp * Math.PI) * 3;
                 stage.style.filter = blurAmt > 0.1 ? `blur(${blurAmt}px)` : '';
-                if (fp > 0.2) fragmentsSection.classList.add('revealed');
               } else {
                 stage.style.opacity = 1;
                 stage.style.filter = '';
-                if (p < 0.78) fragmentsSection.classList.remove('revealed');
               }
             },
           },
@@ -2380,41 +2303,11 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
     });
   }
 
-  // ── Fragments canvas — subtle parallax on scroll through section
-  gsap.to('.fragments-canvas', {
-    scrollTrigger: {
-      trigger: '#servicii',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: 1.8,
-    },
-    y: -55, ease: 'none',
-  });
-
-  // ── Annotation SVG — opposite parallax (slower)
-  gsap.to('.ann-svg', {
-    scrollTrigger: {
-      trigger: '#servicii',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: 2.5,
-    },
-    y: -25, ease: 'none',
-  });
-
-  // Fragments section reveal is handled by CSS .revealed class
-  // GSAP just ensures ScrollTrigger refresh for parallax accuracy
+  // (parallax + scale-down/blur on the fragments section removed —
+  //  the mask must stay fully bright and centred at all times.)
   ScrollTrigger.refresh();
 
-  // ── Contact section entrance — cinematic rise with blur
-  gsap.from('#contact-stage', {
-    scrollTrigger: { trigger: '#contact', start: 'top 85%', once: true },
-    opacity: 0, y: 60, scale: 0.97,
-    filter: 'blur(6px)',
-    duration: 1.3, ease: 'power3.out',
-  });
-
-  // ── Contact labels slide in on scroll
+  // ── Contact labels fade in (lightweight, no scale/blur on the stage)
   ['contact-clipLabel', 'contact-waLabel'].forEach((id, i) => {
     const el = document.getElementById(id);
     if (el) {
@@ -2424,18 +2317,6 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
         delay: 0.3 + i * 0.18, ease: 'power3.out',
       });
     }
-  });
-
-  // ── Fragments section — scroll-driven scale down + blur as user leaves
-  gsap.to('#servicii', {
-    scrollTrigger: {
-      trigger: '#servicii',
-      start: 'bottom 60%',
-      end: 'bottom top',
-      scrub: 1.5,
-    },
-    scale: 0.96, filter: 'blur(3px) brightness(0.7)',
-    ease: 'none',
   });
 })();
 
@@ -2462,47 +2343,8 @@ window._contactVisible = true;
 })();
 
 
-// ── 7. INFINITE PAGE LOOP via ScrollTrigger ─────────
-// Uses GSAP ScrollTrigger (which is already wired into Lenis above for
-// scroll-scrub) so we *know* it fires when the bottom of #contact hits
-// the viewport bottom. The previous rAF poll silently failed because of
-// script ordering. ScrollTrigger doesn't care about order.
-(function () {
-  const fade = document.getElementById('page-loop-fade');
-  if (!fade) return;
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (!window.ScrollTrigger) return;
-
-  let looping = false;
-
-  function loopNow() {
-    if (looping) return;
-    looping = true;
-    fade.classList.add('in');
-    setTimeout(() => {
-      // Jump to top instantly behind the black overlay
-      if (window._lenis) {
-        window._lenis.scrollTo(0, { immediate: true, force: true, lock: false });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'auto' });
-      }
-      // Tell ScrollTrigger the scroll position changed under it
-      ScrollTrigger.update();
-      // Two frames so the scroll commits, then fade back out
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        fade.classList.remove('in');
-        setTimeout(() => { looping = false; }, 800);
-      }));
-    }, 560);
-  }
-
-  // Fire when the bottom of #contact reaches the viewport bottom.
-  ScrollTrigger.create({
-    trigger: '#contact',
-    start: 'bottom bottom',
-    onEnter: loopNow,
-  });
-})();
+// (infinite loop removed entirely — page is linear, no more
+//  fade-to-black artefacts when scrolling backwards)
 
 
 </script>
