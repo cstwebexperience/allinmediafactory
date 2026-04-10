@@ -1531,8 +1531,6 @@
     </div>
   </div>
 
-  <!-- Loop sentinel -->
-  <div id="loop-sentinel" style="height:1px;"></div>
 
 
   <!-- ═══════════════════════════════════════════════════
@@ -1541,87 +1539,104 @@
   <script>
 
 
-    // ── Scroll-Scrub Frame Animation ─────────────────────
-    (function () {
+    // ── Scroll-Scrub Frame Animation (ScrollTrigger-driven, Lenis-safe) ──
+    // Uses GSAP ScrollTrigger so it stays in lockstep with Lenis smooth scroll.
+    // Frames are lazy-loaded: first 30 immediately, rest in background.
+    window._scrollScrubInit = function () {
       const TOTAL_FRAMES = 576;
+      const EAGER_FRAMES = 30; // load these synchronously before reveal
       const canvas = document.getElementById('c');
       const ctx = canvas.getContext('2d');
-      const container = document.getElementById('scroll-scrub-container');
+      const stage = document.getElementById('stage');
+      const fragmentsSection = document.getElementById('servicii');
       const images = new Array(TOTAL_FRAMES);
+      const loaded = new Uint8Array(TOTAL_FRAMES);
       let currentFrame = -1;
+      let canvasSized = false;
 
       function pad(i) { return String(i).padStart(4, '0'); }
+
+      function sizeCanvas(img) {
+        if (canvasSized) return;
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvasSized = true;
+      }
 
       function drawFrame(index) {
         index = Math.max(0, Math.min(TOTAL_FRAMES - 1, index));
         if (index === currentFrame) return;
         const img = images[index];
-        if (!img || !img.complete) return;
-        if (canvas.width !== img.naturalWidth) {
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-        }
+        if (!img || !loaded[index]) return;
+        if (!canvasSized) sizeCanvas(img);
         ctx.drawImage(img, 0, 0);
         currentFrame = index;
       }
 
-      // References for crossfade
-      const stage = document.getElementById('stage');
-      const fragmentsSection = document.getElementById('servicii');
-      const FADE_START = 0.80;  // Start fading stage at 80%
-      const FADE_END = 0.95;    // Stage fully gone at 95%
-
-      function onScroll() {
-        const containerRect = container.getBoundingClientRect();
-        const containerTop = window.scrollY + containerRect.top;
-        const containerHeight = container.offsetHeight - window.innerHeight;
-        const scrolled = window.scrollY - containerTop;
-        const progress = Math.max(0, Math.min(1, scrolled / containerHeight));
-        drawFrame(Math.round(progress * (TOTAL_FRAMES - 1)));
-
-        // ── Crossfade: stage out → fragments in (with blur displacement) ──
-        if (progress >= FADE_START) {
-          const fadeProgress = Math.min(1, (progress - FADE_START) / (FADE_END - FADE_START));
-          // Smooth easing for the fade
-          const easedFade = fadeProgress < 0.5
-            ? 2 * fadeProgress * fadeProgress
-            : 1 - Math.pow(-2 * fadeProgress + 2, 2) / 2;
-          stage.style.opacity = 1 - easedFade;
-          // Add blur during transition peak for displacement feel
-          const blurAmt = Math.sin(fadeProgress * Math.PI) * 3;
-          stage.style.filter = blurAmt > 0.1 ? `blur(${blurAmt}px)` : '';
-
-          if (fadeProgress > 0.2) {
-            fragmentsSection.classList.add('revealed');
-          }
-        } else {
-          stage.style.opacity = 1;
-          stage.style.filter = '';
-          fragmentsSection.classList.remove('revealed');
-        }
-      }
-
-      // Pre-load all frames
-      for (let i = 0; i < TOTAL_FRAMES; i++) {
+      function loadFrame(idx, eager) {
+        if (images[idx]) return images[idx];
         const img = new Image();
-        img.onload = (function (idx) {
-          return function () {
-            if (idx === 0) {
-              canvas.width = this.naturalWidth;
-              canvas.height = this.naturalHeight;
-              ctx.drawImage(this, 0, 0);
-              currentFrame = 0;
-              window.dispatchEvent(new Event('loaderAssetReady'));
-            }
-          };
-        })(i);
-        img.src = 'frames/frame_' + pad(i + 1) + '.webp';
-        images[i] = img;
+        img.decoding = 'async';
+        img.onload = function () {
+          loaded[idx] = 1;
+          if (idx === 0) {
+            sizeCanvas(this);
+            ctx.drawImage(this, 0, 0);
+            currentFrame = 0;
+            window.dispatchEvent(new Event('loaderAssetReady'));
+          }
+        };
+        img.src = 'frames/frame_' + pad(idx + 1) + '.webp';
+        images[idx] = img;
+        return img;
       }
 
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.scrollTo(0, 0);
-    })();
+      // Eager-load the first batch
+      for (let i = 0; i < EAGER_FRAMES && i < TOTAL_FRAMES; i++) loadFrame(i, true);
+
+      // Background-load the rest in chunks via requestIdleCallback (or rAF fallback)
+      const idle = window.requestIdleCallback || function (cb) { return setTimeout(cb, 1); };
+      let bgIdx = EAGER_FRAMES;
+      function loadNextBatch() {
+        const batchEnd = Math.min(bgIdx + 8, TOTAL_FRAMES);
+        for (let i = bgIdx; i < batchEnd; i++) loadFrame(i, false);
+        bgIdx = batchEnd;
+        if (bgIdx < TOTAL_FRAMES) idle(loadNextBatch);
+      }
+      idle(loadNextBatch);
+
+      // ScrollTrigger for frame scrubbing — no manual scroll listener
+      if (window.gsap && window.ScrollTrigger) {
+        const state = { f: 0 };
+        gsap.to(state, {
+          f: TOTAL_FRAMES - 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#scroll-scrub-container',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.5,
+            onUpdate: (self) => {
+              drawFrame(Math.round(state.f));
+              const p = self.progress;
+              // Crossfade stage → fragments in last 20% of scrub
+              if (p >= 0.80) {
+                const fp = Math.min(1, (p - 0.80) / 0.15);
+                const eased = fp < 0.5 ? 2 * fp * fp : 1 - Math.pow(-2 * fp + 2, 2) / 2;
+                stage.style.opacity = 1 - eased;
+                const blurAmt = Math.sin(fp * Math.PI) * 3;
+                stage.style.filter = blurAmt > 0.1 ? `blur(${blurAmt}px)` : '';
+                if (fp > 0.2) fragmentsSection.classList.add('revealed');
+              } else {
+                stage.style.opacity = 1;
+                stage.style.filter = '';
+                if (p < 0.78) fragmentsSection.classList.remove('revealed');
+              }
+            },
+          },
+        });
+      }
+    };
 
 
     // ── Mask Fragments → Full-screen Overlay ─────────────
@@ -2256,6 +2271,9 @@ lenis.on('scroll', ScrollTrigger.update);
 gsap.ticker.add((time) => { lenis.raf(time * 1000); });
 gsap.ticker.lagSmoothing(0);
 
+// Boot the ScrollTrigger-driven scroll-scrub once GSAP is configured
+if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
+
 
 // ── 2. LOADING SCREEN ───────────────────────────────
 (function () {
@@ -2575,27 +2593,6 @@ gsap.ticker.lagSmoothing(0);
   }
 })();
 
-
-// ── 7. INFINITE LOOP — use Lenis for clean jump ──────
-(function () {
-  let looping = false;
-  const sentinel = document.getElementById('loop-sentinel');
-  if (!sentinel) return;
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !looping) {
-        looping = true;
-        if (window._lenis) {
-          window._lenis.scrollTo(0, { immediate: true });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'instant' });
-        }
-        setTimeout(() => { looping = false; }, 600);
-      }
-    });
-  }, { threshold: 0.5 });
-  obs.observe(sentinel);
-})();
 
 </script>
 
