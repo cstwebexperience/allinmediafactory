@@ -1315,6 +1315,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <!-- SplitType -->
   <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
+  <!-- YouTube IFrame API — used to nudge the zoom player to the
+       highest available quality once it's ready -->
+  <script src="https://www.youtube.com/iframe_api" async></script>
 </head>
 
 <body>
@@ -2024,16 +2027,63 @@
       const zoomIframe = document.getElementById('zoom-iframe');
       const zoomClose  = document.getElementById('phoneZoomClose');
 
+      // Track the YT.Player instance so we can re-create it per video
+      let ytPlayer = null;
+
+      // Try to nudge the player to the highest available quality.
+      // YouTube no longer reliably honours setPlaybackQuality (it's
+      // deprecated), but combined with the vq=hd1080 URL hint and the
+      // explicit setPlaybackQualityRange call it works in most cases.
+      function pushHighestQuality(player) {
+        try {
+          const levels = player.getAvailableQualityLevels && player.getAvailableQualityLevels();
+          let target = 'hd1080';
+          if (levels && levels.length) {
+            // Prefer the first level (YouTube returns highest -> lowest)
+            target = levels[0];
+          }
+          if (player.setPlaybackQualityRange) player.setPlaybackQualityRange(target, target);
+          if (player.setPlaybackQuality) player.setPlaybackQuality(target);
+        } catch (e) { /* API may have changed; safe to ignore */ }
+      }
+
       function openPhoneZoom(src) {
         if (!phoneZoom || !zoomIframe || !src) return;
+        // Add the JS API + HD hints if not already there
+        if (!/[?&]enablejsapi=/.test(src)) src += '&enablejsapi=1';
+        if (!/[?&]vq=/.test(src))          src += '&vq=hd1080';
+        if (!/[?&]hd=/.test(src))          src += '&hd=1';
         zoomIframe.src = src;
         phoneZoom.classList.add('open');
+
+        // Once the iframe loads, attach a YT.Player and bump quality
+        zoomIframe.onload = function () {
+          if (!window.YT || !window.YT.Player) return;
+          try {
+            if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
+            ytPlayer = new window.YT.Player('zoom-iframe', {
+              events: {
+                onReady: function (e) { pushHighestQuality(e.target); },
+                onPlaybackQualityChange: function (e) {
+                  // If YouTube downgrades us, try once more
+                  pushHighestQuality(e.target);
+                },
+              },
+            });
+          } catch (e) { /* ignore — quality bump is best-effort */ }
+        };
       }
       function closePhoneZoom() {
         if (!phoneZoom) return;
         phoneZoom.classList.remove('open');
         // Stop the video after the fade-out by clearing src
-        setTimeout(() => { if (zoomIframe) zoomIframe.src = ''; }, 450);
+        setTimeout(() => {
+          if (zoomIframe) zoomIframe.src = '';
+          if (ytPlayer && ytPlayer.destroy) {
+            try { ytPlayer.destroy(); } catch (e) {}
+            ytPlayer = null;
+          }
+        }, 450);
       }
       // Click on any carousel iPhone -> open zoom with that video.
       // Now uses static <img> thumbnails (no iframes in carousel) and
