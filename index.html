@@ -547,13 +547,14 @@
       display: flex;
       gap: 14px;
       width: max-content;
-      animation: media-marquee-scroll 50s linear infinite;
+      animation: media-marquee-scroll 22s linear infinite;
       will-change: transform;
     }
     .media-marquee:hover .media-marquee-track {
       animation-play-state: paused;
     }
     .media-marquee-item {
+      flex-shrink: 0;
       display: inline-flex;
       align-items: center;
       white-space: nowrap;
@@ -569,9 +570,11 @@
       color: rgba(255, 255, 255, 0.72);
       box-shadow: 0 0 18px rgba(180, 130, 255, 0.05) inset;
     }
+    /* -50% would land half a gap short of the duplicated set (24 items + 23 gaps).
+       The seamless loop point is 12 items + 12 gaps = -50% minus half a gap (7px). */
     @keyframes media-marquee-scroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
+      0%   { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(calc(-50% - 7px), 0, 0); }
     }
 
     /* Results section — dark moody screenshot grid (compact) */
