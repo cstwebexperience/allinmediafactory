@@ -1063,26 +1063,6 @@
       gap: 0;
       clip-path: circle(100% at 50% 50%);
     }
-    /* Ripple that pulses out of the logo right before the loader retracts */
-    #loader-ripple {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      background: radial-gradient(circle, rgba(180,140,255,0.55) 0%, rgba(180,140,255,0) 70%);
-      pointer-events: none;
-      opacity: 0;
-      will-change: transform, opacity;
-    }
-    #loader-ripple.go {
-      animation: loaderRipple 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes loaderRipple {
-      0%   { transform: translate(-50%, -50%) scale(0);  opacity: 0; }
-      15%  { opacity: 1; }
-      100% { transform: translate(-50%, -50%) scale(60); opacity: 0; }
-    }
     #loader-logo {
       font-family: 'DM Sans', sans-serif;
       font-size: clamp(13px, 2.5vw, 22px);
@@ -1095,24 +1075,6 @@
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: loaderShimmer 2.8s ease-in-out infinite;
-      will-change: transform, filter, opacity;
-      transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1),
-                  filter 0.5s cubic-bezier(0.65, 0, 0.35, 1),
-                  opacity 0.45s ease;
-    }
-    #loader-logo.zoom-out {
-      transform: scale(1.5);
-      filter: blur(20px);
-      opacity: 0;
-    }
-    /* Hero clip-path circular reveal — set by JS via .reveal-circle */
-    .hero.reveal-circle {
-      clip-path: circle(0% at 50% 50%);
-      animation: heroCircleReveal 1.0s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-    }
-    @keyframes heroCircleReveal {
-      0%   { clip-path: circle(0% at 50% 50%); }
-      100% { clip-path: circle(150% at 50% 50%); }
     }
     @keyframes loaderShimmer {
       0%   { background-position: 100% 50%; }
@@ -1229,7 +1191,6 @@
 
   <!-- Loading Screen -->
   <div id="loader">
-    <div id="loader-ripple"></div>
     <div id="loader-logo">All In Media</div>
     <div id="loader-bar-track">
       <div id="loader-bar-fill"></div>
@@ -2440,53 +2401,19 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
         fill.style.width = v + '%';
         pctEl.textContent = v + '%';
       },
-      onComplete: () => runFinaleSequence(),
-    });
-  }
-
-  // Cinematic finale: logo zoom-out + ripple → loader retract → hero
-  // clip-path circular reveal → char rain on the title.
-  function runFinaleSequence() {
-    const logoEl   = document.getElementById('loader-logo');
-    const rippleEl = document.getElementById('loader-ripple');
-    const heroEl   = document.getElementById('hero');
-
-    // 1) Trigger ripple + logo zoom-out simultaneously
-    if (rippleEl) {
-      rippleEl.classList.remove('go');
-      void rippleEl.offsetWidth;
-      rippleEl.classList.add('go');
-    }
-    if (logoEl) logoEl.classList.add('zoom-out');
-
-    // Pre-hide the hero with clip-path so it isn't visible the instant
-    // the loader retracts. The .reveal-circle class will animate it open.
-    if (heroEl) heroEl.style.clipPath = 'circle(0% at 50% 50%)';
-
-    // 2) After 0.5s the loader itself retracts via its clip-path animation
-    setTimeout(() => {
-      gsap.to(loader, {
-        clipPath: 'circle(0% at 50% 50%)',
-        duration: 0.85,
-        ease: 'power3.inOut',
-        onComplete: () => {
-          loader.style.display = 'none';
-          // 3) Hero reveals with its own circular clip-path
-          if (heroEl) {
-            // Clear the inline style so the keyframe animation can take over
-            heroEl.style.clipPath = '';
-            heroEl.classList.add('reveal-circle');
-            heroEl.addEventListener('animationend', function onEnd(e) {
-              if (e.animationName !== 'heroCircleReveal') return;
-              heroEl.removeEventListener('animationend', onEnd);
-              heroEl.classList.remove('reveal-circle');
-            });
+      onComplete: () => {
+        // Dramatic mask-expand reveal
+        gsap.to(loader, {
+          clipPath: 'circle(0% at 50% 50%)',
+          duration: 1.0, delay: 0.2,
+          ease: 'power3.inOut',
+          onComplete: () => {
+            loader.style.display = 'none';
+            revealPage();
           }
-          // 4) Character rain on the title (rotateX -80 -> 0, stagger 0.025)
-          revealPage();
-        }
-      });
-    }, 500);
+        });
+      }
+    });
   }
 
   window.addEventListener('loaderAssetReady', complete, { once: true });
@@ -2499,27 +2426,24 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
     const h1  = document.querySelector('.hero-title-block h1');
     const sub = document.querySelector('.hero-title-block .sub');
 
+    // Ensure title block is visible for GSAP to animate
     if (titleBlock) titleBlock.style.opacity = '1';
 
     if (h1 && window.SplitType) {
       const split = new SplitType(h1, { types: 'chars' });
-      // Characters rain in from above (y -60 -> 0) with rotateX -80 -> 0
-      // and tight stagger (0.025s) — feels like the title materialises
-      // letter by letter in front of the camera.
       gsap.from(split.chars, {
-        y: -60,
-        opacity: 0,
-        rotateX: -80,
-        duration: 0.85,
-        stagger: 0.025,
-        ease: 'power3.out',
-        delay: 0.30,
-        transformPerspective: 600,
-        onComplete: () => { split.revert(); }
+        y: 50, opacity: 0, rotateX: -40,
+        duration: 0.75, stagger: 0.03,
+        ease: 'power3.out', delay: 0.08,
+        transformPerspective: 500,
+        onComplete: () => {
+          // Revert split so Three.js opacity control works cleanly
+          split.revert();
+        }
       });
     }
     if (sub) {
-      gsap.from(sub, { opacity: 0, y: 14, duration: 0.9, ease: 'power2.out', delay: 1.20 });
+      gsap.from(sub, { opacity: 0, y: 14, duration: 0.9, ease: 'power2.out', delay: 0.55 });
     }
   }
 })();
