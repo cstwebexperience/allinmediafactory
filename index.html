@@ -1729,12 +1729,13 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 // ── Device profile ──
-// Phones get a lighter pipeline: lower pixel ratio, fewer sphere subdivisions,
-// no extra HDRI download, no post-processing passes beyond bloom, and the
-// expensive per-vertex deformation runs at half rate.
+// Phones AND desktops with weak/integrated GPUs (Intel HD/UHD, SwiftShader,
+// software renderers) get a lighter pipeline: lower pixel ratio, fewer
+// sphere subdivisions, no HDRI download, no post-processing, half-rate
+// vertex deform. window._lowPowerGpu is set in the Lenis init script.
 const IS_MOBILE = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 const HW = navigator.hardwareConcurrency || 4;
-const LOW_POWER = IS_MOBILE || HW <= 4;
+const LOW_POWER = IS_MOBILE || HW <= 4 || !!window._lowPowerGpu;
 
 const canvas   = document.getElementById('hero-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOW_POWER, alpha: true, powerPreference: LOW_POWER ? 'low-power' : 'high-performance' });
@@ -1988,7 +1989,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const C_IS_MOBILE = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 const C_HW = navigator.hardwareConcurrency || 4;
-const C_LOW_POWER = C_IS_MOBILE || C_HW <= 4;
+const C_LOW_POWER = C_IS_MOBILE || C_HW <= 4 || !!window._lowPowerGpu;
 
 const contactArea  = document.getElementById('contact');
 const contactStage = document.getElementById('contact-stage');
@@ -2229,25 +2230,64 @@ tick2();
    INIT: Lenis · GSAP · Cursor · Loader · SplitType
    ═══════════════════════════════════════════════════ */
 
+// ── 0. GPU DETECTION ────────────────────────────────
+// Reads the WebGL renderer string and flags integrated/software GPUs
+// (Intel HD/UHD, SwiftShader, llvmpipe, low-end mobile chips). On those
+// machines we skip the smooth-wheel layer entirely (lerping at <60fps
+// looks like scroll lag) AND tell the Three.js scenes to drop their
+// post-processing pipelines. The detection runs synchronously on a
+// throwaway canvas so the result is ready before Lenis is constructed.
+function detectLowPowerGpu() {
+  try {
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+    if (!gl) return { low: true, renderer: 'no-webgl' };
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = ext ? (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '') : '';
+    const r = renderer.toLowerCase();
+    let low = false;
+    // Software renderers — always slow
+    if (r.includes('swiftshader') || r.includes('llvmpipe') || r.includes('software') || r.includes('basic render')) low = true;
+    // Intel integrated graphics — HD Graphics, UHD Graphics, Iris (non-Pro)
+    if (r.includes('intel') && (r.includes('hd graphics') || r.includes('uhd graphics') || (r.includes('iris') && !r.includes('iris pro')))) low = true;
+    // Older mobile GPUs that sometimes appear on cheap Chromebooks
+    if (r.includes('mali-')) low = true;
+    if (/adreno \(?\d{2,3}\)?$/.test(r)) low = true; // Adreno 3xx/4xx etc.
+    // No debug info available + only 1 logical CPU = also treat as low
+    if (!renderer && (navigator.hardwareConcurrency || 4) <= 2) low = true;
+    return { low, renderer: renderer || '(unknown)' };
+  } catch (e) {
+    return { low: false, renderer: '(error)' };
+  }
+}
+const _gpu = detectLowPowerGpu();
+window._lowPowerGpu = _gpu.low;
+// Expose at ?debug=1 so we can verify on a slow machine
+if (location.search.includes('debug=1')) {
+  console.log('[gpu]', _gpu.renderer, '→ lowPower:', _gpu.low);
+}
+
+
 // ── 1. LENIS SMOOTH SCROLL ──────────────────────────
 // Tuned for a tight, responsive feel:
 //  - duration 1.6 -> 1.05 so the wheel reacts almost immediately
 //  - lerp added so fast wheel ticks settle without overshoot
-//  - wheelMultiplier 1 (default) — was implicitly inflated by long duration
 //  - touch falls through to native scroll on phones (no smooth lag)
+//  - on detected low-power GPUs we DISABLE smoothWheel entirely so the
+//    page falls back to the browser's native scroll, which is silky on
+//    integrated graphics where lerping at <60fps looks like jank.
 const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;
 const lenis = new Lenis({
   duration: 1.05,
   lerp: 0.12,
-  smoothWheel: !prefersReduced,
-  smoothTouch: false, // native scroll on touch is smoother + lower-lag
+  smoothWheel: !prefersReduced && !window._lowPowerGpu,
+  smoothTouch: false,
   syncTouch: false,
   orientation: 'vertical',
   gestureOrientation: 'vertical',
   wheelMultiplier: 1.0,
   touchMultiplier: 1.4,
-  easing: (t) => 1 - Math.pow(1 - t, 3), // easeOutCubic — gentle settle
+  easing: (t) => 1 - Math.pow(1 - t, 3),
 });
 window._lenis = lenis;
 
