@@ -25,34 +25,6 @@
   }
   </script>
 
-  <!-- Tailwind CSS v3 CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#f5f3ff',
-              100: '#ede9fe',
-              200: '#ddd6fe',
-              300: '#c4b5fd',
-              400: '#a78bfa',
-              500: '#8b5cf6',
-              600: '#7c3aed',
-              700: '#6d28d9',
-              800: '#5b21b6',
-              900: '#4c1d95',
-            }
-          }
-        }
-      }
-    }
-  </script>
-
   <style>
     /* ── Base & Scroll ────────────────────────────────── */
     *,
@@ -527,6 +499,23 @@
     }
     .nav-link:hover::after { width: 100%; }
     .nav-link:hover { color: #c4b5fd; }
+
+    /* Servicii eyebrow (was Tailwind) */
+    .servicii-eyebrow {
+      position: absolute;
+      top: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(167, 139, 250, 0.5);
+      z-index: 20;
+      pointer-events: none;
+      margin: 0;
+    }
 
     /* ── Mask Fragments ───────────────────────────────── */
     .fragments-section {
@@ -1163,42 +1152,6 @@
                   inset 0 0 12px rgba(120,70,220,0.04);
     }
 
-    /* ── Film Grain Overlay ──────────────────────────────── */
-    #film-grain {
-      position: fixed; inset: -50%; z-index: 9989;
-      width: 200%; height: 200%;
-      pointer-events: none;
-      opacity: 0.04;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      animation: grainDrift 0.8s steps(2) infinite;
-    }
-    @keyframes grainDrift {
-      0% { transform: translate(0, 0); }
-      50% { transform: translate(-5%, -5%); }
-    }
-
-    /* ── Chromatic Aberration Scroll Overlay ──────────────── */
-    #ca-r, #ca-b {
-      position: fixed; inset: 0; z-index: 9988;
-      pointer-events: none;
-      opacity: 0;
-      will-change: transform, opacity;
-    }
-    #ca-r {
-      background: linear-gradient(0deg,
-        rgba(255,30,30,0.2) 0%, rgba(255,30,30,0.03) 20%,
-        transparent 40%, transparent 60%,
-        rgba(255,30,30,0.03) 80%, rgba(255,30,30,0.2) 100%);
-      mix-blend-mode: screen;
-    }
-    #ca-b {
-      background: linear-gradient(0deg,
-        rgba(40,30,255,0.2) 0%, rgba(40,30,255,0.03) 20%,
-        transparent 40%, transparent 60%,
-        rgba(40,30,255,0.03) 80%, rgba(40,30,255,0.2) 100%);
-      mix-blend-mode: screen;
-    }
-
     /* ── Section Displacement Transition ─────────────────── */
     .section-displace {
       position: absolute; left: 0; right: 0;
@@ -1219,7 +1172,6 @@
       }
       #cursor-dot, #cursor-ring { display: none !important; }
       .section-fade-top, .section-fade-bottom { display: none; }
-      #film-grain, #ca-r, #ca-b { display: none !important; }
       #loader { display: none !important; }
       .hero-title-block { opacity: 1 !important; }
     }
@@ -1248,12 +1200,6 @@
   <!-- Custom Cursor -->
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
-
-  <!-- Film Grain Overlay -->
-  <div id="film-grain" aria-hidden="true"></div>
-  <!-- Chromatic Aberration Scroll Overlays -->
-  <div id="ca-r" aria-hidden="true"></div>
-  <div id="ca-b" aria-hidden="true"></div>
 
   <!-- HERO SECTION: Three.js metallic sphere -->
   <div class="scroll-container" id="hero-scroll-container">
@@ -1286,10 +1232,7 @@
   <section id="servicii" class="fragments-section">
 
     <!-- Eyebrow -->
-    <p
-      class="absolute top-12 left-1/2 -translate-x-1/2 text-xs font-medium tracking-[.35em] uppercase text-brand-400/50 z-20">
-      Alege un serviciu
-    </p>
+    <p class="servicii-eyebrow">Alege un serviciu</p>
 
     <div class="fragments-canvas" id="fragments-canvas">
 
@@ -2575,37 +2518,16 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 })();
 
 
-// ── 6. SCROLL VELOCITY EFFECTS + RENDERER PAUSING ─────
+// ── 6. SCROLL VELOCITY (for hero CA shader) + RENDERER PAUSING ─────
 (function () {
-  // ── Track scroll velocity via Lenis ──
+  // Track scroll velocity via Lenis — feeds the in-shader chromatic
+  // aberration on the hero. The full-screen DOM CA overlays were removed.
   window._scrollVelocity = 0;
-  let velocityDecay = 0;
   lenis.on('scroll', ({ velocity }) => {
     window._scrollVelocity = velocity;
-    velocityDecay = Math.abs(velocity);
   });
 
-  // ── Chromatic Aberration overlay driven by velocity ──
-  const caR = document.getElementById('ca-r');
-  const caB = document.getElementById('ca-b');
-  if (caR && caB && !prefersReduced) {
-    gsap.ticker.add(() => {
-      velocityDecay *= 0.88; // smooth decay
-      const amt = Math.min(velocityDecay * 0.4, 5);
-      if (amt > 0.2) {
-        const op = Math.min(amt * 0.07, 0.35);
-        caR.style.opacity = op;
-        caB.style.opacity = op;
-        caR.style.transform = `translateX(${-amt}px)`;
-        caB.style.transform = `translateX(${amt}px)`;
-      } else {
-        caR.style.opacity = 0;
-        caB.style.opacity = 0;
-      }
-    });
-  }
-
-  // ── IntersectionObservers — pause off-screen Three.js ──
+  // IntersectionObservers — pause off-screen Three.js scenes
   window._heroVisible = true;
   window._contactVisible = true;
 
