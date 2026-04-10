@@ -2584,11 +2584,12 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 
 
 // ── 7. INFINITE PAGE LOOP (fade-to-black + jump to top) ─────
-// When the user reaches ~98% of the document we fade a black overlay in
-// (0.55s), instant-jump Lenis to the top behind it, then fade out — so
-// the page feels like it loops back to the hero seamlessly. The previous
-// loop sentinel did a hard scrollTo(0) with no fade, which corrupted
-// Lenis state and produced the purple flashes. This version is safe.
+// Polls scroll position every animation frame so it doesn't depend on
+// Lenis being initialised yet (this handler runs in script #6 which
+// parses BEFORE script #7 where Lenis is created — that was the bug
+// that made the previous version silently never fire). Once the user
+// passes 97% of the scrollable height we fade a black overlay in,
+// instant-jump back to the top behind it, then fade out.
 (function () {
   const fade = document.getElementById('page-loop-fade');
   if (!fade) return;
@@ -2597,7 +2598,7 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
   let looping = false;
   let lastLoopAt = 0;
   const COOLDOWN_MS = 2500;
-  const TRIGGER_RATIO = 0.985; // fire at 98.5% of scroll height
+  const TRIGGER_RATIO = 0.97;
 
   function loopNow() {
     if (looping) return;
@@ -2607,34 +2608,31 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
     setTimeout(() => {
       // Jump to top instantly behind the black overlay
       if (window._lenis) {
-        window._lenis.scrollTo(0, { immediate: true, force: true });
+        window._lenis.scrollTo(0, { immediate: true, force: true, lock: false });
       } else {
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: 'auto' });
       }
-      // One frame to let the scroll settle, then fade back out
+      // Two frames so the scroll commits, then fade back out
       requestAnimationFrame(() => requestAnimationFrame(() => {
         fade.classList.remove('in');
         setTimeout(() => {
           looping = false;
           lastLoopAt = Date.now();
-        }, 600);
+        }, 700);
       }));
     }, 560);
   }
 
-  function onScroll() {
+  // Bullet-proof rAF loop — runs every frame regardless of scroll events
+  function check() {
+    requestAnimationFrame(check);
     if (looping) return;
     const sy = window._lenis ? window._lenis.scroll : window.scrollY;
     const max = document.documentElement.scrollHeight - window.innerHeight;
     if (max <= 0) return;
     if (sy / max >= TRIGGER_RATIO) loopNow();
   }
-
-  if (window._lenis) {
-    window._lenis.on('scroll', onScroll);
-  } else {
-    window.addEventListener('scroll', onScroll, { passive: true });
-  }
+  check();
 })();
 
 
