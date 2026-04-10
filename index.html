@@ -551,7 +551,7 @@
 
     /* Stage fade-out driven by JS */
     #stage {
-      transition: opacity .3s ease;
+      transition: opacity .3s ease, filter .3s ease;
     }
 
     .fragments-canvas {
@@ -1163,6 +1163,52 @@
                   inset 0 0 12px rgba(120,70,220,0.04);
     }
 
+    /* ── Film Grain Overlay ──────────────────────────────── */
+    #film-grain {
+      position: fixed; inset: -50%; z-index: 9989;
+      width: 200%; height: 200%;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grainDrift 0.8s steps(2) infinite;
+    }
+    @keyframes grainDrift {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(-5%, -5%); }
+    }
+
+    /* ── Chromatic Aberration Scroll Overlay ──────────────── */
+    #ca-r, #ca-b {
+      position: fixed; inset: 0; z-index: 9988;
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    #ca-r {
+      background: linear-gradient(0deg,
+        rgba(255,30,30,0.2) 0%, rgba(255,30,30,0.03) 20%,
+        transparent 40%, transparent 60%,
+        rgba(255,30,30,0.03) 80%, rgba(255,30,30,0.2) 100%);
+      mix-blend-mode: screen;
+    }
+    #ca-b {
+      background: linear-gradient(0deg,
+        rgba(40,30,255,0.2) 0%, rgba(40,30,255,0.03) 20%,
+        transparent 40%, transparent 60%,
+        rgba(40,30,255,0.03) 80%, rgba(40,30,255,0.2) 100%);
+      mix-blend-mode: screen;
+    }
+
+    /* ── Section Displacement Transition ─────────────────── */
+    .section-displace {
+      position: absolute; left: 0; right: 0;
+      height: 200px; z-index: 5; pointer-events: none;
+      background: linear-gradient(to bottom,
+        transparent 0%, rgba(5,5,7,0.3) 30%,
+        rgba(5,5,7,0.8) 60%, #050507 100%);
+      filter: blur(1px);
+    }
+
     /* ── prefers-reduced-motion ─────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -1173,6 +1219,7 @@
       }
       #cursor-dot, #cursor-ring { display: none !important; }
       .section-fade-top, .section-fade-bottom { display: none; }
+      #film-grain, #ca-r, #ca-b { display: none !important; }
       #loader { display: none !important; }
       .hero-title-block { opacity: 1 !important; }
     }
@@ -1201,6 +1248,12 @@
   <!-- Custom Cursor -->
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
+
+  <!-- Film Grain Overlay -->
+  <div id="film-grain" aria-hidden="true"></div>
+  <!-- Chromatic Aberration Scroll Overlays -->
+  <div id="ca-r" aria-hidden="true"></div>
+  <div id="ca-b" aria-hidden="true"></div>
 
   <!-- HERO SECTION: Three.js metallic sphere -->
   <div class="scroll-container" id="hero-scroll-container">
@@ -1515,8 +1568,8 @@
       // References for crossfade
       const stage = document.getElementById('stage');
       const fragmentsSection = document.getElementById('servicii');
-      const FADE_START = 0.82;  // Start fading stage at 82%
-      const FADE_END = 0.97;  // Stage fully gone at 97%
+      const FADE_START = 0.80;  // Start fading stage at 80%
+      const FADE_END = 0.95;    // Stage fully gone at 95%
 
       function onScroll() {
         const containerRect = container.getBoundingClientRect();
@@ -1526,16 +1579,24 @@
         const progress = Math.max(0, Math.min(1, scrolled / containerHeight));
         drawFrame(Math.round(progress * (TOTAL_FRAMES - 1)));
 
-        // ── Crossfade: stage out → fragments in ──
+        // ── Crossfade: stage out → fragments in (with blur displacement) ──
         if (progress >= FADE_START) {
           const fadeProgress = Math.min(1, (progress - FADE_START) / (FADE_END - FADE_START));
-          stage.style.opacity = 1 - fadeProgress;
+          // Smooth easing for the fade
+          const easedFade = fadeProgress < 0.5
+            ? 2 * fadeProgress * fadeProgress
+            : 1 - Math.pow(-2 * fadeProgress + 2, 2) / 2;
+          stage.style.opacity = 1 - easedFade;
+          // Add blur during transition peak for displacement feel
+          const blurAmt = Math.sin(fadeProgress * Math.PI) * 3;
+          stage.style.filter = blurAmt > 0.1 ? `blur(${blurAmt}px)` : '';
 
-          if (fadeProgress > 0.3) {
+          if (fadeProgress > 0.2) {
             fragmentsSection.classList.add('revealed');
           }
         } else {
           stage.style.opacity = 1;
+          stage.style.filter = '';
           fragmentsSection.classList.remove('revealed');
         }
       }
@@ -1731,6 +1792,11 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 const canvas   = document.getElementById('hero-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -1791,6 +1857,41 @@ lights[3].position.set(-2,  3, -2);
 lights.forEach(l => scene.add(l));
 scene.add(new THREE.AmbientLight(0x0a0515, 0.3));
 
+// ── Post-Processing: Bloom + Chromatic Aberration ──
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.4, 0.55, 0.82
+);
+composer.addPass(bloomPass);
+
+const ChromaticAberrationShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    amount: { value: 0.0025 },
+  },
+  vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float amount;
+    varying vec2 vUv;
+    void main() {
+      vec2 dir = vUv - vec2(0.5);
+      float dist = length(dir);
+      vec2 offset = dir * dist * amount;
+      float r = texture2D(tDiffuse, vUv + offset).r;
+      float g = texture2D(tDiffuse, vUv).g;
+      float b = texture2D(tDiffuse, vUv - offset).b;
+      gl_FragColor = vec4(r, g, b, 1.0);
+    }
+  `,
+};
+const caPass = new ShaderPass(ChromaticAberrationShader);
+composer.addPass(caPass);
+composer.addPass(new OutputPass());
+
 let mx = 0, my = 0, smx = 0, smy = 0;
 window.addEventListener('mousemove', e => {
   mx = (e.clientX / window.innerWidth)  * 2 - 1;
@@ -1817,6 +1918,8 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+  bloomPass.resolution.set(window.innerWidth, window.innerHeight);
 });
 
 function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; }
@@ -1828,6 +1931,7 @@ const clock = new THREE.Clock();
 
 function tick() {
   requestAnimationFrame(tick);
+  if (window._heroVisible === false) return;
   const t = clock.getElapsedTime();
 
   smx += (mx - smx) * 0.03;
@@ -1888,7 +1992,12 @@ function tick() {
     heroEl.style.pointerEvents = op < 0.02 ? 'none' : '';
   }
 
-  renderer.render(scene, camera);
+  // Dynamic post-processing: bloom intensifies with scroll, CA with velocity
+  bloomPass.strength = 0.4 + pIntensity * 0.7;
+  const vel = Math.abs(window._scrollVelocity || 0);
+  caPass.uniforms.amount.value = 0.002 + vel * 0.0012 + pIntensity * 0.003;
+
+  composer.render();
 }
 tick();
 </script>
@@ -2061,6 +2170,7 @@ const waLabelEl   = document.getElementById('contact-waLabel');
 
 function tick2() {
   requestAnimationFrame(tick2);
+  if (window._contactVisible === false) return;
   const t = clock2.getElapsedTime();
 
   csmx += (cmx-csmx)*0.04;
@@ -2133,10 +2243,11 @@ tick2();
 // ── 1. LENIS SMOOTH SCROLL ──────────────────────────
 const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const lenis = new Lenis({
-  duration: 1.2,
+  duration: 1.6,
   smoothWheel: !prefersReduced,
   orientation: 'vertical',
   gestureOrientation: 'vertical',
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
 });
 window._lenis = lenis;
 
@@ -2297,10 +2408,12 @@ gsap.ticker.lagSmoothing(0);
   // GSAP just ensures ScrollTrigger refresh for parallax accuracy
   ScrollTrigger.refresh();
 
-  // ── Contact section entrance — from bottom
+  // ── Contact section entrance — cinematic rise with blur
   gsap.from('#contact-stage', {
-    scrollTrigger: { trigger: '#contact', start: 'top 90%', once: true },
-    opacity: 0, y: 40, duration: 1, ease: 'power2.out',
+    scrollTrigger: { trigger: '#contact', start: 'top 85%', once: true },
+    opacity: 0, y: 60, scale: 0.97,
+    filter: 'blur(6px)',
+    duration: 1.3, ease: 'power3.out',
   });
 
   // ── Contact labels slide in on scroll
@@ -2309,10 +2422,22 @@ gsap.ticker.lagSmoothing(0);
     if (el) {
       gsap.from(el, {
         scrollTrigger: { trigger: '#contact', start: 'top 70%', once: true },
-        opacity: 0, y: 15, duration: 0.6,
-        delay: i * 0.15, ease: 'power2.out',
+        opacity: 0, y: 20, duration: 0.8,
+        delay: 0.3 + i * 0.18, ease: 'power3.out',
       });
     }
+  });
+
+  // ── Fragments section — scroll-driven scale down + blur as user leaves
+  gsap.to('#servicii', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'bottom 60%',
+      end: 'bottom top',
+      scrub: 1.5,
+    },
+    scale: 0.96, filter: 'blur(3px) brightness(0.7)',
+    ease: 'none',
   });
 })();
 
@@ -2404,7 +2529,54 @@ gsap.ticker.lagSmoothing(0);
 })();
 
 
-// ── 6. INFINITE LOOP — use Lenis for clean jump ──────
+// ── 6. SCROLL VELOCITY EFFECTS + RENDERER PAUSING ─────
+(function () {
+  // ── Track scroll velocity via Lenis ──
+  window._scrollVelocity = 0;
+  let velocityDecay = 0;
+  lenis.on('scroll', ({ velocity }) => {
+    window._scrollVelocity = velocity;
+    velocityDecay = Math.abs(velocity);
+  });
+
+  // ── Chromatic Aberration overlay driven by velocity ──
+  const caR = document.getElementById('ca-r');
+  const caB = document.getElementById('ca-b');
+  if (caR && caB && !prefersReduced) {
+    gsap.ticker.add(() => {
+      velocityDecay *= 0.88; // smooth decay
+      const amt = Math.min(velocityDecay * 0.4, 5);
+      if (amt > 0.2) {
+        const op = Math.min(amt * 0.07, 0.35);
+        caR.style.opacity = op;
+        caB.style.opacity = op;
+        caR.style.transform = `translateX(${-amt}px)`;
+        caB.style.transform = `translateX(${amt}px)`;
+      } else {
+        caR.style.opacity = 0;
+        caB.style.opacity = 0;
+      }
+    });
+  }
+
+  // ── IntersectionObservers — pause off-screen Three.js ──
+  window._heroVisible = true;
+  window._contactVisible = true;
+
+  const heroEl = document.getElementById('hero');
+  if (heroEl) {
+    new IntersectionObserver(([e]) => { window._heroVisible = e.isIntersecting; }, { threshold: 0 })
+      .observe(heroEl);
+  }
+  const contactStageEl = document.getElementById('contact-stage');
+  if (contactStageEl) {
+    new IntersectionObserver(([e]) => { window._contactVisible = e.isIntersecting; }, { threshold: 0 })
+      .observe(contactStageEl);
+  }
+})();
+
+
+// ── 7. INFINITE LOOP — use Lenis for clean jump ──────
 (function () {
   let looping = false;
   const sentinel = document.getElementById('loop-sentinel');
