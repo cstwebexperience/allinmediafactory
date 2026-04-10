@@ -495,6 +495,26 @@
       text-shadow: 0 0 18px rgba(180, 130, 255, 0.08);
     }
 
+    /* Longer descriptive paragraph — smaller than the title, body-text
+       legibility. Used where a panel needs a real pitch, not just a
+       2-word punchline. Publication names wrapped in <strong> for
+       emphasis without gradient tricks. */
+    .panel-description {
+      font-family: 'DM Sans', 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: clamp(14px, 0.95vw + 6px, 18px);
+      line-height: 1.6;
+      letter-spacing: 0.005em;
+      color: rgba(255, 255, 255, 0.72);
+      text-align: center;
+      max-width: 580px;
+      margin: clamp(16px, 2vh, 26px) auto 0;
+    }
+    .panel-description strong {
+      color: rgba(255, 255, 255, 0.94);
+      font-weight: 600;
+    }
+
     /* Results section — dark moody screenshot grid (compact) */
     .results-section {
       width: 100%;
@@ -1770,12 +1790,12 @@
       </div>
     </div>
 
-    <!-- ── 04 SEO + Google ── -->
+    <!-- ── 04 SEO & Vizibilitate ── -->
     <div class="service-pane" id="pane-left-mouth">
       <div class="pane-content">
-        <span class="content-stagger pane-eyebrow panel-label">04 — SEO + GOOGLE</span>
-        <h2 class="content-stagger pane-h2 panel-title">Vizibilitate<br>organică maximă.</h2>
-        <h3 class="content-stagger panel-subtitle">Trafic. Real.</h3>
+        <span class="content-stagger pane-eyebrow panel-label">04 — SEO &amp; VIZIBILITATE</span>
+        <h2 class="content-stagger pane-h2 panel-title">Apari acolo unde<br>contează.</h2>
+        <p class="content-stagger panel-description">Avem acces la advertoriale în <strong>Forbes</strong>, <strong>ProTV</strong>, <strong>Antena 3</strong>, <strong>Antena Stars</strong> și zeci de alte publicații premium. Un singur articol în locul potrivit face mai mult decât 6 luni de postări.</p>
       </div>
     </div>
 
