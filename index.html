@@ -1058,6 +1058,7 @@
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 0;
+      clip-path: circle(100% at 50% 50%);
     }
     #loader-logo {
       font-family: 'DM Sans', sans-serif;
@@ -1065,8 +1066,16 @@
       font-weight: 300;
       letter-spacing: 0.6em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.85);
       margin-bottom: 36px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.95), rgba(180,140,255,0.9), rgba(255,255,255,0.95), rgba(255,255,255,0.35));
+      background-size: 300% 100%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: loaderShimmer 2.8s ease-in-out infinite;
+    }
+    @keyframes loaderShimmer {
+      0%   { background-position: 100% 50%; }
+      100% { background-position: -100% 50%; }
     }
     #loader-bar-track {
       width: clamp(180px, 28vw, 360px);
@@ -1086,40 +1095,46 @@
       margin-top: 14px;
     }
 
-    /* ── Custom Cursor ───────────────────────────────────── */
-    * { cursor: none !important; }
-    #cursor-dot {
-      position: fixed; z-index: 9998;
-      top: 0; left: 0;
-      width: 6px; height: 6px;
-      background: rgba(255,255,255,0.95);
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s, height 0.2s, background 0.2s;
-      will-change: transform;
+    /* ── Custom Cursor (hover-capable devices only) ────── */
+    @media (hover: hover) and (pointer: fine) {
+      * { cursor: none !important; }
+      #cursor-dot {
+        position: fixed; z-index: 9998;
+        top: 0; left: 0;
+        width: 6px; height: 6px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        transition: width 0.2s, height 0.2s, background 0.2s;
+        will-change: transform;
+      }
+      #cursor-ring {
+        position: fixed; z-index: 9997;
+        top: 0; left: 0;
+        width: 28px; height: 28px;
+        border: 1px solid rgba(255,255,255,0.35);
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: difference;
+        will-change: transform;
+        transition: width 0.25s cubic-bezier(0.16,1,0.3,1),
+                    height 0.25s cubic-bezier(0.16,1,0.3,1),
+                    border-color 0.25s;
+      }
+      body.cur-hover #cursor-dot {
+        width: 4px; height: 4px;
+        background: rgba(255,255,255,0.5);
+      }
+      body.cur-hover #cursor-ring {
+        width: 52px; height: 52px;
+        border-color: rgba(255,255,255,0.7);
+      }
     }
-    #cursor-ring {
-      position: fixed; z-index: 9997;
-      top: 0; left: 0;
-      width: 28px; height: 28px;
-      border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      mix-blend-mode: difference;
-      will-change: transform;
-      transition: width 0.25s cubic-bezier(0.16,1,0.3,1),
-                  height 0.25s cubic-bezier(0.16,1,0.3,1),
-                  border-color 0.25s;
-    }
-    body.cur-hover #cursor-dot {
-      width: 4px; height: 4px;
-      background: rgba(255,255,255,0.5);
-    }
-    body.cur-hover #cursor-ring {
-      width: 52px; height: 52px;
-      border-color: rgba(255,255,255,0.7);
+    /* Hide cursor elements on touch devices */
+    @media (hover: none) {
+      #cursor-dot, #cursor-ring { display: none !important; }
     }
 
     /* ── Section transition overlays ────────────────────── */
@@ -1137,6 +1152,30 @@
     /* ── GSAP text reveal helpers ────────────────────────── */
     .char { display: inline-block; overflow: hidden; }
     .split-hidden .word, .split-hidden .char { opacity: 0; transform: translateY(60%); }
+
+    /* ── Form input animated focus ring ─────────────────── */
+    .contact-form-box input:focus,
+    .contact-form-box select:focus,
+    .contact-form-box textarea:focus {
+      border-color: rgba(140,100,240,0.5);
+      box-shadow: 0 0 0 3px rgba(120,70,220,0.08),
+                  0 0 28px rgba(120,70,220,0.15),
+                  inset 0 0 12px rgba(120,70,220,0.04);
+    }
+
+    /* ── prefers-reduced-motion ─────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      #cursor-dot, #cursor-ring { display: none !important; }
+      .section-fade-top, .section-fade-bottom { display: none; }
+      #loader { display: none !important; }
+      .hero-title-block { opacity: 1 !important; }
+    }
   </style>
 
   <!-- Lenis Smooth Scroll -->
@@ -1772,7 +1811,6 @@ function snoise(x, y, z) {
 }
 
 const titleEl     = document.getElementById('hero-title-block');
-const scrollHint  = document.getElementById('scroll-hint');
 const heroEl      = document.getElementById('hero');
 
 window.addEventListener('resize', () => {
@@ -1804,8 +1842,6 @@ function tick() {
     titleEl.style.opacity   = 1 - easeInOut(mapRange(scrollP, 0.03, 0.20));
     titleEl.style.transform = `translateY(${scrollP * -40}px)`;
   }
-  if (scrollHint) scrollHint.style.opacity = 1 - mapRange(scrollP, 0, 0.05);
-
   camera.position.z = 5 - pZoom * 1.0;
   camera.position.y = 0.3 + pRise * 0.5;
   sphere.position.y = 0.4 + pRise * 6;
@@ -2095,9 +2131,10 @@ tick2();
    ═══════════════════════════════════════════════════ */
 
 // ── 1. LENIS SMOOTH SCROLL ──────────────────────────
+const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const lenis = new Lenis({
   duration: 1.2,
-  smoothWheel: true,
+  smoothWheel: !prefersReduced,
   orientation: 'vertical',
   gestureOrientation: 'vertical',
 });
@@ -2139,9 +2176,11 @@ gsap.ticker.lagSmoothing(0);
         pctEl.textContent = v + '%';
       },
       onComplete: () => {
+        // Dramatic mask-expand reveal
         gsap.to(loader, {
-          opacity: 0, duration: 0.7, delay: 0.25,
-          ease: 'power2.inOut',
+          clipPath: 'circle(0% at 50% 50%)',
+          duration: 1.0, delay: 0.2,
+          ease: 'power3.inOut',
           onComplete: () => {
             loader.style.display = 'none';
             revealPage();
@@ -2184,8 +2223,9 @@ gsap.ticker.lagSmoothing(0);
 })();
 
 
-// ── 3. CUSTOM CURSOR ────────────────────────────────
+// ── 3. CUSTOM CURSOR (skip on touch) ────────────────
 (function () {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   const dot  = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
   if (!dot || !ring) return;
@@ -2253,12 +2293,9 @@ gsap.ticker.lagSmoothing(0);
     y: -25, ease: 'none',
   });
 
-  // ── Fragments section scale reveal (already CSS, add GSAP fallback)
-  gsap.from('#servicii', {
-    scrollTrigger: { trigger: '#servicii', start: 'top 80%', once: true },
-    opacity: 0, scale: 0.94, duration: 1.1,
-    ease: 'power3.out', clearProps: 'all',
-  });
+  // Fragments section reveal is handled by CSS .revealed class
+  // GSAP just ensures ScrollTrigger refresh for parallax accuracy
+  ScrollTrigger.refresh();
 
   // ── Contact section entrance — from bottom
   gsap.from('#contact-stage', {
@@ -2333,6 +2370,24 @@ gsap.ticker.lagSmoothing(0);
       line.style.transformOrigin = 'right';
       line.style.transform = 'scaleX(0)';
       setTimeout(() => { line.style.transformOrigin = 'left'; }, 350);
+    });
+  });
+
+  // Form input focus glow — animated via GSAP
+  document.querySelectorAll('.contact-form-box input, .contact-form-box select, .contact-form-box textarea').forEach(inp => {
+    inp.addEventListener('focus', () => {
+      gsap.to(inp, {
+        boxShadow: '0 0 0 3px rgba(120,70,220,0.12), 0 0 32px rgba(120,70,220,0.2), inset 0 0 14px rgba(120,70,220,0.05)',
+        borderColor: 'rgba(140,100,240,0.55)',
+        duration: 0.4, ease: 'power2.out',
+      });
+    });
+    inp.addEventListener('blur', () => {
+      gsap.to(inp, {
+        boxShadow: '0 0 0 0px transparent, 0 0 0px transparent, inset 0 0 0px transparent',
+        borderColor: 'rgba(160,140,220,0.1)',
+        duration: 0.35, ease: 'power2.out',
+      });
     });
   });
 
