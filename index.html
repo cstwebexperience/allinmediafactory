@@ -1658,21 +1658,39 @@
       let currentPane = null;
       let currentFragEl = null;
       let isOpen = false;
-      let closeTimer = null;
+      // Single source of truth for any pending close steps so a fast
+      // re-click can cancel ALL of them in one go.
+      const pendingTimers = new Set();
+      function later(fn, ms) {
+        const id = setTimeout(() => { pendingTimers.delete(id); fn(); }, ms);
+        pendingTimers.add(id);
+        return id;
+      }
+      function cancelPending() {
+        pendingTimers.forEach(id => clearTimeout(id));
+        pendingTimers.clear();
+      }
+
+      // Hard reset every piece of state so the next openService starts clean.
+      function hardReset() {
+        cancelPending();
+        document.querySelectorAll('.mask-fragment.flying, .mask-fragment.active')
+          .forEach(el => el.classList.remove('flying', 'active'));
+        document.querySelectorAll('.service-pane.active')
+          .forEach(el => el.classList.remove('active'));
+        if (canvas) canvas.classList.remove('has-active');
+        ghost.className = '';
+        currentFragEl = null;
+        currentPane = null;
+      }
 
       function openService(fragId) {
         const cfg = FRAGMENT_MAP[fragId];
         if (!cfg) return;
 
-        if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
-
-        // Reset previous flying fragment immediately
-        if (currentFragEl) {
-          currentFragEl.classList.remove('flying', 'active');
-        }
-        ghost.className = '';
-        if (currentPane) currentPane.classList.remove('active');
-        if (canvas) canvas.classList.remove('has-active');
+        // Always start from a clean slate so rapid re-clicks never leave
+        // ghosts/panes/flying fragments hanging around.
+        hardReset();
 
         // Fly the clicked fragment toward its corner
         currentFragEl = document.getElementById(fragId);
@@ -1680,42 +1698,35 @@
           currentFragEl.classList.add('flying', 'active');
           if (canvas) canvas.classList.add('has-active');
         }
-
-        // Apply ghost position class
         ghost.classList.add(cfg.ghost);
 
-        // Lock scroll
+        // Lock page scroll
         document.body.style.overflow = 'hidden';
         window._lenis?.stop();
 
-        // Open overlay simultaneously with fragment flying out
+        // Open overlay on the next frame so the flying transform commits
         requestAnimationFrame(() => {
           overlay.classList.add('open');
           isOpen = true;
           currentPane = document.getElementById(cfg.pane);
-          // Stagger content in after ghost appears
           requestAnimationFrame(() => requestAnimationFrame(() => {
-            if (currentPane) {
-              currentPane.classList.add('active');
-              // SplitType char reveal on pane h2
-              const h2 = currentPane.querySelector('.pane-h2');
-              if (h2 && window.SplitType) {
-                if (h2._st) { h2._st.revert(); delete h2._st; }
-                const st = new SplitType(h2, { types: 'chars' });
-                h2._st = st;
-                gsap.from(st.chars, {
-                  y: 45, opacity: 0, rotateX: -40,
-                  duration: 0.7, stagger: 0.022,
-                  ease: 'power3.out', delay: 0.38,
-                  transformPerspective: 600,
-                });
-              }
-              // Eyebrow SplitType
-              const ey = currentPane.querySelector('.pane-eyebrow');
-              if (ey && window.SplitType && !ey._st) {
-                const stE = new SplitType(ey, { types: 'chars' });
-                ey._st = stE;
-              }
+            if (!currentPane) return;
+            currentPane.classList.add('active');
+            const h2 = currentPane.querySelector('.pane-h2');
+            if (h2 && window.SplitType) {
+              if (h2._st) { h2._st.revert(); delete h2._st; }
+              const st = new SplitType(h2, { types: 'chars' });
+              h2._st = st;
+              gsap.from(st.chars, {
+                y: 45, opacity: 0, rotateX: -40,
+                duration: 0.7, stagger: 0.022,
+                ease: 'power3.out', delay: 0.38,
+                transformPerspective: 600,
+              });
+            }
+            const ey = currentPane.querySelector('.pane-eyebrow');
+            if (ey && window.SplitType && !ey._st) {
+              ey._st = new SplitType(ey, { types: 'chars' });
             }
           }));
         });
@@ -1723,26 +1734,20 @@
 
       function closeService() {
         if (!isOpen) return;
-        // Fade pane content out
+        cancelPending();
         if (currentPane) currentPane.classList.remove('active');
 
-        closeTimer = setTimeout(() => {
+        // Step 1 (160ms): hide overlay + return fragment + restore scroll
+        later(() => {
           overlay.classList.remove('open');
           document.body.style.overflow = '';
           window._lenis?.start();
-
-          // Return fragment back to mask
           if (currentFragEl) {
             currentFragEl.classList.remove('flying', 'active');
             if (canvas) canvas.classList.remove('has-active');
-            currentFragEl = null;
           }
-
-          closeTimer = setTimeout(() => {
-            ghost.className = '';
-            currentPane = null;
-            isOpen = false;
-          }, 550);
+          // Step 2 (550ms): final state cleanup once the overlay finishes fading
+          later(() => { hardReset(); isOpen = false; }, 550);
         }, 160);
       }
 
