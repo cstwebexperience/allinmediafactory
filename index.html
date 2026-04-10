@@ -136,48 +136,88 @@
     }
 
     /* ── Service Overlay ────────────────────────────────── */
-    /* Reveal: clip-path: circle() expands from the clicked fragment's
-       on-screen position out to full coverage. Origin is set via the
-       --ox/--oy custom properties at click time. */
     #service-overlay {
       position: fixed;
       inset: 0;
       z-index: 200;
       background: #050507;
+      opacity: 0;
       pointer-events: none;
-      --ox: 50%;
-      --oy: 50%;
-      clip-path: circle(0% at var(--ox) var(--oy));
-      opacity: 1;
-      will-change: clip-path;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     #service-overlay.open {
+      opacity: 1;
       pointer-events: all;
-      clip-path: circle(150% at 50% 50%);
-      transition: clip-path 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    #service-overlay.closing {
-      pointer-events: none;
-      clip-path: circle(0% at var(--ox) var(--oy));
-      transition: clip-path 0.55s cubic-bezier(0.65, 0, 0.35, 1);
     }
 
-    /* Fragment fly-to-center pre-overlay state */
-    .mask-fragment.fly-center {
-      animation: none !important;
-      z-index: 60 !important;
-      pointer-events: none;
-      transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1),
-                  filter 0.4s ease;
-      transform: translate(var(--cdx, 0px), var(--cdy, 0px)) scale(1.4) !important;
-      filter: drop-shadow(0 0 30px rgba(180,140,255,0.85))
-              drop-shadow(0 0 80px rgba(140,90,255,0.45)) !important;
+    /* Blurred ghost fragment anchored to its screen corner */
+    #overlay-ghost {
+      position: absolute;
+      width: 120vw;
+      aspect-ratio: 16 / 9;
+      background-image: url('masca-despicata.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      filter: blur(10px) brightness(0.48);
+      opacity: 0;
+      transform: scale(0.12);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .fragments-canvas.has-active .mask-fragment:not(.fly-center) {
-      transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
-      filter: blur(8px) brightness(0.35) !important;
-      opacity: 0 !important;
-      transform: scale(0.92) !important;
+    #service-overlay.open #overlay-ghost {
+      opacity: 0.82;
+      transform: scale(1);
+    }
+
+    #overlay-ghost.ghost-left-eye {
+      top: -5%; left: -5%; right: auto; bottom: auto;
+      transform-origin: 36% 28%;
+      clip-path: polygon(49.4% 24.6%, 48.6% 15.2%, 47.6% 7.4%, 45.1% 1.5%,
+        41.1% 0.3%, 37.6% 0.5%, 32.0% 3.3%,
+        26.7% 7.6%, 24.6% 14.4%, 23.8% 22.2%, 23.8% 29.5%,
+        24.3% 36.7%, 25.8% 45.3%, 27.3% 50.8%, 30.1% 53.4%,
+        33.6% 51.2%, 37.3% 50.2%, 41.1% 46.3%, 44.6% 40.7%,
+        46.7% 34.3%, 47.7% 28.7%);
+    }
+    #overlay-ghost.ghost-right-eye {
+      top: -5%; right: -5%; left: auto; bottom: auto;
+      transform-origin: 67% 25%;
+      clip-path: polygon(65.0% 0.9%, 62.2% 4.0%, 59.9% 9.6%,
+        58.4% 14.0%, 57.1% 20.0%, 56.2% 26.5%,
+        57.2% 32.7%, 58.7% 38.3%, 60.3% 43.1%,
+        63.1% 48.2%, 66.4% 50.8%, 69.6% 51.4%,
+        73.0% 50.6%, 74.1% 48.0%, 76.3% 40.5%,
+        76.6% 33.7%, 77.4% 26.7%, 78.9% 23.4%,
+        79.0% 16.0%, 77.0% 8.0%, 73.0% 3.0%, 69.0% 1.0%);
+    }
+    #overlay-ghost.ghost-nose {
+      top: -15%; left: -10%; right: auto; bottom: auto;
+      transform-origin: 52% 50%;
+      clip-path: polygon(51.4% 30.5%, 50.0% 32.3%, 47.4% 37.5%, 44.0% 45.1%,
+        42.0% 51.4%, 43.8% 56.2%, 45.4% 63.2%, 48.0% 70.5%,
+        51.9% 69.3%, 56.8% 68.5%, 61.3% 63.4%, 61.1% 56.8%,
+        60.2% 51.4%, 59.8% 48.4%, 58.7% 44.7%, 56.8% 40.7%,
+        55.9% 36.7%, 53.7% 31.5%);
+    }
+    #overlay-ghost.ghost-left-mouth {
+      bottom: -5%; left: -5%; right: auto; top: auto;
+      transform-origin: 38% 77%;
+      clip-path: polygon(24.9% 60.8%, 25.6% 57.2%, 28.8% 57.8%, 31.3% 56.6%,
+        34.2% 55.8%, 36.7% 57.4%, 38.9% 59.0%, 40.7% 61.8%,
+        42.7% 63.4%, 48.4% 75.7%, 49.7% 80.7%, 50.4% 87.1%,
+        50.8% 95.2%, 44.1% 97.2%, 39.8% 95.8%, 35.8% 91.6%,
+        32.9% 85.9%, 28.7% 82.9%, 26.4% 78.3%, 26.3% 71.3%,
+        25.1% 66.4%);
+    }
+    #overlay-ghost.ghost-right-mouth {
+      bottom: -5%; right: -5%; left: auto; top: auto;
+      transform-origin: 67% 76%;
+      clip-path: polygon(64.0% 62.6%, 61.6% 67.6%, 60.1% 70.9%, 58.6% 74.5%,
+        56.9% 80.3%, 55.9% 85.3%, 54.9% 90.8%, 55.1% 96.0%,
+        57.6% 97.8%, 61.6% 98.4%, 65.4% 94.8%, 69.6% 88.5%,
+        72.9% 80.9%, 75.8% 74.5%, 77.3% 69.5%, 78.2% 65.0%,
+        79.1% 59.2%, 79.3% 52.2%, 75.6% 49.8%, 74.0% 53.6%,
+        71.4% 54.6%, 68.1% 52.6%, 66.4% 54.2%, 65.1% 58.6%);
     }
 
     /* Close button */
@@ -535,6 +575,19 @@
                   opacity .5s ease;
       will-change: transform, filter, opacity;
     }
+
+    /* Fragment flies toward its corner when clicked */
+    .mask-fragment.flying {
+      animation: none !important;
+      z-index: 50 !important;
+      pointer-events: none;
+      cursor: default;
+    }
+    #frag-left-eye.flying   { transform: translate(-60vw, -58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-right-eye.flying  { transform: translate( 60vw, -58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-nose.flying       { transform: translate(   0,  -62vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-left-mouth.flying { transform: translate(-60vw,  58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-right-mouth.flying{ transform: translate( 60vw,  58vh) scale(3.5) !important; opacity: 0 !important; }
 
     /* White edge glow on hover */
     .mask-fragment:hover {
@@ -1298,6 +1351,9 @@
        ═══════════════════════════════════════════════════ -->
   <div id="service-overlay" aria-modal="true" role="dialog" aria-label="Detalii serviciu">
 
+    <!-- Blurred ghost fragment (position class set by JS) -->
+    <div id="overlay-ghost"></div>
+
     <!-- Close -->
     <button id="overlay-close" aria-label="Închide">
       <span class="close-x">×</span>
@@ -1563,29 +1619,26 @@
 
 
     // ── Mask Fragments → Full-screen Overlay ─────────────
-    // Two-stage transition:
-    //  1. Clicked fragment flies to viewport center + scales to 1.4 (0.4s)
-    //     while the other fragments blur + fade out.
-    //  2. Overlay reveals via clip-path: circle() expanding from the
-    //     fragment's on-screen position out to 150% (0.7s).
-    //  Close runs both in reverse.
     (function () {
       const overlay  = document.getElementById('service-overlay');
+      const ghost    = document.getElementById('overlay-ghost');
       const closeBtn = document.getElementById('overlay-close');
       const fragments = document.querySelectorAll('.mask-fragment');
 
       const FRAGMENT_MAP = {
-        'frag-left-eye':    { pane: 'pane-left-eye',    ann: 'ann-left-eye' },
-        'frag-right-eye':   { pane: 'pane-right-eye',   ann: 'ann-right-eye' },
-        'frag-nose':        { pane: 'pane-nose',        ann: 'ann-nose' },
-        'frag-left-mouth':  { pane: 'pane-left-mouth',  ann: 'ann-left-mouth' },
-        'frag-right-mouth': { pane: 'pane-right-mouth', ann: 'ann-right-mouth' },
+        'frag-left-eye':    { ghost: 'ghost-left-eye',   pane: 'pane-left-eye',    ann: 'ann-left-eye' },
+        'frag-right-eye':   { ghost: 'ghost-right-eye',  pane: 'pane-right-eye',   ann: 'ann-right-eye' },
+        'frag-nose':        { ghost: 'ghost-nose',        pane: 'pane-nose',        ann: 'ann-nose' },
+        'frag-left-mouth':  { ghost: 'ghost-left-mouth',  pane: 'pane-left-mouth',  ann: 'ann-left-mouth' },
+        'frag-right-mouth': { ghost: 'ghost-right-mouth', pane: 'pane-right-mouth', ann: 'ann-right-mouth' },
       };
 
       const canvas = document.getElementById('fragments-canvas');
       let currentPane = null;
       let currentFragEl = null;
       let isOpen = false;
+      // Single source of truth for any pending close steps so a fast
+      // re-click can cancel ALL of them in one go.
       const pendingTimers = new Set();
       function later(fn, ms) {
         const id = setTimeout(() => { pendingTimers.delete(id); fn(); }, ms);
@@ -1597,73 +1650,45 @@
         pendingTimers.clear();
       }
 
+      // Hard reset every piece of state so the next openService starts clean.
       function hardReset() {
         cancelPending();
-        document.querySelectorAll('.mask-fragment.fly-center, .mask-fragment.active')
-          .forEach(el => {
-            el.classList.remove('fly-center', 'active');
-            el.style.removeProperty('--cdx');
-            el.style.removeProperty('--cdy');
-          });
+        document.querySelectorAll('.mask-fragment.flying, .mask-fragment.active')
+          .forEach(el => el.classList.remove('flying', 'active'));
         document.querySelectorAll('.service-pane.active')
           .forEach(el => el.classList.remove('active'));
         if (canvas) canvas.classList.remove('has-active');
-        overlay.classList.remove('open', 'closing');
+        ghost.className = '';
         currentFragEl = null;
         currentPane = null;
-      }
-
-      // Compute the clicked fragment's bounding rect center in viewport
-      // coords. Used both as the fly-to-center delta AND as the origin
-      // (--ox/--oy) of the overlay's circular clip-path reveal.
-      function fragmentGeometry(fragEl) {
-        const r = fragEl.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        return {
-          cx, cy,
-          dx: vw / 2 - cx,        // px to viewport center
-          dy: vh / 2 - cy,
-          oxPct: (cx / vw) * 100, // % for clip-path origin
-          oyPct: (cy / vh) * 100,
-        };
       }
 
       function openService(fragId) {
         const cfg = FRAGMENT_MAP[fragId];
         if (!cfg) return;
 
+        // Always start from a clean slate so rapid re-clicks never leave
+        // ghosts/panes/flying fragments hanging around.
         hardReset();
 
+        // Fly the clicked fragment toward its corner
         currentFragEl = document.getElementById(fragId);
-        if (!currentFragEl) return;
+        if (currentFragEl) {
+          currentFragEl.classList.add('flying', 'active');
+          if (canvas) canvas.classList.add('has-active');
+        }
+        ghost.classList.add(cfg.ghost);
 
-        const g = fragmentGeometry(currentFragEl);
-
-        // Stage 1: fragment flies to center, others blur out
-        currentFragEl.style.setProperty('--cdx', g.dx + 'px');
-        currentFragEl.style.setProperty('--cdy', g.dy + 'px');
-        currentFragEl.classList.add('fly-center', 'active');
-        if (canvas) canvas.classList.add('has-active');
-
-        // Lock page scroll right away
+        // Lock page scroll
         document.body.style.overflow = 'hidden';
         window._lenis?.stop();
 
-        // Stage 2: ~400ms later, set the clip-path origin and reveal overlay
-        later(() => {
-          overlay.style.setProperty('--ox', g.oxPct + '%');
-          overlay.style.setProperty('--oy', g.oyPct + '%');
-          // Force reflow so the circle(0%) state is committed before .open
-          void overlay.offsetWidth;
+        // Open overlay on the next frame so the flying transform commits
+        requestAnimationFrame(() => {
           overlay.classList.add('open');
           isOpen = true;
           currentPane = document.getElementById(cfg.pane);
-
-          // Stage 3: ~700ms later, fade in pane content + char-reveal h2
-          later(() => {
+          requestAnimationFrame(() => requestAnimationFrame(() => {
             if (!currentPane) return;
             currentPane.classList.add('active');
             const h2 = currentPane.querySelector('.pane-h2');
@@ -1674,7 +1699,7 @@
               gsap.from(st.chars, {
                 y: 45, opacity: 0, rotateX: -40,
                 duration: 0.7, stagger: 0.022,
-                ease: 'power3.out',
+                ease: 'power3.out', delay: 0.38,
                 transformPerspective: 600,
               });
             }
@@ -1682,8 +1707,8 @@
             if (ey && window.SplitType && !ey._st) {
               ey._st = new SplitType(ey, { types: 'chars' });
             }
-          }, 350);
-        }, 400);
+          }));
+        });
       }
 
       function closeService() {
@@ -1691,30 +1716,18 @@
         cancelPending();
         if (currentPane) currentPane.classList.remove('active');
 
-        // Stage 1: collapse the overlay clip-path back to its origin
+        // Step 1 (160ms): hide overlay + return fragment + restore scroll
         later(() => {
           overlay.classList.remove('open');
-          overlay.classList.add('closing');
-
-          // Stage 2 (~550ms): release the fragment, restore scroll
-          later(() => {
-            window._lenis?.start();
-            document.body.style.overflow = '';
-            if (currentFragEl) {
-              currentFragEl.classList.remove('fly-center', 'active');
-              currentFragEl.style.removeProperty('--cdx');
-              currentFragEl.style.removeProperty('--cdy');
-            }
+          document.body.style.overflow = '';
+          window._lenis?.start();
+          if (currentFragEl) {
+            currentFragEl.classList.remove('flying', 'active');
             if (canvas) canvas.classList.remove('has-active');
-
-            // Stage 3 (~450ms): final cleanup once the fragment slid back
-            later(() => {
-              overlay.classList.remove('closing');
-              hardReset();
-              isOpen = false;
-            }, 450);
-          }, 550);
-        }, 180);
+          }
+          // Step 2 (550ms): final state cleanup once the overlay finishes fading
+          later(() => { hardReset(); isOpen = false; }, 550);
+        }, 160);
       }
 
       // ── Annotation highlight on fragment hover ───────────
