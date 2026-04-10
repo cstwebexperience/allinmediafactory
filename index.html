@@ -499,21 +499,30 @@
     .nav-link:hover::after { width: 100%; }
     .nav-link:hover { color: #c4b5fd; }
 
-    /* Servicii eyebrow (was Tailwind) */
+    /* Servicii title — sits above the mask, hidden until .revealed */
     .servicii-eyebrow {
       position: absolute;
       top: 3rem;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -10px);
       font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 500;
-      letter-spacing: 0.35em;
+      letter-spacing: 0.55em;
       text-transform: uppercase;
-      color: rgba(167, 139, 250, 0.5);
+      color: rgba(220, 200, 255, 0.85);
       z-index: 20;
       pointer-events: none;
       margin: 0;
+      opacity: 0;
+      text-shadow: 0 0 12px rgba(167, 139, 250, 0.4);
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .fragments-section.revealed .servicii-eyebrow {
+      opacity: 1;
+      transform: translate(-50%, 0);
+      transition-delay: 0.05s;
     }
 
     /* ── Mask Fragments — sticky overlay on top of #stage ─────── */
@@ -1005,7 +1014,7 @@
     <section id="servicii" class="fragments-section">
 
       <!-- Eyebrow -->
-      <p class="servicii-eyebrow">Alege un serviciu</p>
+      <p class="servicii-eyebrow">SERVICII</p>
 
       <div class="fragments-canvas" id="fragments-canvas">
 
@@ -2243,19 +2252,11 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 
 // ── 4. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
 (function () {
-  // ── Eyebrow text in fragments section — char reveal
-  const eyebrow = document.querySelector('#servicii > p');
-  if (eyebrow && window.SplitType) {
-    const split = new SplitType(eyebrow, { types: 'chars' });
-    gsap.from(split.chars, {
-      scrollTrigger: { trigger: eyebrow, start: 'top 88%', once: true },
-      y: 22, opacity: 0, duration: 0.55,
-      stagger: 0.028, ease: 'power3.out',
-    });
-  }
+  // (The eyebrow text "SERVICII" is now revealed via the .revealed
+  //  class on #servicii — same trigger as the annotation animations.
+  //  The previous SplitType char-reveal here was firing on its own
+  //  ScrollTrigger 'top 88%' which leaked the first char "A" early.)
 
-  // (parallax + scale-down/blur on the fragments section removed —
-  //  the mask must stay fully bright and centred at all times.)
   ScrollTrigger.refresh();
 
   // ── Contact labels fade in (lightweight, no scale/blur on the stage)
