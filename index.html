@@ -482,12 +482,17 @@
       transition: opacity .3s ease, filter .3s ease;
     }
 
-    /* Full-screen canvas so fragments line up with the video frame */
+    /* Full-screen canvas so fragments line up with the video frame.
+       Opacity is driven by JS during the scrub crossfade so the PNGs
+       can fade in WHILE the canvas underneath is still painting the
+       last frame — zero visual jump between video mask and PNG mask. */
     .fragments-canvas {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
+      opacity: 0;
+      will-change: opacity;
     }
 
     /* Each fragment is full-screen + uses its own transparent PNG.
@@ -500,12 +505,9 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      cursor: pointer;
-      opacity: 0;
       pointer-events: none;
-      transition: filter .4s cubic-bezier(.4, 0, .2, 1),
-                  opacity .4s ease;
-      will-change: filter, opacity;
+      transition: filter .4s cubic-bezier(.4, 0, .2, 1);
+      will-change: filter;
     }
     .mask-fragment[data-frag="ochi-stang"]   { background-image: url('frag-ochi-stang.png'); }
     .mask-fragment[data-frag="ochi-drept"]   { background-image: url('frag-ochi-drept.png'); }
@@ -513,12 +515,12 @@
     .mask-fragment[data-frag="gura-stanga"]  { background-image: url('frag-gura-stanga.png'); }
     .mask-fragment[data-frag="gura-dreapta"] { background-image: url('frag-gura-dreapta.png'); }
 
-    /* Revealed state — set by scroll-scrub when last frame is reached */
+    /* Revealed: only after stage canvas has fully faded out, so
+       fragments are the sole visual layer + clicks are enabled. */
     .fragments-section.revealed {
       pointer-events: all;
     }
     .fragments-section.revealed .mask-fragment {
-      opacity: 1;
       pointer-events: all;
     }
 
@@ -541,7 +543,10 @@
       z-index: 10;
     }
 
-    /* Annotation lines (biology/HUD style) */
+    /* ── Annotation lines (biology/HUD style) ─────────────
+       Hidden until #servicii.revealed, then animated in with a
+       stroke-dasharray draw-on effect + violet glow + 120ms stagger
+       between the 5 groups. */
     .ann-svg {
       position: absolute;
       inset: 0;
@@ -552,11 +557,62 @@
       overflow: visible;
     }
     .ann-group {
-      opacity: 0.32;
-      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .ann-group.lit {
+    .ann-line {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      transition: stroke-dashoffset 0.95s cubic-bezier(0.65, 0, 0.35, 1);
+      filter: drop-shadow(0 0 2px rgba(167, 139, 250, 0.55))
+              drop-shadow(0 0 6px rgba(167, 139, 250, 0.25));
+    }
+    .ann-num, .ann-lbl {
+      opacity: 0;
+      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Reveal — driven by #servicii.revealed (set by scroll-scrub at 80%) */
+    .fragments-section.revealed .ann-group {
+      opacity: 0.55;
+    }
+    .fragments-section.revealed .ann-line {
+      stroke-dashoffset: 0;
+    }
+    .fragments-section.revealed .ann-num,
+    .fragments-section.revealed .ann-lbl {
       opacity: 1;
+    }
+    /* Stagger 120ms between the 5 annotation groups */
+    .fragments-section.revealed #ann-left-eye    { transition-delay: 0.10s; }
+    .fragments-section.revealed #ann-left-eye   .ann-line,
+    .fragments-section.revealed #ann-left-eye   .ann-num,
+    .fragments-section.revealed #ann-left-eye   .ann-lbl  { transition-delay: 0.10s; }
+
+    .fragments-section.revealed #ann-right-eye   { transition-delay: 0.22s; }
+    .fragments-section.revealed #ann-right-eye  .ann-line,
+    .fragments-section.revealed #ann-right-eye  .ann-num,
+    .fragments-section.revealed #ann-right-eye  .ann-lbl { transition-delay: 0.22s; }
+
+    .fragments-section.revealed #ann-nose        { transition-delay: 0.34s; }
+    .fragments-section.revealed #ann-nose       .ann-line,
+    .fragments-section.revealed #ann-nose       .ann-num,
+    .fragments-section.revealed #ann-nose       .ann-lbl { transition-delay: 0.34s; }
+
+    .fragments-section.revealed #ann-left-mouth  { transition-delay: 0.46s; }
+    .fragments-section.revealed #ann-left-mouth .ann-line,
+    .fragments-section.revealed #ann-left-mouth .ann-num,
+    .fragments-section.revealed #ann-left-mouth .ann-lbl { transition-delay: 0.46s; }
+
+    .fragments-section.revealed #ann-right-mouth { transition-delay: 0.58s; }
+    .fragments-section.revealed #ann-right-mouth .ann-line,
+    .fragments-section.revealed #ann-right-mouth .ann-num,
+    .fragments-section.revealed #ann-right-mouth .ann-lbl { transition-delay: 0.58s; }
+
+    /* Hover lit (set by JS via alpha hit-test) */
+    .ann-group.lit {
+      opacity: 1 !important;
+      transition-delay: 0s !important;
     }
 
     /* When one fragment is active, dim the rest */
@@ -1203,30 +1259,55 @@
       }
       idle(loadNextBatch);
 
-      // ScrollTrigger for frame scrubbing
+      // ScrollTrigger for frame scrubbing — staged crossfade so the
+      // PNG mask never overlaps the video mask:
+      //
+      //   0%  → 70%  : video frames scrub (mask splits)
+      //   70% → 76%  : fragments-canvas fades in OVER the last frame
+      //                (visually identical, so no jump)
+      //   76% → 80%  : stage canvas fades out (video mask disappears,
+      //                only PNG fragments remain)
+      //   80%+       : .revealed → annotation draw-on animation +
+      //                pointer-events on (clicks enabled)
       if (window.gsap && window.ScrollTrigger) {
-        // Frame scrub runs only over the FIRST 75% of the container so the
-        // mask reaches its final, fully-split state well before #servicii
-        // takes the foreground. The remaining 25% is dwell time on the
-        // fragments — user can hover/click before the next section.
-        const SCRUB_END = 0.75;
-        // Reveal the fragments (and enable hit testing) once the scrub is
-        // ~95% done so the PNGs line up exactly with the last frame painted.
-        const REVEAL_AT = 0.72;
-        const servicii = document.getElementById('servicii');
+        const SCRUB_END           = 0.70;
+        const FRAGMENTS_FADE_IN   = 0.70;
+        const FRAGMENTS_FADE_OUT  = 0.76;
+        const STAGE_FADE_START    = 0.76;
+        const STAGE_FADE_END      = 0.80;
+        const REVEAL_AT           = 0.80;
 
-        const state = { f: 0 };
+        const servicii = document.getElementById('servicii');
+        const fragsCanvas = document.getElementById('fragments-canvas');
+
         ScrollTrigger.create({
           trigger: '#scroll-scrub-container',
           start: 'top top',
           end: 'bottom bottom',
           onUpdate: (self) => {
             const p = self.progress;
-            // Frame index — clamped to SCRUB_END so the last frame holds
+
+            // 1) Video frames
             const scrubP = Math.min(1, p / SCRUB_END);
             drawFrame(Math.round(scrubP * (TOTAL_FRAMES - 1)));
 
-            // Reveal fragments (sticky overlay) once last frame is painted
+            // 2) Fragments canvas fades in 70 → 76
+            if (p >= FRAGMENTS_FADE_IN) {
+              const fp = Math.min(1, (p - FRAGMENTS_FADE_IN) / (FRAGMENTS_FADE_OUT - FRAGMENTS_FADE_IN));
+              fragsCanvas.style.opacity = fp;
+            } else {
+              fragsCanvas.style.opacity = 0;
+            }
+
+            // 3) Stage canvas fades out 76 → 80
+            if (p >= STAGE_FADE_START) {
+              const sp = Math.min(1, (p - STAGE_FADE_START) / (STAGE_FADE_END - STAGE_FADE_START));
+              stage.style.opacity = 1 - sp;
+            } else {
+              stage.style.opacity = 1;
+            }
+
+            // 4) Full reveal at 80%+ → annotation draw-on + clicks
             if (p >= REVEAL_AT) {
               servicii.classList.add('revealed');
             } else {
