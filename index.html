@@ -501,6 +501,117 @@
       .pane-content-vp { padding: 1rem; }
     }
 
+    /* ── Phone Zoom Overlay (pane 01 iPhone click) ───────── */
+    #phone-zoom-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(3, 3, 5, 0.92);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    #phone-zoom-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .zoom-phone {
+      transform: scale(0.4) translateY(40px);
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+      filter: drop-shadow(0 50px 120px rgba(0,0,0,0.85))
+              drop-shadow(0 0 80px rgba(180,130,255,0.18));
+    }
+    #phone-zoom-overlay.open .zoom-phone {
+      transform: scale(1) translateY(0);
+    }
+    .zoom-iphone-frame {
+      width: min(310px, 78vw) !important;
+      border-radius: 56px !important;
+      padding: 18px 12px 22px !important;
+    }
+    .zoom-iphone-frame::before {
+      width: 100px !important;
+      height: 28px !important;
+    }
+    .zoom-iphone-frame .iphone-screen {
+      border-radius: 44px;
+    }
+
+    /* Close button shared between zoom + lightbox */
+    .zoom-close, .lightbox-close {
+      position: absolute;
+      top: 1.8rem;
+      right: 2.2rem;
+      width: 46px;
+      height: 46px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50%;
+      color: rgba(255,255,255,0.65);
+      font-family: 'Inter', sans-serif;
+      font-size: 26px;
+      font-weight: 300;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      transition: all 0.3s ease;
+    }
+    .zoom-close:hover, .lightbox-close:hover {
+      color: #fff;
+      border-color: rgba(180,130,255,0.55);
+      background: rgba(180,130,255,0.12);
+      transform: rotate(90deg);
+    }
+
+    /* ── Image Lightbox (pane 01 result-card click) ──────── */
+    #image-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 305;
+      background: rgba(3, 3, 5, 0.95);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(2rem, 6vh, 4.5rem);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    #image-lightbox.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #image-lightbox img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 14px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7),
+                  0 0 80px rgba(180,130,255,0.15);
+      transform: scale(0.85);
+      opacity: 0;
+      transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1),
+                  opacity 0.45s ease;
+    }
+    #image-lightbox.open img {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* Make the iPhone mockups + result cards feel clickable */
+    .pane-content-vp .iphone-mockup { cursor: pointer; }
+    .pane-content-vp .result-card { cursor: zoom-in; }
+
     /* ── Panel 02: Performance Ads ───────────────────────── */
 
     /* Smaller descriptive subtitle (different from .panel-subtitle's
@@ -1439,6 +1550,26 @@
     </div>
   </div>
 
+  <!-- Phone zoom overlay — opened by clicking any iPhone mockup in pane 01 -->
+  <div id="phone-zoom-overlay" aria-hidden="true">
+    <button class="zoom-close" id="phoneZoomClose" aria-label="Închide">&times;</button>
+    <div class="zoom-phone">
+      <div class="iphone-frame zoom-iphone-frame">
+        <div class="iphone-screen">
+          <iframe id="zoom-iframe" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image lightbox — opened by clicking any result screenshot -->
+  <div id="image-lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Închide">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+  </div>
+
   <!-- Contact form overlay -->
   <div class="contact-form-overlay" id="contactFormOverlay">
     <div class="contact-form-box">
@@ -1829,6 +1960,78 @@
       }
       wireDragScroll(document.getElementById('iphone-carousel'));
       wireDragScroll(document.getElementById('metaScroll'));
+    })();
+
+
+    // ── Phone zoom + image lightbox (pane 01) ────────────
+    (function () {
+      // Phone zoom — clicking any iPhone mockup pops a giant version
+      // of itself into the centre of the screen + autoplays the video.
+      const phoneZoom  = document.getElementById('phone-zoom-overlay');
+      const zoomIframe = document.getElementById('zoom-iframe');
+      const zoomClose  = document.getElementById('phoneZoomClose');
+
+      function openPhoneZoom(srcAttr) {
+        if (!phoneZoom || !zoomIframe || !srcAttr) return;
+        // Force-enable autoplay so the giant phone starts playing
+        let src = srcAttr;
+        if (!/[?&]autoplay=/.test(src)) {
+          src += (src.includes('?') ? '&' : '?') + 'autoplay=1';
+        }
+        zoomIframe.src = src;
+        phoneZoom.classList.add('open');
+      }
+      function closePhoneZoom() {
+        if (!phoneZoom) return;
+        phoneZoom.classList.remove('open');
+        // Stop the video after the fade-out by clearing src
+        setTimeout(() => { if (zoomIframe) zoomIframe.src = ''; }, 450);
+      }
+      document.querySelectorAll('#pane-left-eye .iphone-mockup').forEach(mockup => {
+        mockup.addEventListener('click', e => {
+          e.stopPropagation();
+          const innerIframe = mockup.querySelector('iframe');
+          if (innerIframe) openPhoneZoom(innerIframe.src);
+        });
+      });
+      if (zoomClose) zoomClose.addEventListener('click', closePhoneZoom);
+      if (phoneZoom) phoneZoom.addEventListener('click', e => {
+        if (e.target === phoneZoom) closePhoneZoom();
+      });
+
+      // Image lightbox — clicking any result screenshot opens it full-screen
+      const lightbox    = document.getElementById('image-lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      const lightboxClose = document.getElementById('lightboxClose');
+
+      function openLightbox(src, alt) {
+        if (!lightbox || !lightboxImg) return;
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || '';
+        lightbox.classList.add('open');
+      }
+      function closeLightbox() {
+        if (!lightbox) return;
+        lightbox.classList.remove('open');
+      }
+      document.querySelectorAll('#pane-left-eye .result-card').forEach(card => {
+        card.addEventListener('click', e => {
+          e.stopPropagation();
+          const img = card.querySelector('img');
+          if (img) openLightbox(img.src, img.alt);
+        });
+      });
+      if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+      if (lightbox) lightbox.addEventListener('click', e => {
+        if (e.target === lightbox) closeLightbox();
+      });
+
+      // ESC closes lightbox first, then phone zoom
+      document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return;
+        if (lightbox && lightbox.classList.contains('open')) { closeLightbox(); return; }
+        if (phoneZoom && phoneZoom.classList.contains('open')) closePhoneZoom();
+      });
     })();
 
 
