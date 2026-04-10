@@ -612,20 +612,29 @@
     .pane-content-vp .iphone-mockup { cursor: pointer; }
     .pane-content-vp .result-card { cursor: zoom-in; }
 
-    /* CRITICAL: the YouTube iframes inside the carousel mockups must
-       NOT capture pointer events, otherwise clicks land inside the
-       iframe (on YouTube's player) and never bubble up to the
-       .iphone-mockup click handler that opens the zoom overlay.
-       The zoom iframe (#zoom-iframe) is NOT inside .pane-content-vp,
-       so it keeps full pointer events for native YouTube controls. */
-    .pane-content-vp .iphone-screen iframe {
-      pointer-events: none;
+    /* Bullet-proof click handling on the carousel iPhone mockups.
+       The .iphone-click-shield <button> sits on top of every mockup
+       and absorbs every click in the mockup area. The click handler
+       is wired to the shield directly — YouTube's iframe (which loves
+       to swallow clicks unevenly across its surface) can never block
+       the open-zoom action again. */
+    .pane-content-vp .iphone-mockup {
+      position: relative;
     }
-    .pane-content-vp .iphone-mockup,
-    .pane-content-vp .iphone-frame,
-    .pane-content-vp .iphone-screen {
-      pointer-events: auto;
+    .iphone-click-shield {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      z-index: 5;
+      border-radius: inherit;
     }
+    .iphone-click-shield:focus { outline: none; }
 
     /* ── Panel 02: Performance Ads ───────────────────────── */
 
@@ -1417,7 +1426,10 @@
         <h2 class="content-stagger pane-h2 panel-title">Editare care opreşte<br>thumb-ul.</h2>
         <h3 class="content-stagger panel-subtitle">Conţinut. Pur.</h3>
 
-        <!-- 3 Real YouTube Shorts in iPhone mockups (UI cropped) -->
+        <!-- 3 Real YouTube Shorts in iPhone mockups (UI cropped).
+             Each mockup carries an explicit .iphone-click-shield button
+             on top of the iframe — the shield is the real click target,
+             so YouTube's iframe can never swallow the event. -->
         <div class="content-stagger iphone-carousel" id="iphone-carousel">
           <div class="iphone-track">
             <div class="iphone-mockup" style="--rot:-5deg">
@@ -1431,6 +1443,7 @@
                     loading="lazy"></iframe>
                 </div>
               </div>
+              <button type="button" class="iphone-click-shield" aria-label="Joacă videoul în mare"></button>
             </div>
             <div class="iphone-mockup" style="--rot:0deg">
               <div class="iphone-frame">
@@ -1443,6 +1456,7 @@
                     loading="lazy"></iframe>
                 </div>
               </div>
+              <button type="button" class="iphone-click-shield" aria-label="Joacă videoul în mare"></button>
             </div>
             <div class="iphone-mockup" style="--rot:5deg">
               <div class="iphone-frame">
@@ -1455,6 +1469,7 @@
                     loading="lazy"></iframe>
                 </div>
               </div>
+              <button type="button" class="iphone-click-shield" aria-label="Joacă videoul în mare"></button>
             </div>
           </div>
         </div>
@@ -2002,10 +2017,14 @@
         // Stop the video after the fade-out by clearing src
         setTimeout(() => { if (zoomIframe) zoomIframe.src = ''; }, 450);
       }
-      document.querySelectorAll('#pane-left-eye .iphone-mockup').forEach(mockup => {
-        mockup.addEventListener('click', e => {
+      // Wire on the .iphone-click-shield button — guaranteed to receive
+      // every click, since the iframe sits BELOW it in the stacking order.
+      document.querySelectorAll('#pane-left-eye .iphone-click-shield').forEach(shield => {
+        shield.addEventListener('click', e => {
+          e.preventDefault();
           e.stopPropagation();
-          const innerIframe = mockup.querySelector('iframe');
+          const mockup = shield.closest('.iphone-mockup');
+          const innerIframe = mockup && mockup.querySelector('iframe');
           if (innerIframe) openPhoneZoom(innerIframe.src);
         });
       });
