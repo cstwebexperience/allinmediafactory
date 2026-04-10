@@ -559,7 +559,7 @@
 
     .fragments-canvas {
       position: relative;
-      width: min(90vw, 900px);
+      width: min(95vw, 1300px);
       aspect-ratio: 16 / 9;
     }
 
@@ -1989,10 +1989,9 @@ function tick() {
     }
   }
 
-  // Dynamic post-processing (same on every device)
+  // Dynamic post-processing (bloom + CA scale with scroll progress)
   bloomPass.strength = 0.4 + pIntensity * 0.7;
-  const vel = Math.abs(window._scrollVelocity || 0);
-  caPass.uniforms.amount.value = 0.002 + vel * 0.0012 + pIntensity * 0.003;
+  caPass.uniforms.amount.value = 0.002 + pIntensity * 0.003;
   composer.render();
 }
 tick();
@@ -2063,22 +2062,8 @@ loader.load('whatsapp-t.png', (tex) => {
   scene2.add(waMesh);
 });
 
-// ── Chrome particles ──
-function snoise2(x,y,z) {
-  return (Math.sin(x*1.7+y*2.1+z*0.9)*Math.cos(y*1.3+z*2.7+x*0.6)+
-    Math.sin(x*3.1+z*1.9)*Math.cos(y*2.9+x*1.1)*0.5)*0.55;
-}
-const particles2 = [];
-for (let i = 0; i < 10; i++) {
-  const r = 0.012 + Math.random()*0.03;
-  const p = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 3), chromeMat);
-  p.position.set((Math.random()-0.5)*7, (Math.random()-0.5)*4, -0.5 - Math.random()*2);
-  const bp = p.geometry.attributes.position.array.slice();
-  p.userData = { bp, spd: 0.04+Math.random()*0.1, off: Math.random()*Math.PI*2,
-    bx: p.position.x, by: p.position.y, dx: 0.3+Math.random()*0.6, dy: 0.15+Math.random()*0.25 };
-  scene2.add(p);
-  particles2.push(p);
-}
+// (chrome particles removed — they were 10 deforming meshes the user
+// couldn't even see clearly behind the clipboard / WhatsApp icons)
 
 // ── Lights ──
 const clipGlow = new THREE.PointLight(0x8050d0, 4, 8);
@@ -2220,21 +2205,6 @@ function tick2() {
     waLabelEl.style.top  = ((-v2.y*0.5+0.5)*window.innerHeight) + 'px';
     waLabelEl.style.opacity = mapRange2(waP, 0.85, 1) * (0.5 + hWaS*0.5);
   }
-
-  // Particles
-  particles2.forEach(p => {
-    const d = p.userData;
-    p.position.x = d.bx + Math.sin(t*d.spd+d.off)*d.dx;
-    p.position.y = d.by + Math.cos(t*d.spd*0.7+d.off)*d.dy;
-    p.rotation.y = t*d.spd; p.rotation.x = t*d.spd*0.3;
-    const pp = p.geometry.attributes.position.array, bp = d.bp;
-    for (let i=0;i<pp.length;i+=3) {
-      const bx=bp[i],by=bp[i+1],bz=bp[i+2], l=Math.sqrt(bx*bx+by*by+bz*bz)||1;
-      const s=1+Math.sin(t*0.8+d.off)*0.04+snoise2((bx/l)*2+t*0.2+d.off,(by/l)*2,(bz/l)*2)*0.07;
-      pp[i]=bx*s; pp[i+1]=by*s; pp[i+2]=bz*s;
-    }
-    p.geometry.attributes.position.needsUpdate = true;
-  });
 
   renderer2.render(scene2, camera2);
 }
@@ -2470,106 +2440,15 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 })();
 
 
-// ── 5. MICRO-INTERACTIONS ────────────────────────────
+// ── 5. (micro-interactions removed: 3D tilt, link underlines, focus
+//        glows and overlay close hover were drainage on the GPU and
+//        were not visually load-bearing) ─────────────────────────────
+
+
+// ── 6. RENDERER PAUSING (off-screen Three.js scenes) ─────
+window._heroVisible = true;
+window._contactVisible = true;
 (function () {
-  // Fragment 3D tilt on mouse move
-  document.querySelectorAll('.mask-fragment').forEach(el => {
-    el.addEventListener('mousemove', e => {
-      const r = el.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width  - 0.5;
-      const y = (e.clientY - r.top)  / r.height - 0.5;
-      gsap.to(el, {
-        rotateY: x * 12, rotateX: -y * 9,
-        duration: 0.35, ease: 'power2.out',
-        transformPerspective: 900, transformOrigin: 'center center',
-      });
-    });
-    el.addEventListener('mouseleave', () => {
-      gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.7, ease: 'power3.out' });
-    });
-  });
-
-  // Submit button GSAP hover glow
-  document.querySelectorAll('.cf-submit').forEach(btn => {
-    btn.addEventListener('mouseenter', () => {
-      gsap.to(btn, {
-        scale: 1.025,
-        boxShadow: '0 0 30px rgba(110,60,200,0.45), 0 0 60px rgba(110,60,200,0.2)',
-        duration: 0.35, ease: 'power2.out',
-      });
-    });
-    btn.addEventListener('mouseleave', () => {
-      gsap.to(btn, {
-        scale: 1, boxShadow: '0 0 0px rgba(110,60,200,0)',
-        duration: 0.4, ease: 'power3.out',
-      });
-    });
-  });
-
-  // Link underline reveal — clip-path left→right
-  // Applied to any .pane-sub links if they exist
-  document.querySelectorAll('a:not([class])').forEach(a => {
-    a.style.position = 'relative';
-    a.style.textDecoration = 'none';
-    const line = document.createElement('span');
-    line.style.cssText = `
-      position:absolute; bottom:-1px; left:0; width:100%; height:1px;
-      background:currentColor; transform:scaleX(0); transform-origin:left;
-      transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);
-    `;
-    a.appendChild(line);
-    a.addEventListener('mouseenter', () => { line.style.transform = 'scaleX(1)'; });
-    a.addEventListener('mouseleave', () => {
-      line.style.transformOrigin = 'right';
-      line.style.transform = 'scaleX(0)';
-      setTimeout(() => { line.style.transformOrigin = 'left'; }, 350);
-    });
-  });
-
-  // Form input focus glow — animated via GSAP
-  document.querySelectorAll('.contact-form-box input, .contact-form-box select, .contact-form-box textarea').forEach(inp => {
-    inp.addEventListener('focus', () => {
-      gsap.to(inp, {
-        boxShadow: '0 0 0 3px rgba(120,70,220,0.12), 0 0 32px rgba(120,70,220,0.2), inset 0 0 14px rgba(120,70,220,0.05)',
-        borderColor: 'rgba(140,100,240,0.55)',
-        duration: 0.4, ease: 'power2.out',
-      });
-    });
-    inp.addEventListener('blur', () => {
-      gsap.to(inp, {
-        boxShadow: '0 0 0 0px transparent, 0 0 0px transparent, inset 0 0 0px transparent',
-        borderColor: 'rgba(160,140,220,0.1)',
-        duration: 0.35, ease: 'power2.out',
-      });
-    });
-  });
-
-  // Overlay close button hover
-  const overlayClose = document.getElementById('overlay-close');
-  if (overlayClose) {
-    overlayClose.addEventListener('mouseenter', () => {
-      gsap.to(overlayClose, { scale: 1.1, rotation: 90, duration: 0.3, ease: 'power2.out' });
-    });
-    overlayClose.addEventListener('mouseleave', () => {
-      gsap.to(overlayClose, { scale: 1, rotation: 0, duration: 0.4, ease: 'power3.out' });
-    });
-  }
-})();
-
-
-// ── 6. SCROLL VELOCITY (for hero CA shader) + RENDERER PAUSING ─────
-(function () {
-  // Track scroll velocity via Lenis — feeds the in-shader chromatic
-  // aberration on the hero. The full-screen DOM CA overlays were removed.
-  window._scrollVelocity = 0;
-  lenis.on('scroll', ({ velocity }) => {
-    window._scrollVelocity = velocity;
-  });
-
-  // IntersectionObservers — pause off-screen Three.js scenes
-  window._heroVisible = true;
-  window._contactVisible = true;
-
   const heroEl = document.getElementById('hero');
   if (heroEl) {
     new IntersectionObserver(([e]) => { window._heroVisible = e.isIntersecting; }, { threshold: 0 })
@@ -2583,26 +2462,21 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 })();
 
 
-// ── 7. INFINITE PAGE LOOP (fade-to-black + jump to top) ─────
-// Polls scroll position every animation frame so it doesn't depend on
-// Lenis being initialised yet (this handler runs in script #6 which
-// parses BEFORE script #7 where Lenis is created — that was the bug
-// that made the previous version silently never fire). Once the user
-// passes 97% of the scrollable height we fade a black overlay in,
-// instant-jump back to the top behind it, then fade out.
+// ── 7. INFINITE PAGE LOOP via ScrollTrigger ─────────
+// Uses GSAP ScrollTrigger (which is already wired into Lenis above for
+// scroll-scrub) so we *know* it fires when the bottom of #contact hits
+// the viewport bottom. The previous rAF poll silently failed because of
+// script ordering. ScrollTrigger doesn't care about order.
 (function () {
   const fade = document.getElementById('page-loop-fade');
   if (!fade) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.ScrollTrigger) return;
 
   let looping = false;
-  let lastLoopAt = 0;
-  const COOLDOWN_MS = 2500;
-  const TRIGGER_RATIO = 0.97;
 
   function loopNow() {
     if (looping) return;
-    if (Date.now() - lastLoopAt < COOLDOWN_MS) return;
     looping = true;
     fade.classList.add('in');
     setTimeout(() => {
@@ -2612,27 +2486,22 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
       } else {
         window.scrollTo({ top: 0, behavior: 'auto' });
       }
+      // Tell ScrollTrigger the scroll position changed under it
+      ScrollTrigger.update();
       // Two frames so the scroll commits, then fade back out
       requestAnimationFrame(() => requestAnimationFrame(() => {
         fade.classList.remove('in');
-        setTimeout(() => {
-          looping = false;
-          lastLoopAt = Date.now();
-        }, 700);
+        setTimeout(() => { looping = false; }, 800);
       }));
     }, 560);
   }
 
-  // Bullet-proof rAF loop — runs every frame regardless of scroll events
-  function check() {
-    requestAnimationFrame(check);
-    if (looping) return;
-    const sy = window._lenis ? window._lenis.scroll : window.scrollY;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    if (max <= 0) return;
-    if (sy / max >= TRIGGER_RATIO) loopNow();
-  }
-  check();
+  // Fire when the bottom of #contact reaches the viewport bottom.
+  ScrollTrigger.create({
+    trigger: '#contact',
+    start: 'bottom bottom',
+    onEnter: loopNow,
+  });
 })();
 
 
