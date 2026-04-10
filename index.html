@@ -612,6 +612,21 @@
     .pane-content-vp .iphone-mockup { cursor: pointer; }
     .pane-content-vp .result-card { cursor: zoom-in; }
 
+    /* CRITICAL: the YouTube iframes inside the carousel mockups must
+       NOT capture pointer events, otherwise clicks land inside the
+       iframe (on YouTube's player) and never bubble up to the
+       .iphone-mockup click handler that opens the zoom overlay.
+       The zoom iframe (#zoom-iframe) is NOT inside .pane-content-vp,
+       so it keeps full pointer events for native YouTube controls. */
+    .pane-content-vp .iphone-screen iframe {
+      pointer-events: none;
+    }
+    .pane-content-vp .iphone-mockup,
+    .pane-content-vp .iphone-frame,
+    .pane-content-vp .iphone-screen {
+      pointer-events: auto;
+    }
+
     /* ── Panel 02: Performance Ads ───────────────────────── */
 
     /* Smaller descriptive subtitle (different from .panel-subtitle's
