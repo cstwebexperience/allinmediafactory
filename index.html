@@ -274,7 +274,7 @@
        needs to centre on screen instead of being shoved off-side. */
     #pane-left-eye   .pane-content:not(.pane-content-vp) { margin-left: 30vw; margin-top: 20vh; }
     #pane-right-eye  .pane-content:not(.pane-content-vp) { margin-right: 30vw; margin-top: 20vh; }
-    #pane-nose       .pane-content { margin-top: 28vh; }
+    #pane-nose       .pane-content:not(.pane-content-vp) { margin-top: 28vh; }
     #pane-left-mouth .pane-content { margin-left: 30vw; margin-bottom: 20vh; }
     #pane-right-mouth .pane-content { margin-right: 30vw; margin-bottom: 20vh; }
 
@@ -659,6 +659,95 @@
     /* Make the iPhone mockups + result cards feel clickable */
     .pane-content-vp .iphone-mockup { cursor: pointer; }
     .pane-content-vp .result-card { cursor: zoom-in; }
+
+    /* ── Sites Grid (pane 03 — Web Design) ───────────────── */
+    /* Two preview cards side by side. Each card is an <a> so the
+       whole thing is one big native click target → opens the live
+       site in a new tab. Thumbnails come from WordPress mShots
+       (free, cached screenshot service). */
+    .sites-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(14px, 1.6vw, 22px);
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .site-card {
+      display: flex;
+      flex-direction: column;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.025);
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.4s ease,
+                  box-shadow 0.4s ease;
+    }
+    .site-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(180, 130, 255, 0.4);
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6),
+                  0 0 50px rgba(180, 130, 255, 0.2);
+    }
+    .site-card-thumb {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a0a12 0%, #14101e 100%);
+    }
+    .site-card-thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.55) 100%);
+      pointer-events: none;
+    }
+    .site-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      filter: brightness(0.85) saturate(0.9);
+      transition: filter 0.4s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .site-card:hover .site-card-thumb img {
+      filter: brightness(1) saturate(1);
+      transform: scale(1.04);
+    }
+    .site-card-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .site-card-domain {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.78);
+      font-weight: 500;
+    }
+    .site-card-arrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(180, 130, 255, 0.9);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .site-card:hover .site-card-arrow {
+      transform: translateX(5px);
+      color: #ffffff;
+    }
+    @media (max-width: 768px) {
+      .sites-grid { grid-template-columns: 1fr; }
+    }
 
     /* Carousel iPhones are clickable — cursor pointer + relative
        positioning so the play badge sits over the thumbnail. */
@@ -1555,10 +1644,36 @@
 
     <!-- ── 03 Web Design ── -->
     <div class="service-pane" id="pane-nose">
-      <div class="pane-content">
+      <div class="pane-content pane-content-vp">
         <span class="content-stagger pane-eyebrow panel-label">03 — WEB DESIGN + SITE-URI</span>
         <h2 class="content-stagger pane-h2 panel-title">Site-uri care<br>vând.</h2>
         <h3 class="content-stagger panel-subtitle">Design. Hipnotic.</h3>
+
+        <!-- 2 site previews — clicking either opens the live site in a new tab -->
+        <div class="content-stagger sites-grid">
+          <a href="https://realestate1233.vercel.app/" target="_blank" rel="noopener noreferrer" class="site-card">
+            <div class="site-card-thumb">
+              <img
+                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Frealestate1233.vercel.app%2F?w=900&amp;h=600"
+                alt="RealEstate — preview" loading="lazy" />
+            </div>
+            <div class="site-card-info">
+              <span class="site-card-domain">realestate1233.vercel.app</span>
+              <span class="site-card-arrow">→</span>
+            </div>
+          </a>
+          <a href="https://www.nordisk-grup.ro/" target="_blank" rel="noopener noreferrer" class="site-card">
+            <div class="site-card-thumb">
+              <img
+                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.nordisk-grup.ro%2F?w=900&amp;h=600"
+                alt="Nordisk Grup — preview" loading="lazy" />
+            </div>
+            <div class="site-card-info">
+              <span class="site-card-domain">nordisk-grup.ro</span>
+              <span class="site-card-arrow">→</span>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
 
