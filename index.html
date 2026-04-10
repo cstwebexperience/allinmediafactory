@@ -1098,48 +1098,6 @@
       margin-top: 14px;
     }
 
-    /* ── Custom Cursor (hover-capable devices only) ────── */
-    @media (hover: hover) and (pointer: fine) {
-      * { cursor: none !important; }
-      #cursor-dot {
-        position: fixed; z-index: 9998;
-        top: 0; left: 0;
-        width: 6px; height: 6px;
-        background: rgba(255,255,255,0.95);
-        border-radius: 50%;
-        pointer-events: none;
-        transform: translate(-50%, -50%);
-        transition: width 0.2s, height 0.2s, background 0.2s;
-        will-change: transform;
-      }
-      #cursor-ring {
-        position: fixed; z-index: 9997;
-        top: 0; left: 0;
-        width: 28px; height: 28px;
-        border: 1px solid rgba(255,255,255,0.35);
-        border-radius: 50%;
-        pointer-events: none;
-        transform: translate(-50%, -50%);
-        mix-blend-mode: difference;
-        will-change: transform;
-        transition: width 0.25s cubic-bezier(0.16,1,0.3,1),
-                    height 0.25s cubic-bezier(0.16,1,0.3,1),
-                    border-color 0.25s;
-      }
-      body.cur-hover #cursor-dot {
-        width: 4px; height: 4px;
-        background: rgba(255,255,255,0.5);
-      }
-      body.cur-hover #cursor-ring {
-        width: 52px; height: 52px;
-        border-color: rgba(255,255,255,0.7);
-      }
-    }
-    /* Hide cursor elements on touch devices */
-    @media (hover: none) {
-      #cursor-dot, #cursor-ring { display: none !important; }
-    }
-
     /* ── Section transition overlays ────────────────────── */
     .section-fade-top {
       position: absolute; top: 0; left: 0; right: 0;
@@ -1184,7 +1142,6 @@
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
       }
-      #cursor-dot, #cursor-ring { display: none !important; }
       .section-fade-top, .section-fade-bottom { display: none; }
       #loader { display: none !important; }
       .hero-title-block { opacity: 1 !important; }
@@ -1210,10 +1167,6 @@
     </div>
     <div id="loader-percent">0%</div>
   </div>
-
-  <!-- Custom Cursor -->
-  <div id="cursor-dot"></div>
-  <div id="cursor-ring"></div>
 
   <!-- HERO SECTION: Three.js metallic sphere -->
   <div class="scroll-container" id="hero-scroll-container">
@@ -2373,39 +2326,7 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 })();
 
 
-// ── 3. CUSTOM CURSOR (skip on touch) ────────────────
-(function () {
-  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  const dot  = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
-  if (!dot || !ring) return;
-
-  let mx = 0, my = 0;
-  let rx = 0, ry = 0;
-
-  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-
-  // Dot follows instantly, ring lerps
-  gsap.ticker.add(() => {
-    dot.style.transform  = `translate(calc(${mx}px - 50%), calc(${my}px - 50%))`;
-    rx += (mx - rx) * 0.10;
-    ry += (my - ry) * 0.10;
-    ring.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
-  });
-
-  // Hover state on interactive elements
-  const hoverSel = 'a, button, [role="button"], .mask-fragment, .cf-submit, #contact-canvas, .ann-group';
-  document.addEventListener('mouseover', e => {
-    if (e.target.closest(hoverSel)) document.body.classList.add('cur-hover');
-  });
-  document.addEventListener('mouseout', e => {
-    if (e.target.closest(hoverSel)) document.body.classList.remove('cur-hover');
-  });
-
-  // Hide cursor when mouse leaves window
-  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
-  document.addEventListener('mouseenter', () => { dot.style.opacity = ''; ring.style.opacity = ''; });
-})();
+// ── 3. (custom cursor removed — use native browser cursor) ──
 
 
 // ── 4. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
