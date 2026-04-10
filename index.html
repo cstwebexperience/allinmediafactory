@@ -2230,13 +2230,24 @@ tick2();
    ═══════════════════════════════════════════════════ */
 
 // ── 1. LENIS SMOOTH SCROLL ──────────────────────────
+// Tuned for a tight, responsive feel:
+//  - duration 1.6 -> 1.05 so the wheel reacts almost immediately
+//  - lerp added so fast wheel ticks settle without overshoot
+//  - wheelMultiplier 1 (default) — was implicitly inflated by long duration
+//  - touch falls through to native scroll on phones (no smooth lag)
 const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = matchMedia('(hover: none) and (pointer: coarse)').matches;
 const lenis = new Lenis({
-  duration: 1.6,
+  duration: 1.05,
+  lerp: 0.12,
   smoothWheel: !prefersReduced,
+  smoothTouch: false, // native scroll on touch is smoother + lower-lag
+  syncTouch: false,
   orientation: 'vertical',
   gestureOrientation: 'vertical',
-  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  wheelMultiplier: 1.0,
+  touchMultiplier: 1.4,
+  easing: (t) => 1 - Math.pow(1 - t, 3), // easeOutCubic — gentle settle
 });
 window._lenis = lenis;
 
