@@ -330,16 +330,27 @@
     }
     .iphone-track {
       display: flex;
-      gap: clamp(12px, 1.5vw, 22px);
+      gap: clamp(24px, 2.6vw, 44px);
       justify-content: center;
       align-items: center;
     }
     .iphone-mockup {
+      position: relative;
+      z-index: 1;
       transform: rotate(var(--rot, 0deg));
       filter: drop-shadow(0 28px 60px rgba(0,0,0,0.85)) drop-shadow(0 0 30px rgba(139,92,246,0.07));
       flex-shrink: 0;
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
                   filter 0.35s ease;
+    }
+    /* Middle phone explicitly on top so the rotated side phones can
+       never cover its click area (their corners extend laterally
+       even with the bigger gap). */
+    .iphone-track .iphone-mockup:nth-child(2) {
+      z-index: 3;
+    }
+    .iphone-mockup:hover {
+      z-index: 5 !important;
     }
     .iphone-mockup:hover {
       transform: rotate(var(--rot, 0deg)) translateY(-6px) scale(1.025);
