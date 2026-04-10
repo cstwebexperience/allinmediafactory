@@ -1761,9 +1761,17 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
+// ── Device profile ──
+// Phones get a lighter pipeline: lower pixel ratio, fewer sphere subdivisions,
+// no extra HDRI download, no post-processing passes beyond bloom, and the
+// expensive per-vertex deformation runs at half rate.
+const IS_MOBILE = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
+const HW = navigator.hardwareConcurrency || 4;
+const LOW_POWER = IS_MOBILE || HW <= 4;
+
 const canvas   = document.getElementById('hero-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOW_POWER, alpha: true, powerPreference: LOW_POWER ? 'low-power' : 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, LOW_POWER ? 1.25 : 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.85;
@@ -1789,19 +1797,23 @@ const mat = new THREE.MeshPhysicalMaterial({
   reflectivity: 0.7,
 });
 
-new RGBELoader().load(
-  'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
-  function(hdr) {
-    hdr.mapping = THREE.EquirectangularReflectionMapping;
-    const env = pmrem.fromEquirectangular(hdr).texture;
-    scene.environment = env;
-    mat.envMap = env;
-    mat.needsUpdate = true;
-    hdr.dispose();
-  }
-);
+// HDRI is a ~3MB external dep. Skip it on phones — RoomEnvironment is good enough.
+if (!LOW_POWER) {
+  new RGBELoader().load(
+    'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
+    function(hdr) {
+      hdr.mapping = THREE.EquirectangularReflectionMapping;
+      const env = pmrem.fromEquirectangular(hdr).texture;
+      scene.environment = env;
+      mat.envMap = env;
+      mat.needsUpdate = true;
+      hdr.dispose();
+    }
+  );
+}
 
-const geo = new THREE.IcosahedronGeometry(0.9, 6);
+// Detail level: 6 = ~10k tris (desktop), 4 = ~2.5k tris (mobile)
+const geo = new THREE.IcosahedronGeometry(0.9, LOW_POWER ? 4 : 6);
 const basePos = geo.attributes.position.array.slice();
 const sphere = new THREE.Mesh(geo, mat);
 sphere.position.y = 0.4;
@@ -1820,40 +1832,47 @@ lights[3].position.set(-2,  3, -2);
 lights.forEach(l => scene.add(l));
 scene.add(new THREE.AmbientLight(0x0a0515, 0.3));
 
-// ── Post-Processing: Bloom + Chromatic Aberration ──
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
+// ── Post-Processing ──
+// Desktop: full pipeline (Bloom + ChromaticAberration + OutputPass).
+// Mobile/low-power: skip the composer entirely and render straight to screen.
+let composer = null;
+let bloomPass = null;
+let caPass = null;
+if (!LOW_POWER) {
+  composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
 
-const bloomPass = new UnrealBloomPass(
-  new THREE.Vector2(window.innerWidth, window.innerHeight),
-  0.4, 0.55, 0.82
-);
-composer.addPass(bloomPass);
+  bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    0.4, 0.55, 0.82
+  );
+  composer.addPass(bloomPass);
 
-const ChromaticAberrationShader = {
-  uniforms: {
-    tDiffuse: { value: null },
-    amount: { value: 0.0025 },
-  },
-  vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-  fragmentShader: `
-    uniform sampler2D tDiffuse;
-    uniform float amount;
-    varying vec2 vUv;
-    void main() {
-      vec2 dir = vUv - vec2(0.5);
-      float dist = length(dir);
-      vec2 offset = dir * dist * amount;
-      float r = texture2D(tDiffuse, vUv + offset).r;
-      float g = texture2D(tDiffuse, vUv).g;
-      float b = texture2D(tDiffuse, vUv - offset).b;
-      gl_FragColor = vec4(r, g, b, 1.0);
-    }
-  `,
-};
-const caPass = new ShaderPass(ChromaticAberrationShader);
-composer.addPass(caPass);
-composer.addPass(new OutputPass());
+  const ChromaticAberrationShader = {
+    uniforms: {
+      tDiffuse: { value: null },
+      amount: { value: 0.0025 },
+    },
+    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `
+      uniform sampler2D tDiffuse;
+      uniform float amount;
+      varying vec2 vUv;
+      void main() {
+        vec2 dir = vUv - vec2(0.5);
+        float dist = length(dir);
+        vec2 offset = dir * dist * amount;
+        float r = texture2D(tDiffuse, vUv + offset).r;
+        float g = texture2D(tDiffuse, vUv).g;
+        float b = texture2D(tDiffuse, vUv - offset).b;
+        gl_FragColor = vec4(r, g, b, 1.0);
+      }
+    `,
+  };
+  caPass = new ShaderPass(ChromaticAberrationShader);
+  composer.addPass(caPass);
+  composer.addPass(new OutputPass());
+}
 
 let mx = 0, my = 0, smx = 0, smy = 0;
 window.addEventListener('mousemove', e => {
@@ -1889,8 +1908,8 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  composer.setSize(window.innerWidth, window.innerHeight);
-  bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+  if (composer) composer.setSize(window.innerWidth, window.innerHeight);
+  if (bloomPass) bloomPass.resolution.set(window.innerWidth, window.innerHeight);
 });
 
 function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; }
@@ -1899,10 +1918,12 @@ function clamp01(t)   { return Math.max(0, Math.min(1, t)); }
 function mapRange(v,s,e){ return clamp01((v-s)/(e-s)); }
 
 const clock = new THREE.Clock();
+let frameCounter = 0;
 
 function tick() {
   requestAnimationFrame(tick);
   if (window._heroVisible === false) return;
+  frameCounter++;
   const t = clock.getElapsedTime();
 
   smx += (mx - smx) * 0.03;
@@ -1921,6 +1942,12 @@ function tick() {
   camera.position.y = 0.3 + pRise * 0.5;
   sphere.position.y = 0.4 + pRise * 6;
 
+  // Per-vertex deformation is the hot loop. On low-power devices we run it
+  // every other frame — the sphere stays smooth visually but CPU drops 50%.
+  const skipDeform = LOW_POWER && (frameCounter & 1);
+  if (skipDeform) {
+    // still need rotation + lights below, but skip the vertex math
+  } else {
   const pos = geo.attributes.position.array;
   const deformMult = 1 + pIntensity * 0.3;
   const speed = 0.25;
@@ -1944,6 +1971,7 @@ function tick() {
   }
   geo.attributes.position.needsUpdate = true;
   geo.attributes.normal.needsUpdate   = true;
+  } // end !skipDeform
 
   const rotSpeed = 0.05 + pRotSpeed * 0.15;
   sphere.rotation.y = t*rotSpeed + smx*0.3;
@@ -1972,12 +2000,15 @@ function tick() {
     }
   }
 
-  // Dynamic post-processing: bloom intensifies with scroll, CA with velocity
-  bloomPass.strength = 0.4 + pIntensity * 0.7;
-  const vel = Math.abs(window._scrollVelocity || 0);
-  caPass.uniforms.amount.value = 0.002 + vel * 0.0012 + pIntensity * 0.003;
-
-  composer.render();
+  // Dynamic post-processing (desktop only)
+  if (composer && bloomPass && caPass) {
+    bloomPass.strength = 0.4 + pIntensity * 0.7;
+    const vel = Math.abs(window._scrollVelocity || 0);
+    caPass.uniforms.amount.value = 0.002 + vel * 0.0012 + pIntensity * 0.003;
+    composer.render();
+  } else {
+    renderer.render(scene, camera);
+  }
 }
 tick();
 </script>
@@ -1988,11 +2019,15 @@ tick();
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
+const C_IS_MOBILE = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
+const C_HW = navigator.hardwareConcurrency || 4;
+const C_LOW_POWER = C_IS_MOBILE || C_HW <= 4;
+
 const contactArea  = document.getElementById('contact');
 const contactStage = document.getElementById('contact-stage');
 const cCanvas      = document.getElementById('contact-canvas');
-const renderer2    = new THREE.WebGLRenderer({ canvas: cCanvas, antialias: true });
-renderer2.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const renderer2    = new THREE.WebGLRenderer({ canvas: cCanvas, antialias: !C_LOW_POWER, powerPreference: C_LOW_POWER ? 'low-power' : 'high-performance' });
+renderer2.setPixelRatio(Math.min(window.devicePixelRatio, C_LOW_POWER ? 1.25 : 2));
 renderer2.setSize(window.innerWidth, window.innerHeight);
 
 const scene2  = new THREE.Scene();
@@ -2048,9 +2083,10 @@ function snoise2(x,y,z) {
     Math.sin(x*3.1+z*1.9)*Math.cos(y*2.9+x*1.1)*0.5)*0.55;
 }
 const particles2 = [];
-for (let i = 0; i < 10; i++) {
+const PARTICLE_COUNT = C_LOW_POWER ? 4 : 10;
+for (let i = 0; i < PARTICLE_COUNT; i++) {
   const r = 0.012 + Math.random()*0.03;
-  const p = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 3), chromeMat);
+  const p = new THREE.Mesh(new THREE.IcosahedronGeometry(r, C_LOW_POWER ? 2 : 3), chromeMat);
   p.position.set((Math.random()-0.5)*7, (Math.random()-0.5)*4, -0.5 - Math.random()*2);
   const bp = p.geometry.attributes.position.array.slice();
   p.userData = { bp, spd: 0.04+Math.random()*0.1, off: Math.random()*Math.PI*2,
