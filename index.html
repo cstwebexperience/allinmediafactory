@@ -378,19 +378,55 @@
       overflow: hidden;
       position: relative;
     }
-    /* YouTube Shorts iframe inside the iPhone screen.
-       The iframe is scaled and shifted so the YouTube channel name (top),
-       Subscribe button, and right-side action stack (like / comment /
-       share / mute) are cropped outside the iPhone screen. Only the
-       video frame remains visible. */
-    .iphone-screen iframe {
+    /* Static thumbnail inside the iPhone screen — clicking it opens
+       the giant phone-zoom overlay that loads the real YouTube iframe. */
+    .phone-thumb {
       position: absolute;
-      top: -22%;
-      left: -22%;
-      width: 144%;
-      height: 144%;
-      border: 0;
-      pointer-events: auto;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+    /* Play badge over the thumbnail */
+    .phone-play {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 48px;
+      height: 48px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5),
+                  0 0 24px rgba(180, 130, 255, 0.18);
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  background 0.3s ease;
+      z-index: 2;
+    }
+    .phone-play::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 54%;
+      transform: translate(-50%, -50%);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 8px 0 8px 13px;
+      border-color: transparent transparent transparent #ffffff;
+    }
+    .iphone-mockup:hover .phone-play {
+      transform: translate(-50%, -50%) scale(1.12);
+      background: rgba(180, 130, 255, 0.85);
     }
 
     /* Videoclipuri Premium pane: wider, no-scroll, compact dark vibe */
@@ -613,29 +649,11 @@
     .pane-content-vp .iphone-mockup { cursor: pointer; }
     .pane-content-vp .result-card { cursor: zoom-in; }
 
-    /* Bullet-proof click handling on the carousel iPhone mockups.
-       The .iphone-click-shield <button> sits on top of every mockup
-       and absorbs every click in the mockup area. The click handler
-       is wired to the shield directly — YouTube's iframe (which loves
-       to swallow clicks unevenly across its surface) can never block
-       the open-zoom action again. */
+    /* Carousel iPhones are clickable — cursor pointer + relative
+       positioning so the play badge sits over the thumbnail. */
     .pane-content-vp .iphone-mockup {
       position: relative;
     }
-    .iphone-click-shield {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      border: 0;
-      padding: 0;
-      margin: 0;
-      cursor: pointer;
-      z-index: 5;
-      border-radius: inherit;
-    }
-    .iphone-click-shield:focus { outline: none; }
 
     /* ── Panel 02: Performance Ads ───────────────────────── */
 
@@ -1427,50 +1445,43 @@
         <h2 class="content-stagger pane-h2 panel-title">Editare care opreşte<br>thumb-ul.</h2>
         <h3 class="content-stagger panel-subtitle">Conţinut. Pur.</h3>
 
-        <!-- 3 Real YouTube Shorts in iPhone mockups (UI cropped).
-             Each mockup carries an explicit .iphone-click-shield button
-             on top of the iframe — the shield is the real click target,
-             so YouTube's iframe can never swallow the event. -->
+        <!-- 3 Shorts thumbnails in iPhone mockups. We use static <img>
+             previews instead of <iframe> embeds because YouTube's
+             cross-origin iframe swallows click events unevenly across
+             its surface, which made the middle phone unclickable.
+             The real autoplay iframe lives inside #phone-zoom-overlay,
+             which is opened by clicking any thumbnail. -->
         <div class="content-stagger iphone-carousel" id="iphone-carousel">
           <div class="iphone-track">
-            <div class="iphone-mockup">
+            <div class="iphone-mockup" data-yt-id="6QoeHnucqUs">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <iframe
-                    src="https://www.youtube-nocookie.com/embed/6QoeHnucqUs?controls=0&amp;modestbranding=1&amp;showinfo=0&amp;rel=0&amp;playsinline=1&amp;iv_load_policy=3&amp;disablekb=1&amp;fs=0"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                    loading="lazy"></iframe>
+                  <img class="phone-thumb"
+                    src="https://i.ytimg.com/vi/6QoeHnucqUs/hqdefault.jpg"
+                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
+                  <span class="phone-play"></span>
                 </div>
               </div>
-              <button type="button" class="iphone-click-shield" aria-label="Joacă videoul în mare"></button>
             </div>
-            <div class="iphone-mockup">
+            <div class="iphone-mockup" data-yt-id="hW5BLJl37Qs">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <iframe
-                    src="https://www.youtube-nocookie.com/embed/hW5BLJl37Qs?controls=0&amp;modestbranding=1&amp;showinfo=0&amp;rel=0&amp;playsinline=1&amp;iv_load_policy=3&amp;disablekb=1&amp;fs=0"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                    loading="lazy"></iframe>
+                  <img class="phone-thumb"
+                    src="https://i.ytimg.com/vi/hW5BLJl37Qs/hqdefault.jpg"
+                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
+                  <span class="phone-play"></span>
                 </div>
               </div>
-              <button type="button" class="iphone-click-shield" aria-label="Joacă videoul în mare"></button>
             </div>
-            <div class="iphone-mockup">
+            <div class="iphone-mockup" data-yt-id="9EshKr4zksI">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <iframe
-                    src="https://www.youtube-nocookie.com/embed/9EshKr4zksI?controls=0&amp;modestbranding=1&amp;showinfo=0&amp;rel=0&amp;playsinline=1&amp;iv_load_policy=3&amp;disablekb=1&amp;fs=0"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                    loading="lazy"></iframe>
+                  <img class="phone-thumb"
+                    src="https://i.ytimg.com/vi/9EshKr4zksI/hqdefault.jpg"
+                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
+                  <span class="phone-play"></span>
                 </div>
               </div>
-              <button type="button" class="iphone-click-shield" aria-label="Joacă videoul în mare"></button>
             </div>
           </div>
         </div>
@@ -2002,13 +2013,8 @@
       const zoomIframe = document.getElementById('zoom-iframe');
       const zoomClose  = document.getElementById('phoneZoomClose');
 
-      function openPhoneZoom(srcAttr) {
-        if (!phoneZoom || !zoomIframe || !srcAttr) return;
-        // Force-enable autoplay so the giant phone starts playing
-        let src = srcAttr;
-        if (!/[?&]autoplay=/.test(src)) {
-          src += (src.includes('?') ? '&' : '?') + 'autoplay=1';
-        }
+      function openPhoneZoom(src) {
+        if (!phoneZoom || !zoomIframe || !src) return;
         zoomIframe.src = src;
         phoneZoom.classList.add('open');
       }
@@ -2018,33 +2024,23 @@
         // Stop the video after the fade-out by clearing src
         setTimeout(() => { if (zoomIframe) zoomIframe.src = ''; }, 450);
       }
-      // Bullet-proof click handling: event delegation on the carousel
-       // + elementsFromPoint fallback. Even if z-index battles or
-       // YouTube iframe shenanigans get in the way, this finds the
-       // mockup that's actually under the cursor.
+      // Click on any carousel iPhone -> open zoom with that video.
+      // Now uses static <img> thumbnails (no iframes in carousel) and
+      // reads the YouTube ID from data-yt-id, so click capture is
+      // bullet-proof — img elements never swallow events.
       function handlePhoneClick(e) {
-        // 1) try the direct path first
-        let mockup = e.target.closest && e.target.closest('#pane-left-eye .iphone-mockup');
-        // 2) fallback: scan elements at the click point
-        if (!mockup && document.elementsFromPoint) {
-          const stack = document.elementsFromPoint(e.clientX, e.clientY);
-          for (const el of stack) {
-            const m = el.closest && el.closest('#pane-left-eye .iphone-mockup');
-            if (m) { mockup = m; break; }
-          }
-        }
+        const mockup = e.target.closest && e.target.closest('#pane-left-eye .iphone-mockup');
         if (!mockup) return;
         e.preventDefault();
         e.stopPropagation();
-        const innerIframe = mockup.querySelector('iframe');
-        if (innerIframe) openPhoneZoom(innerIframe.src);
+        const ytId = mockup.dataset.ytId;
+        if (!ytId) return;
+        const src = 'https://www.youtube-nocookie.com/embed/' + ytId
+                  + '?autoplay=1&playsinline=1&rel=0&modestbranding=1';
+        openPhoneZoom(src);
       }
       const carouselEl = document.getElementById('iphone-carousel');
-      if (carouselEl) carouselEl.addEventListener('click', handlePhoneClick, true);
-      // Also wire each shield directly so the cursor stays a pointer
-      document.querySelectorAll('#pane-left-eye .iphone-click-shield').forEach(shield => {
-        shield.addEventListener('click', handlePhoneClick);
-      });
+      if (carouselEl) carouselEl.addEventListener('click', handlePhoneClick);
       if (zoomClose) zoomClose.addEventListener('click', closePhoneZoom);
       if (phoneZoom) phoneZoom.addEventListener('click', e => {
         if (e.target === phoneZoom) closePhoneZoom();
