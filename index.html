@@ -661,16 +661,17 @@
     .pane-content-vp .result-card { cursor: zoom-in; }
 
     /* ── Sites Grid (pane 03 — Web Design) ───────────────── */
-    /* Two preview cards side by side. Each card is an <a> so the
+    /* Three preview cards side by side. Each card is an <a> so the
        whole thing is one big native click target → opens the live
        site in a new tab. Thumbnails come from WordPress mShots
-       (free, cached screenshot service). */
+       (free, cached screenshot service) — will be swapped later
+       for custom presentation images. */
     .sites-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: clamp(14px, 1.6vw, 22px);
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: clamp(12px, 1.4vw, 20px);
       width: 100%;
-      max-width: 960px;
+      max-width: 1180px;
       margin: 0 auto;
     }
     .site-card {
@@ -745,8 +746,11 @@
       transform: translateX(5px);
       color: #ffffff;
     }
-    @media (max-width: 768px) {
-      .sites-grid { grid-template-columns: 1fr; }
+    @media (max-width: 1024px) {
+      .sites-grid { grid-template-columns: 1fr 1fr; max-width: 760px; }
+    }
+    @media (max-width: 640px) {
+      .sites-grid { grid-template-columns: 1fr; max-width: 420px; }
     }
 
     /* Carousel iPhones are clickable — cursor pointer + relative
@@ -1670,6 +1674,17 @@
             </div>
             <div class="site-card-info">
               <span class="site-card-domain">nordisk-grup.ro</span>
+              <span class="site-card-arrow">→</span>
+            </div>
+          </a>
+          <a href="https://leadhunt.tech/" target="_blank" rel="noopener noreferrer" class="site-card">
+            <div class="site-card-thumb">
+              <img
+                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fleadhunt.tech%2F?w=900&amp;h=600"
+                alt="LeadHunt — preview" loading="lazy" />
+            </div>
+            <div class="site-card-info">
+              <span class="site-card-domain">leadhunt.tech</span>
               <span class="site-card-arrow">→</span>
             </div>
           </a>
