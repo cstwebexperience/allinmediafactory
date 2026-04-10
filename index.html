@@ -270,11 +270,10 @@
     }
 
     /* Shift content away from ghost corner so they don't overlap.
-       The Videoclipuri Premium pane (.pane-content-vp) opts out — its
-       wider 1100px container needs to centre on screen instead of
-       being shoved off to the side. */
+       Panels with .pane-content-vp opt out — their wider container
+       needs to centre on screen instead of being shoved off-side. */
     #pane-left-eye   .pane-content:not(.pane-content-vp) { margin-left: 30vw; margin-top: 20vh; }
-    #pane-right-eye  .pane-content { margin-right: 30vw; margin-top: 20vh; }
+    #pane-right-eye  .pane-content:not(.pane-content-vp) { margin-right: 30vw; margin-top: 20vh; }
     #pane-nose       .pane-content { margin-top: 28vh; }
     #pane-left-mouth .pane-content { margin-left: 30vw; margin-bottom: 20vh; }
     #pane-right-mouth .pane-content { margin-right: 30vw; margin-bottom: 20vh; }
@@ -500,6 +499,150 @@
     @media (max-width: 768px) {
       .results-grid { grid-template-columns: 1fr; gap: 10px; }
       .pane-content-vp { padding: 1rem; }
+    }
+
+    /* ── Panel 02: Performance Ads ───────────────────────── */
+
+    /* Smaller descriptive subtitle (different from .panel-subtitle's
+       big "Conţinut. Pur." statement — this one carries longer copy) */
+    .panel-subtitle-sm {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.2vw, 16px);
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      max-width: 620px;
+      line-height: 1.6;
+      margin: 0 auto;
+    }
+
+    /* Stats row — 2 numbers side by side, second one violet-highlighted */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(12px, 1.4vw, 18px);
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .stat-block {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: clamp(16px, 2vw, 26px) clamp(18px, 2.2vw, 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.35s ease;
+    }
+    .stat-block:hover {
+      transform: translateY(-3px);
+      border-color: rgba(180, 130, 255, 0.25);
+    }
+    .stat-block--highlight {
+      border-color: rgba(180, 130, 255, 0.4);
+      background: rgba(180, 130, 255, 0.07);
+      box-shadow: 0 0 30px rgba(180, 130, 255, 0.08);
+    }
+    .stat-block--highlight:hover {
+      border-color: rgba(180, 130, 255, 0.55);
+    }
+    .stat-number {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(40px, 6vw, 76px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      background: linear-gradient(180deg, #ffffff 0%, #b4b4c8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-block--highlight .stat-number {
+      background: linear-gradient(180deg, #ffffff 0%, #c8a8ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .stat-unit {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      color: rgba(180, 130, 255, 0.85);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+    .stat-desc {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.74rem;
+      color: rgba(255, 255, 255, 0.4);
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    /* Meta Ads screenshot — drag-scrollable, inverted to dark mode */
+    .meta-screenshot-wrapper {
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    .screenshot-label {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: rgba(180, 130, 255, 0.6);
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .meta-screenshot-scroll {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      cursor: grab;
+      scrollbar-width: none;
+    }
+    .meta-screenshot-scroll::-webkit-scrollbar { display: none; }
+    .meta-screenshot-scroll.dragging { cursor: grabbing; }
+    .meta-inner {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+    }
+    .meta-screenshot-scroll img {
+      height: 200px;
+      width: auto;
+      max-width: none;
+      display: block;
+      filter: invert(1) hue-rotate(180deg) brightness(0.88) contrast(1.05);
+      transition: filter 0.3s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .meta-screenshot-scroll:hover img {
+      filter: invert(1) hue-rotate(180deg) brightness(1) contrast(1.05);
+    }
+    .row-highlight {
+      position: absolute;
+      left: 0;
+      right: 0;
+      background: rgba(180, 130, 255, 0.14);
+      border-top: 1px solid rgba(180, 130, 255, 0.45);
+      border-bottom: 1px solid rgba(180, 130, 255, 0.45);
+      box-shadow: 0 0 20px rgba(180, 130, 255, 0.18);
+      pointer-events: none;
+    }
+    .screenshot-hint {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem;
+      color: rgba(255, 255, 255, 0.22);
+      text-align: center;
+      margin: 6px 0 0;
+      letter-spacing: 0.05em;
     }
 
     /* Placeholder cards (other services) */
@@ -1208,15 +1351,40 @@
       </div>
     </div>
 
-    <!-- ── 02 Meta ADS ── -->
+    <!-- ── 02 Performance Ads ── -->
     <div class="service-pane" id="pane-right-eye">
-      <div class="pane-content">
-        <p class="content-stagger pane-eyebrow">02 — Meta ADS</p>
-        <h2 class="content-stagger pane-h2">Campanii care<br>convertesc.</h2>
-        <p class="content-stagger pane-sub">Facebook & Instagram optimizate pentru ROI maxim — fiecare leu investit lucrează pentru tine.</p>
-        <div class="content-stagger placeholder-cards">
-          <div class="placeholder-card"></div>
-          <div class="placeholder-card"></div>
+      <div class="pane-content pane-content-vp">
+        <span class="content-stagger pane-eyebrow panel-label">02 — PERFORMANCE ADS</span>
+        <h2 class="content-stagger pane-h2 panel-title">Ieși pe profit<br>din prima lună.</h2>
+        <p class="content-stagger panel-subtitle-sm">
+          Recordurile noastre vorbesc singure:<br>
+          lead-uri la 3–5 lei, interacțiuni la 0.05 lei — confirmate de Meta.
+        </p>
+
+        <!-- Two stat cards side by side -->
+        <div class="content-stagger stats-row">
+          <div class="stat-block">
+            <span class="stat-number">3–5</span>
+            <span class="stat-unit">lei / lead</span>
+            <p class="stat-desc">cost per lead — campanii Meta &amp; Google</p>
+          </div>
+          <div class="stat-block stat-block--highlight">
+            <span class="stat-number">0.05</span>
+            <span class="stat-unit">lei / interacțiune</span>
+            <p class="stat-desc">marcat „High Performing" de Meta Ads</p>
+          </div>
+        </div>
+
+        <!-- Meta Ads screenshot — inverted dark mode + GIVEAWAY row highlight -->
+        <div class="content-stagger meta-screenshot-wrapper">
+          <span class="screenshot-label">META ADS — DATE REALE · FEB–MAR 2026</span>
+          <div class="meta-screenshot-scroll" id="metaScroll">
+            <div class="meta-inner">
+              <img src="assets/meta-ads-results.jpg" alt="Meta Ads rezultate reale" draggable="false" />
+              <div class="row-highlight" style="top: 110px; height: 35px;"></div>
+            </div>
+          </div>
+          <p class="screenshot-hint">← trage pentru a vedea tot →</p>
         </div>
       </div>
     </div>
@@ -1639,25 +1807,28 @@
         if (e.key === 'Escape' && isOpen) closeService();
       });
 
-      // Drag-to-scroll on iPhone carousel (still useful inside service pane)
-      const carousel = document.getElementById('iphone-carousel');
-      if (carousel) {
+      // Generic drag-to-scroll wiring (works on any element with the
+       // `data-drag-scroll` attribute or matching id list)
+      function wireDragScroll(el) {
+        if (!el) return;
         let isDown = false, startX = 0, scrollLeft = 0;
-        carousel.addEventListener('mousedown', e => {
+        el.addEventListener('mousedown', e => {
           isDown = true;
-          carousel.classList.add('dragging');
-          startX = e.pageX - carousel.offsetLeft;
-          scrollLeft = carousel.scrollLeft;
+          el.classList.add('dragging');
+          startX = e.pageX - el.offsetLeft;
+          scrollLeft = el.scrollLeft;
         });
-        carousel.addEventListener('mouseleave', () => { isDown = false; carousel.classList.remove('dragging'); });
-        carousel.addEventListener('mouseup', () => { isDown = false; carousel.classList.remove('dragging'); });
-        carousel.addEventListener('mousemove', e => {
+        el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('dragging'); });
+        el.addEventListener('mouseup',    () => { isDown = false; el.classList.remove('dragging'); });
+        el.addEventListener('mousemove', e => {
           if (!isDown) return;
           e.preventDefault();
-          const x = e.pageX - carousel.offsetLeft;
-          carousel.scrollLeft = scrollLeft - (x - startX) * 1.4;
+          const x = e.pageX - el.offsetLeft;
+          el.scrollLeft = scrollLeft - (x - startX) * 1.5;
         });
       }
+      wireDragScroll(document.getElementById('iphone-carousel'));
+      wireDragScroll(document.getElementById('metaScroll'));
     })();
 
 
