@@ -1134,33 +1134,6 @@
       filter: blur(1px);
     }
 
-    /* ── Page Curtain (global transition primitive) ──────── */
-    /* Slides in from top, holds black, slides out from bottom — used to
-       mask any content swap (form submit success, future page nav, etc.) */
-    #page-curtain {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: linear-gradient(180deg, #0a0010 0%, #2d1b69 100%);
-      pointer-events: none;
-      clip-path: inset(0 0 100% 0);
-      transform: translateZ(0);
-      will-change: clip-path;
-    }
-    #page-curtain.in {
-      pointer-events: all;
-      clip-path: inset(0 0 0% 0);
-      transition: clip-path 0.6s cubic-bezier(0.76, 0, 0.24, 1);
-    }
-    #page-curtain.out {
-      pointer-events: none;
-      clip-path: inset(100% 0 0% 0);
-      transition: clip-path 0.5s cubic-bezier(0.76, 0, 0.24, 1);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #page-curtain { display: none !important; }
-    }
-
     /* ── prefers-reduced-motion ─────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -1185,9 +1158,6 @@
 </head>
 
 <body>
-
-  <!-- Global Page Curtain (transition primitive) -->
-  <div id="page-curtain" aria-hidden="true"></div>
 
   <!-- Loading Screen -->
   <div id="loader">
@@ -2145,20 +2115,11 @@ cfForm.addEventListener('submit', async (e) => {
   try {
     await fetch('https://formsubmit.co/ajax/leaveyoucontact@gmail.com',
       { method:'POST', body: new FormData(cfForm) });
-    // Run the global page curtain so the swap from form -> success
-    // never feels like a hard cut.
-    const swapToSuccess = () => {
-      cfForm.style.display = 'none';
-      const s = document.createElement('div'); s.className = 'cf-success';
-      s.innerHTML = '<span class="cf-check">&#10003;</span>Multumim! Te contactam in curand.';
-      cfForm.parentElement.appendChild(s);
-    };
-    if (window._curtain) {
-      window._curtain(swapToSuccess, () => setTimeout(closeCF, 2800));
-    } else {
-      swapToSuccess();
-      setTimeout(closeCF, 3500);
-    }
+    cfForm.style.display = 'none';
+    const s = document.createElement('div'); s.className = 'cf-success';
+    s.innerHTML = '<span class="cf-check">&#10003;</span>Multumim! Te contactam in curand.';
+    cfForm.parentElement.appendChild(s);
+    setTimeout(closeCF, 3500);
   } catch(err) { btn.textContent='Eroare'; btn.disabled=false; }
 });
 
@@ -2299,45 +2260,6 @@ window._lowPowerGpu = _gpu.low;
 if (location.search.includes('debug=1')) {
   console.log('[gpu]', _gpu.renderer, '→ lowPower:', _gpu.low);
 }
-
-
-// ── 0b. PAGE CURTAIN PRIMITIVE ──────────────────────
-// Reveals a full-screen gradient panel from top (0.6s) → fires the mid
-// callback when fully covered → retracts from bottom (0.5s) → fires done.
-// Used for any major content swap so the user never sees a hard cut.
-(function () {
-  const curtain = document.getElementById('page-curtain');
-  if (!curtain) { window._curtain = (mid, done) => { mid && mid(); done && done(); }; return; }
-  let busy = false;
-  window._curtain = function (mid, done) {
-    if (busy) return;
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      mid && mid(); done && done(); return;
-    }
-    busy = true;
-    curtain.classList.remove('out');
-    // Force reflow so the transition restarts cleanly
-    void curtain.offsetWidth;
-    curtain.classList.add('in');
-    const onIn = () => {
-      curtain.removeEventListener('transitionend', onIn);
-      try { mid && mid(); } catch (e) {}
-      // Hold for one frame so layout settles, then retract
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        curtain.classList.remove('in');
-        curtain.classList.add('out');
-        const onOut = () => {
-          curtain.removeEventListener('transitionend', onOut);
-          curtain.classList.remove('out');
-          busy = false;
-          try { done && done(); } catch (e) {}
-        };
-        curtain.addEventListener('transitionend', onOut, { once: true });
-      }));
-    };
-    curtain.addEventListener('transitionend', onIn, { once: true });
-  };
-})();
 
 
 // ── 1. LENIS SMOOTH SCROLL ──────────────────────────
