@@ -753,6 +753,69 @@
       .sites-grid { grid-template-columns: 1fr; max-width: 420px; }
     }
 
+    /* ── Portfolio CTA (pane 03 — under the 3 site cards) ── */
+    /* Small label "Verifică portofoliu" + 2 compact buttons that
+       link to the full agency portfolios (agentieseo.net + cstportfolio.xyz).
+       Kept tight so it fits the no-scroll panel layout. */
+    .portfolio-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: clamp(14px, 1.6vh, 22px);
+    }
+    .portfolio-cta-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: 500;
+    }
+    .portfolio-cta-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .portfolio-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(180, 130, 255, 0.35);
+      background: rgba(180, 130, 255, 0.06);
+      color: rgba(255, 255, 255, 0.9);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.35s ease,
+                  background 0.35s ease,
+                  box-shadow 0.35s ease,
+                  color 0.35s ease;
+    }
+    .portfolio-btn .portfolio-btn-arrow {
+      font-size: 14px;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .portfolio-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(200, 160, 255, 0.7);
+      background: rgba(180, 130, 255, 0.14);
+      color: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                  0 0 28px rgba(180, 130, 255, 0.25);
+    }
+    .portfolio-btn:hover .portfolio-btn-arrow {
+      transform: translateX(4px);
+    }
+
     /* Carousel iPhones are clickable — cursor pointer + relative
        positioning so the play badge sits over the thumbnail. */
     .pane-content-vp .iphone-mockup {
@@ -1688,6 +1751,21 @@
               <span class="site-card-arrow">→</span>
             </div>
           </a>
+        </div>
+
+        <!-- Portfolio CTA: small label + 2 buttons to full agency portfolios -->
+        <div class="content-stagger portfolio-cta">
+          <span class="portfolio-cta-label">Verifică portofoliu</span>
+          <div class="portfolio-cta-buttons">
+            <a href="https://www.agentieseo.net/web-design/" target="_blank" rel="noopener noreferrer" class="portfolio-btn">
+              agentieseo.net
+              <span class="portfolio-btn-arrow">→</span>
+            </a>
+            <a href="https://cstportfolio.xyz/portfolio" target="_blank" rel="noopener noreferrer" class="portfolio-btn">
+              cstportfolio.xyz
+              <span class="portfolio-btn-arrow">→</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
