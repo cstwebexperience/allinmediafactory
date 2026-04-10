@@ -336,24 +336,14 @@
     }
     .iphone-mockup {
       position: relative;
-      z-index: 1;
-      transform: rotate(var(--rot, 0deg));
+      isolation: isolate; /* each phone gets its own stacking context */
       filter: drop-shadow(0 28px 60px rgba(0,0,0,0.85)) drop-shadow(0 0 30px rgba(139,92,246,0.07));
       flex-shrink: 0;
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
                   filter 0.35s ease;
     }
-    /* Middle phone explicitly on top so the rotated side phones can
-       never cover its click area (their corners extend laterally
-       even with the bigger gap). */
-    .iphone-track .iphone-mockup:nth-child(2) {
-      z-index: 3;
-    }
     .iphone-mockup:hover {
-      z-index: 5 !important;
-    }
-    .iphone-mockup:hover {
-      transform: rotate(var(--rot, 0deg)) translateY(-6px) scale(1.025);
+      transform: translateY(-6px) scale(1.025);
       filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9)) drop-shadow(0 0 50px rgba(139,92,246,0.16));
     }
     .iphone-frame {
@@ -1443,7 +1433,7 @@
              so YouTube's iframe can never swallow the event. -->
         <div class="content-stagger iphone-carousel" id="iphone-carousel">
           <div class="iphone-track">
-            <div class="iphone-mockup" style="--rot:-5deg">
+            <div class="iphone-mockup">
               <div class="iphone-frame">
                 <div class="iphone-screen">
                   <iframe
@@ -1456,7 +1446,7 @@
               </div>
               <button type="button" class="iphone-click-shield" aria-label="Joacă videoul în mare"></button>
             </div>
-            <div class="iphone-mockup" style="--rot:0deg">
+            <div class="iphone-mockup">
               <div class="iphone-frame">
                 <div class="iphone-screen">
                   <iframe
@@ -1469,7 +1459,7 @@
               </div>
               <button type="button" class="iphone-click-shield" aria-label="Joacă videoul în mare"></button>
             </div>
-            <div class="iphone-mockup" style="--rot:5deg">
+            <div class="iphone-mockup">
               <div class="iphone-frame">
                 <div class="iphone-screen">
                   <iframe
@@ -2028,16 +2018,32 @@
         // Stop the video after the fade-out by clearing src
         setTimeout(() => { if (zoomIframe) zoomIframe.src = ''; }, 450);
       }
-      // Wire on the .iphone-click-shield button — guaranteed to receive
-      // every click, since the iframe sits BELOW it in the stacking order.
+      // Bullet-proof click handling: event delegation on the carousel
+       // + elementsFromPoint fallback. Even if z-index battles or
+       // YouTube iframe shenanigans get in the way, this finds the
+       // mockup that's actually under the cursor.
+      function handlePhoneClick(e) {
+        // 1) try the direct path first
+        let mockup = e.target.closest && e.target.closest('#pane-left-eye .iphone-mockup');
+        // 2) fallback: scan elements at the click point
+        if (!mockup && document.elementsFromPoint) {
+          const stack = document.elementsFromPoint(e.clientX, e.clientY);
+          for (const el of stack) {
+            const m = el.closest && el.closest('#pane-left-eye .iphone-mockup');
+            if (m) { mockup = m; break; }
+          }
+        }
+        if (!mockup) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const innerIframe = mockup.querySelector('iframe');
+        if (innerIframe) openPhoneZoom(innerIframe.src);
+      }
+      const carouselEl = document.getElementById('iphone-carousel');
+      if (carouselEl) carouselEl.addEventListener('click', handlePhoneClick, true);
+      // Also wire each shield directly so the cursor stays a pointer
       document.querySelectorAll('#pane-left-eye .iphone-click-shield').forEach(shield => {
-        shield.addEventListener('click', e => {
-          e.preventDefault();
-          e.stopPropagation();
-          const mockup = shield.closest('.iphone-mockup');
-          const innerIframe = mockup && mockup.querySelector('iframe');
-          if (innerIframe) openPhoneZoom(innerIframe.src);
-        });
+        shield.addEventListener('click', handlePhoneClick);
       });
       if (zoomClose) zoomClose.addEventListener('click', closePhoneZoom);
       if (phoneZoom) phoneZoom.addEventListener('click', e => {
