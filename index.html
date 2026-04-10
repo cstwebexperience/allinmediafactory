@@ -290,6 +290,8 @@
     #service-overlay.open .service-pane.active .content-stagger:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.58s; }
     #service-overlay.open .service-pane.active .content-stagger:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.70s; }
     #service-overlay.open .service-pane.active .content-stagger:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.80s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(6) { opacity:1; transform:translateY(0); transition-delay:0.90s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(7) { opacity:1; transform:translateY(0); transition-delay:1.00s; }
 
     /* Typography inside panes */
     .pane-eyebrow {
@@ -516,6 +518,60 @@
     }
     .panel-description strong {
       font-weight: 700;
+    }
+
+    /* ── Single site card (pane 04 — agentieseo.net) ─────── */
+    /* Reuses .site-card styling from pane 03 but wrapped in
+       a narrow centred container so a lone card doesn't look
+       stretched. */
+    .single-site {
+      width: 100%;
+      max-width: 340px;
+      margin: clamp(14px, 1.8vh, 22px) auto clamp(6px, 1vh, 12px);
+    }
+
+    /* ── Media Marquee (pane 04 — Romanian news sites) ────── */
+    /* Infinite horizontal scroller. Track holds two copies of the
+       same item list, translateX animates 0 → -50% so the loop is
+       seamless. Edge fades via CSS mask so items enter/leave gently. */
+    .media-marquee {
+      width: 100%;
+      max-width: 620px;
+      margin: clamp(16px, 2vh, 26px) auto 0;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+              mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+      padding: 6px 0;
+    }
+    .media-marquee-track {
+      display: flex;
+      gap: 14px;
+      width: max-content;
+      animation: media-marquee-scroll 50s linear infinite;
+      will-change: transform;
+    }
+    .media-marquee:hover .media-marquee-track {
+      animation-play-state: paused;
+    }
+    .media-marquee-item {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(180, 130, 255, 0.22);
+      background: rgba(180, 130, 255, 0.05);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 0 18px rgba(180, 130, 255, 0.05) inset;
+    }
+    @keyframes media-marquee-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
 
     /* Results section — dark moody screenshot grid (compact) */
@@ -1798,8 +1854,54 @@
       <div class="pane-content">
         <span class="content-stagger pane-eyebrow panel-label">04 — SEO &amp; VIZIBILITATE</span>
         <h2 class="content-stagger pane-h2 panel-title">Apari acolo unde<br>contează.</h2>
+        <!-- Single site card for agentieseo.net (same style as pane 03) -->
+        <div class="content-stagger single-site">
+          <a href="https://www.agentieseo.net/" target="_blank" rel="noopener noreferrer" class="site-card">
+            <div class="site-card-thumb">
+              <img
+                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.agentieseo.net%2F?w=900&amp;h=600"
+                alt="AgentieSEO — preview" loading="lazy" />
+            </div>
+            <div class="site-card-info">
+              <span class="site-card-domain">agentieseo.net</span>
+              <span class="site-card-arrow">→</span>
+            </div>
+          </a>
+        </div>
         <h3 class="content-stagger panel-subtitle">Trafic. Real.</h3>
         <p class="content-stagger panel-description">Avem acces la advertoriale în <strong>Forbes</strong>, <strong>ProTV</strong>, <strong>Antena 3</strong>, <strong>Antena Stars</strong> și zeci de alte publicații premium. Un singur articol în locul potrivit face mai mult decât 6 luni de postări.</p>
+        <!-- Infinite horizontal marquee of Romanian news sites where
+             we can place client advertoriale. Items duplicated twice
+             for seamless loop (CSS translateX 0 → -50%). -->
+        <div class="content-stagger media-marquee">
+          <div class="media-marquee-track">
+            <span class="media-marquee-item">protv.ro</span>
+            <span class="media-marquee-item">stirileprotv.ro</span>
+            <span class="media-marquee-item">a1.ro</span>
+            <span class="media-marquee-item">observatornews.ro</span>
+            <span class="media-marquee-item">antena3.ro</span>
+            <span class="media-marquee-item">kanald.ro</span>
+            <span class="media-marquee-item">digi24.ro</span>
+            <span class="media-marquee-item">prosport.ro</span>
+            <span class="media-marquee-item">sport.ro</span>
+            <span class="media-marquee-item">adevarul.ro</span>
+            <span class="media-marquee-item">libertatea.ro</span>
+            <span class="media-marquee-item">gandul.ro</span>
+            <!-- Duplicate for seamless loop -->
+            <span class="media-marquee-item" aria-hidden="true">protv.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">stirileprotv.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">a1.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">observatornews.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">antena3.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">kanald.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">digi24.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">prosport.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">sport.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">adevarul.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">libertatea.ro</span>
+            <span class="media-marquee-item" aria-hidden="true">gandul.ro</span>
+          </div>
+        </div>
       </div>
     </div>
 
