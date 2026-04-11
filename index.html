@@ -1438,6 +1438,26 @@
       overflow: hidden;
       background: #030305;
     }
+    /* Soft top fade — dissolves the palette edge between the end of the
+       mask section above (page bg #050507) and the start of the contact
+       scene below. Sits above the Three.js canvas (z:0) but below the
+       floating labels (z:5), so the CTA text remains crisp over the fade. */
+    #contact-stage::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 22vh;
+      background: linear-gradient(180deg,
+        #050507              0%,
+        rgba(5, 5, 7, 0.92)  20%,
+        rgba(5, 5, 7, 0.70)  45%,
+        rgba(5, 5, 7, 0.35)  72%,
+        rgba(5, 5, 7, 0.00)  100%);
+      pointer-events: none;
+      z-index: 2;
+    }
     #contact-canvas {
       position: absolute;
       top: 0; left: 0;
