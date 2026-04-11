@@ -1634,59 +1634,58 @@
         overflow: visible;
       }
 
-      /* ── Service panes — mobile architecture differs from desktop.
-         Desktop: each pane is position:absolute inset:0 and cross-fades
-         via opacity. That breaks scroll on mobile because absolute-
-         positioned elements don't contribute to their parent's scroll
-         height, so the overlay can't actually scroll the pane content.
-         Mobile fix: make #service-overlay itself the scroll container,
-         and turn .service-pane into a position:relative block that
-         only renders when .active (display:none otherwise). The active
-         pane flows naturally inside the overlay with min-height:100vh
-         and padding for top/bottom breathing room. iOS Safari then
-         gets a proper touch scroll on the whole overlay. */
-      #service-overlay {
+      /* ── Service panes — mobile needs a BLOCK layout, not flex.
+         The desktop `.service-pane` is `display: flex; align-items:
+         center` which vertically CENTRES its content. When the
+         content is taller than the viewport, flex centring pushes
+         the top of the content above 0 — even with overflow-y:auto
+         the user can't scroll up to it. The whole approach has to
+         change on mobile.
+         Solution: on mobile, the active pane becomes a block-level
+         fixed-position scroll container with 100vh height +
+         overflow-y:auto + padding for close button clearance. Inner
+         content flows naturally from top. Inactive panes are
+         display:none so only one pane contributes layout. */
+      #service-overlay .service-pane {
+        display: none !important;
+      }
+      #service-overlay .service-pane.active {
+        display: block !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        inset: 0 !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
         touch-action: pan-y;
-      }
-      #service-overlay .service-pane {
-        display: none !important;
-        position: relative !important;
-        inset: auto !important;
-        width: 100% !important;
-        min-height: 100vh !important;
-        align-items: flex-start !important;
         padding: 88px 16px 96px !important;
       }
-      #service-overlay .service-pane.active {
+      /* pane-content becomes a flex-column inside the scrolling
+         pane — same stacking behaviour as desktop but now it flows
+         from the TOP of the scroll container instead of being
+         vertically centred. */
+      #service-overlay .pane-content,
+      #service-overlay .pane-content-vp {
         display: flex !important;
-      }
-      .pane-content {
+        flex-direction: column !important;
+        align-items: center !important;
         width: 92vw !important;
         max-width: 640px !important;
+        margin: 0 auto !important;
         height: auto !important;
-      }
-      /* .pane-content-vp (pane 01/02/03) had 'max-height: 100vh;
-         overflow: hidden' for the desktop 'no-scroll' compact
-         layout. Release those constraints on portrait so content
-         flows and participates in the overlay's scroll. */
-      .pane-content.pane-content-vp,
-      .pane-content-vp {
-        max-width: 640px !important;
-        width: 92vw !important;
         max-height: none !important;
         overflow: visible !important;
-        height: auto !important;
       }
       #pane-left-eye   .pane-content,
       #pane-right-eye  .pane-content,
       #pane-nose       .pane-content,
       #pane-left-mouth .pane-content,
       #pane-right-mouth .pane-content {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
         margin-top: 0 !important;
         margin-bottom: 0 !important;
       }
@@ -2653,45 +2652,76 @@
         return iframe;
       }
 
+      const IS_MOBILE_ZOOM = window.matchMedia(
+        '(max-width: 900px), (hover: none) and (pointer: coarse)'
+      ).matches;
+
       function openPhoneZoom(src) {
         if (!phoneZoom || !zoomScreen || !src) return;
-        // Add the JS API + HD hints if not already there
-        if (!/[?&]enablejsapi=/.test(src)) src += '&enablejsapi=1';
-        if (!/[?&]vq=/.test(src))          src += '&vq=hd1080';
-        if (!/[?&]hd=/.test(src))          src += '&hd=1';
+        // Add the HD hints; skip the JS API on mobile because the
+        // YT.Player wrapper tends to leave stale state between
+        // opens on iOS, which caused the 2nd-open black screen.
+        if (!IS_MOBILE_ZOOM && !/[?&]enablejsapi=/.test(src)) src += '&enablejsapi=1';
+        if (!/[?&]vq=/.test(src))  src += '&vq=hd1080';
+        if (!/[?&]hd=/.test(src))  src += '&hd=1';
+        // Extra autoplay/mute-related hints for iOS Safari
+        if (!/[?&]autoplay=/.test(src)) src += '&autoplay=1';
+        if (!/[?&]playsinline=/.test(src)) src += '&playsinline=1';
 
-        // Tear down any previous YT.Player BEFORE we rebuild the iframe,
-        // so we don't leak the old instance pointing at a detached node.
+        // Aggressive cleanup of any leftover state before opening
+        // a new video. Any previous YT.Player instance is destroyed,
+        // any previous iframe is stopped (about:blank) then removed,
+        // and a forced reflow makes sure the DOM change has landed
+        // before the new iframe goes in.
         if (ytPlayer && ytPlayer.destroy) {
           try { ytPlayer.destroy(); } catch (e) {}
           ytPlayer = null;
         }
+        if (zoomScreen) {
+          const stale = zoomScreen.querySelector('iframe');
+          if (stale) {
+            try { stale.src = 'about:blank'; } catch (e) {}
+            stale.remove();
+          }
+          // Force layout flush so the removal is committed before
+          // the new iframe is appended (iOS Safari was sometimes
+          // reusing the removed element's internal media state).
+          void zoomScreen.offsetHeight;
+        }
+
         const iframe = buildFreshIframe();
         if (!iframe) return;
         iframe.src = src;
         phoneZoom.classList.add('open');
 
-        // Once the fresh iframe loads, attach a YT.Player and bump quality
-        iframe.onload = function () {
-          if (!window.YT || !window.YT.Player) return;
-          try {
-            ytPlayer = new window.YT.Player('zoom-iframe', {
-              events: {
-                onReady: function (e) { pushHighestQuality(e.target); },
-                onPlaybackQualityChange: function (e) {
-                  // If YouTube downgrades us, try once more
-                  pushHighestQuality(e.target);
+        // YT.Player wrapper is DESKTOP-ONLY. On mobile it's pure
+        // overhead — iOS Safari ignores setPlaybackQualityRange
+        // anyway, and the wrapper + destroy cycle leaves stale
+        // internal state that breaks subsequent opens.
+        if (!IS_MOBILE_ZOOM) {
+          iframe.onload = function () {
+            if (!window.YT || !window.YT.Player) return;
+            try {
+              ytPlayer = new window.YT.Player('zoom-iframe', {
+                events: {
+                  onReady: function (e) { pushHighestQuality(e.target); },
+                  onPlaybackQualityChange: function (e) {
+                    pushHighestQuality(e.target);
+                  },
                 },
-              },
-            });
-          } catch (e) { /* ignore — quality bump is best-effort */ }
-        };
+              });
+            } catch (e) { /* ignore — quality bump is best-effort */ }
+          };
+        }
       }
       function closePhoneZoom() {
         if (!phoneZoom) return;
         phoneZoom.classList.remove('open');
         // After the fade-out, tear the iframe out completely. Next
-        // open will build a brand-new one from scratch.
+        // open will build a brand-new one from scratch. On mobile
+        // we also set the src to about:blank first so YouTube
+        // releases its audio context cleanly — otherwise iOS was
+        // holding on to the last stream.
         setTimeout(() => {
           if (ytPlayer && ytPlayer.destroy) {
             try { ytPlayer.destroy(); } catch (e) {}
@@ -2699,7 +2729,10 @@
           }
           if (zoomScreen) {
             const iframe = zoomScreen.querySelector('iframe');
-            if (iframe) iframe.remove();
+            if (iframe) {
+              try { iframe.src = 'about:blank'; } catch (e) {}
+              iframe.remove();
+            }
           }
         }, 450);
       }
