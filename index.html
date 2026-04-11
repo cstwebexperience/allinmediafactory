@@ -1592,6 +1592,40 @@
         width: 140px !important;
       }
 
+      /* ── iPhone mockups in pane 01 — reliable mobile taps.
+         touch-action: manipulation kills iOS Safari's 300ms
+         double-tap-zoom wait, so a tap on the phone registers as
+         click instantly. -webkit-tap-highlight-color: transparent
+         removes the grey tap flash. Also clear iOS callout. */
+      .iphone-mockup,
+      .iphone-frame,
+      .iphone-screen,
+      .phone-thumb,
+      .phone-play {
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
+      }
+      /* Phone zoom overlay close button — larger touch target */
+      #phone-zoom-overlay .zoom-close {
+        width: 52px !important;
+        height: 52px !important;
+        top: 1rem !important;
+        right: 1rem !important;
+      }
+      /* Phone zoom overlay: make sure it's above everything AND
+         has working touch-action so the YouTube iframe doesn't
+         get double-tap-zoomed. */
+      #phone-zoom-overlay {
+        touch-action: manipulation;
+      }
+      /* When a pane 01 iPhone is tapped the zoom overlay should
+         appear regardless of scroll position — ensure it doesn't
+         inherit the scroll container's overflow constraints. */
+      #phone-zoom-overlay.open {
+        overflow: visible;
+      }
+
       /* ── Service panes — make them scrollable on mobile. Desktop
          uses align-items:center so content sits vertically centred;
          on a phone the content is often taller than the viewport
@@ -1611,6 +1645,19 @@
         max-width: 640px !important;
         /* Allow the content box to grow past viewport height on
            mobile so the scroll container can scroll through it. */
+        height: auto !important;
+      }
+      /* .pane-content-vp (pane 01/02/03) had 'max-height: 100vh;
+         overflow: hidden' for the desktop 'no-scroll' compact
+         layout. On mobile that blocks the scroll container from
+         reaching the rest of the content (iPhone mockups, stats,
+         screenshots). Release those constraints on portrait. */
+      .pane-content.pane-content-vp,
+      .pane-content-vp {
+        max-width: 640px !important;
+        width: 92vw !important;
+        max-height: none !important;
+        overflow: visible !important;
         height: auto !important;
       }
       #pane-left-eye   .pane-content,
