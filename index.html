@@ -1536,29 +1536,26 @@
         letter-spacing: 0.18em;
       }
 
-      /* ── Mask section — lay the 16:9 scene out as a full-width
-         box centred vertically in the viewport. Both #stage canvas
-         (scroll-scrub video) and .fragments-canvas (PNG mask layer)
-         become the same 16:9 box so they stay pixel-aligned, and
-         the rest of the tall portrait viewport is black breathing
-         room. The mask + annotations fill ~100% of the screen
-         width instead of collapsing to a thin horizontal strip. */
+      /* ── Mask section — FULL VIEWPORT COVER on portrait.
+         Both #stage canvas and .fragments-canvas fill the entire
+         mobile viewport with cover semantics. This crops the sides
+         of the 16:9 image (the far-left/right of the photo) but
+         keeps the mask itself centre-focused, which is what the
+         user sees as 'full screen video' instead of the old 16:9
+         letterbox band in the middle of the phone. */
       #stage canvas,
       .fragments-canvas {
-        top: 50% !important;
+        top: 0 !important;
         left: 0 !important;
         width: 100vw !important;
-        height: 56.25vw !important;       /* 16:9 aspect box */
-        transform: translateY(-50%) scale(0.98) !important;
-        transform-origin: center center !important;
+        height: 100vh !important;
+        transform: none !important;
       }
-      /* Since the box is an exact 16:9 match for the image aspect,
-         cover and contain give identical results — switch both
-         layers to cover so every last pixel of the image fills the
-         box (Math.min in hitTest still works: at identical aspect
-         ratios min == max). */
       #stage canvas { object-fit: cover !important; }
       .mask-fragment { background-size: cover !important; }
+      /* Hit-test math branches on aspect — see index.html hitTest()
+         which picks Math.max on portrait (cover) and Math.min on
+         landscape (contain). */
 
       /* Annotation text — needs to be larger so 01..05 labels are
          readable on a 390px wide screen. The ann-svg viewBox is
@@ -2285,25 +2282,23 @@
       requestAnimationFrame(floatTick);
 
       // Returns the data-frag name under the given client coords, or null.
-      // Uses object-fit: contain semantics so it matches the CSS
-      // background-size: contain on .mask-fragment AND the object-fit:
-      // contain on #stage canvas. Subtracts each fragment's current
-      // float offset so the hit-test follows the visibly drifted
-      // pixels, not the original PNG box.
+      // Fit semantics branch on viewport aspect:
+      //   landscape (desktop, aspect > 1) → contain (Math.min)
+      //   portrait  (phone,   aspect ≤ 1) → cover   (Math.max)
+      // This matches the CSS we apply in the @media portrait override,
+      // where #stage canvas + .mask-fragment switch from contain to
+      // cover so the mask fills the full mobile viewport.
       function hitTest(clientX, clientY) {
         const r = canvas.getBoundingClientRect();
         if (clientX < r.left || clientX > r.right || clientY < r.top || clientY > r.bottom) return null;
-        // Check the topmost first by Z order — but since they all overlap with
-        // alpha, any with non-transparent pixel here counts. We iterate in a
-        // stable order; if multiple match (rare overlap zones) we keep the
-        // first one (eyes/mouth/nose tend not to overlap on the mask).
+        const isPortrait = r.width / r.height < 1.0;
         for (const name in offscreens) {
           const off = offscreens[name];
           if (!off) continue;
           const drift = fragmentOffsets[name] || { x: 0, y: 0 };
-          // contain: PNG fits fully inside the canvas box, letterbox
-          // on the axis where the image is too small — matches the CSS
-          const scale = Math.min(r.width / off.w, r.height / off.h);
+          const scale = isPortrait
+            ? Math.max(r.width / off.w, r.height / off.h)   // cover
+            : Math.min(r.width / off.w, r.height / off.h);  // contain
           const drawnW = off.w * scale;
           const drawnH = off.h * scale;
           const dx = (r.width - drawnW) / 2;  // could be negative
@@ -2669,7 +2664,13 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 // page falls back to native scroll. window._lowPowerGpu set in init script.
 const IS_MOBILE = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 const HW = navigator.hardwareConcurrency || 4;
-const LOW_POWER = IS_MOBILE || HW <= 4 || !!window._lowPowerGpu;
+// LOW_POWER is ONLY for genuinely weak hardware — old phones (HW<6),
+// integrated/software GPUs (_lowPowerGpu), or HW<=4 desktops. Modern
+// iPhone 13+/Pixel 7+ etc. have 6-8 cores and render the full composer
+// (bloom + chromatic aberration) at 60fps without issue. Forcing them
+// to the LOW_POWER path made the dark metallic sphere look like just
+// 4-5 faint purple dots because bloom was disabled.
+const LOW_POWER = (IS_MOBILE && HW < 6) || HW <= 4 || !!window._lowPowerGpu;
 
 const canvas   = document.getElementById('hero-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: LOW_POWER ? 'low-power' : 'high-performance' });
@@ -2784,18 +2785,19 @@ window.addEventListener('mousemove', e => {
   my = -(e.clientY / window.innerHeight) * 2 + 1;
 });
 
-// scrollP is driven by Lenis (smooth scroll) instead of raw window.scrollY
-// so the hero animation stays in lockstep with the rest of the page.
+// scrollP is driven by Lenis (smooth scroll) on desktop AND by native
+// scroll events on mobile. Critical: on touch phones Lenis has
+// smoothTouch:false so it does NOT intercept native touch scroll —
+// lenis.on('scroll') never fires, and scrollP would get stuck. We
+// attach BOTH listeners so scrollP always updates. readScrollP also
+// falls back to window.scrollY when Lenis hasn't been created yet.
 let scrollP = 0;
 function readScrollP() {
   const sy = window._lenis ? window._lenis.scroll : window.scrollY;
   scrollP = Math.min(Math.max(sy / window.innerHeight, 0), 1);
 }
-if (window._lenis) {
-  window._lenis.on('scroll', readScrollP);
-} else {
-  window.addEventListener('scroll', readScrollP, { passive: true });
-}
+if (window._lenis) window._lenis.on('scroll', readScrollP);
+window.addEventListener('scroll', readScrollP, { passive: true });
 readScrollP();
 
 function snoise(x, y, z) {
@@ -2944,7 +2946,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 // Same contact scene visuals on every device — only pixelRatio adapts.
 const C_IS_MOBILE = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 const C_HW = navigator.hardwareConcurrency || 4;
-const C_LOW_POWER = C_IS_MOBILE || C_HW <= 4 || !!window._lowPowerGpu;
+// Same rule as the hero: modern mobile with HW>=6 gets full quality.
+const C_LOW_POWER = (C_IS_MOBILE && C_HW < 6) || C_HW <= 4 || !!window._lowPowerGpu;
 
 const contactArea  = document.getElementById('contact');
 const cCanvas      = document.getElementById('contact-canvas');
@@ -3026,7 +3029,11 @@ scene2.add(waGlow);
 scene2.add(new THREE.PointLight(0x6030b0, 3, 15));
 scene2.add(new THREE.AmbientLight(0x080410, 0.4));
 
-// ── Scroll (Lenis-driven) ──
+// ── Scroll (Lenis on desktop + native on mobile) ──
+// Both listeners are attached because Lenis doesn't fire its scroll
+// event on native touch scroll (smoothTouch:false). Without the
+// native listener cScrollP freezes and the clipboard + WhatsApp
+// meshes never animate in on phones.
 let cScrollP = 0;
 function updateContactScroll() {
   const sy = window._lenis ? window._lenis.scroll : window.scrollY;
@@ -3034,11 +3041,8 @@ function updateContactScroll() {
   const scrolled   = sy - contactArea.offsetTop;
   cScrollP = Math.min(Math.max(scrolled / scrollable, 0), 1);
 }
-if (window._lenis) {
-  window._lenis.on('scroll', updateContactScroll);
-} else {
-  window.addEventListener('scroll', updateContactScroll, { passive: true });
-}
+if (window._lenis) window._lenis.on('scroll', updateContactScroll);
+window.addEventListener('scroll', updateContactScroll, { passive: true });
 updateContactScroll();
 
 // ── Helpers ──
@@ -3134,8 +3138,13 @@ function tick2() {
     clipGlow.intensity = (3 + Math.sin(t*1.5)*1.5 + hClipS*5) * clipP;
     clipGlow.position.x = clipMesh.position.x;
 
-    // Label position
-    const v1 = clipMesh.position.clone(); v1.y -= 1.05; v1.project(camera2);
+    // Label position. On desktop the label sits BELOW the clipboard
+    // mesh (negative y offset). On portrait the clipboard mesh is
+    // stacked in the top half so the label goes ABOVE it (positive
+    // offset) — otherwise it falls into the middle of the screen
+    // and overlaps the WhatsApp mesh below.
+    const clipLabelOffset = C_PORTRAIT ? 0.75 : -1.05;
+    const v1 = clipMesh.position.clone(); v1.y += clipLabelOffset; v1.project(camera2);
     clipLabelEl.style.left = ((v1.x*0.5+0.5)*window.innerWidth) + 'px';
     clipLabelEl.style.top  = ((-v1.y*0.5+0.5)*window.innerHeight) + 'px';
     clipLabelEl.style.opacity = mapRange2(clipP, 0.85, 1) * (0.5 + hClipS*0.5);
@@ -3151,7 +3160,10 @@ function tick2() {
     waGlow.intensity = (2 + Math.sin(t*1.8)*1 + hWaS*4) * waP;
     waGlow.position.x = waMesh.position.x;
 
-    const v2 = waMesh.position.clone(); v2.y -= 0.6; v2.project(camera2);
+    // On portrait waMesh is in bottom half, label sits a touch lower.
+    // On desktop waMesh is side-right, label below it.
+    const waLabelOffset = C_PORTRAIT ? -0.42 : -0.6;
+    const v2 = waMesh.position.clone(); v2.y += waLabelOffset; v2.project(camera2);
     waLabelEl.style.left = ((v2.x*0.5+0.5)*window.innerWidth) + 'px';
     waLabelEl.style.top  = ((-v2.y*0.5+0.5)*window.innerHeight) + 'px';
     waLabelEl.style.opacity = mapRange2(waP, 0.85, 1) * (0.5 + hWaS*0.5);
