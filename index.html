@@ -1634,18 +1634,14 @@
         overflow: visible;
       }
 
-      /* ── Service panes — mobile needs a BLOCK layout, not flex.
-         The desktop `.service-pane` is `display: flex; align-items:
-         center` which vertically CENTRES its content. When the
-         content is taller than the viewport, flex centring pushes
-         the top of the content above 0 — even with overflow-y:auto
-         the user can't scroll up to it. The whole approach has to
-         change on mobile.
-         Solution: on mobile, the active pane becomes a block-level
-         fixed-position scroll container with 100vh height +
-         overflow-y:auto + padding for close button clearance. Inner
-         content flows naturally from top. Inactive panes are
-         display:none so only one pane contributes layout. */
+      /* ── Service panes — mobile uses BLOCK layout, not flex.
+         Desktop: .service-pane is 'display:flex; align-items:center'
+         which vertically centres content and prevents scroll. On
+         mobile the active pane becomes a fixed position:fixed
+         block-level scroll container. Inner content flows from top. */
+      #service-overlay {
+        overflow: hidden !important;
+      }
       #service-overlay .service-pane {
         display: none !important;
       }
@@ -1656,29 +1652,38 @@
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        inset: 0 !important;
-        overflow-y: auto !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        overflow-y: scroll !important;
+        overflow-x: hidden !important;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
-        touch-action: pan-y;
+        touch-action: pan-y !important;
         padding: 88px 16px 96px !important;
+        align-items: initial !important;
+        justify-content: initial !important;
+        z-index: 210;
       }
-      /* pane-content becomes a flex-column inside the scrolling
-         pane — same stacking behaviour as desktop but now it flows
-         from the TOP of the scroll container instead of being
-         vertically centred. */
+      /* pane-content is a flex column INSIDE the block pane,
+         centred horizontally via margin:0 auto. Grows to natural
+         content height so the pane's own scrollbar engages. */
       #service-overlay .pane-content,
       #service-overlay .pane-content-vp {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        width: 92vw !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
         max-width: 640px !important;
         margin: 0 auto !important;
+        padding: 0 !important;
         height: auto !important;
+        min-height: 0 !important;
         max-height: none !important;
         overflow: visible !important;
       }
+      /* Cancel all desktop side/top/bottom offsets on every pane */
       #pane-left-eye   .pane-content,
       #pane-right-eye  .pane-content,
       #pane-nose       .pane-content,
@@ -1688,6 +1693,17 @@
         margin-right: auto !important;
         margin-top: 0 !important;
         margin-bottom: 0 !important;
+      }
+      /* Results grid → 1 column on mobile so all 3 cards stack */
+      #service-overlay .results-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      /* iPhone carousel → wrap to multiple rows on narrow screens */
+      #service-overlay .iphone-track {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 18px !important;
       }
 
       /* Overlay close button — bigger touch target on mobile */
@@ -2747,6 +2763,20 @@
         e.stopPropagation();
         const ytId = mockup.dataset.ytId;
         if (!ytId) return;
+
+        // MOBILE: open the video directly in a new tab (YouTube app
+        // or mobile site). The custom phone-zoom overlay + iframe
+        // embed has too many iOS quirks — 2nd-open black screens,
+        // the whole page reloading when the iframe fails autoplay,
+        // memory pressure from destroy/recreate cycles. Native
+        // YouTube on iOS just works, and the tap context is a
+        // valid user gesture so the new tab is allowed.
+        if (IS_MOBILE_ZOOM) {
+          window.open('https://www.youtube.com/watch?v=' + ytId, '_blank', 'noopener');
+          return;
+        }
+
+        // DESKTOP: keep the fancy phone-zoom overlay
         const src = 'https://www.youtube-nocookie.com/embed/' + ytId
                   + '?autoplay=1&playsinline=1&rel=0&modestbranding=1';
         openPhoneZoom(src);
