@@ -1547,16 +1547,16 @@
       }
       /* ── 5-fragment mask section (.fragments-canvas + .mask-fragment)
          — stays in a 100vw × 56.25vw centred box so the full mask +
-         annotations remain readable. Explicitly DIFFERENT from the
-         stage canvas above: the crossfade snaps from full-screen
-         video to boxed mask in a few % of scroll, which is a clean
-         compositional cut rather than a blurry overlap. */
+         annotations remain readable. Scaled up 14% to feel bigger
+         on small screens while still fitting comfortably; the
+         fragments-section has overflow:hidden so the 14% overflow
+         on the sides is clipped invisibly. */
       .fragments-canvas {
         top: 50% !important;
         left: 0 !important;
         width: 100vw !important;
         height: 56.25vw !important;
-        transform: translateY(-50%) !important;
+        transform: translateY(-50%) scale(1.14) !important;
         transform-origin: center center !important;
       }
       .mask-fragment { background-size: cover !important; }
@@ -2225,12 +2225,22 @@
       //   80%+       : .revealed → annotation draw-on animation +
       //                pointer-events on (clicks enabled)
       if (window.gsap && window.ScrollTrigger) {
-        const SCRUB_END           = 0.70;
-        const FRAGMENTS_FADE_IN   = 0.70;
-        const FRAGMENTS_FADE_OUT  = 0.76;
-        const STAGE_FADE_START    = 0.76;
-        const STAGE_FADE_END      = 0.80;
-        const REVEAL_AT           = 0.80;
+        // On mobile/portrait the stage canvas renders the mask full
+        // screen while .fragments-canvas renders it inside a smaller
+        // centred 16:9 box — so the desktop overlap crossfade shows
+        // a "big mask + small mask" intercalation at 70-76%. Switch
+        // to a clean SEQUENTIAL crossfade on mobile: stage fades out
+        // completely first, then fragments fade in from black.
+        const IS_NARROW = window.matchMedia(
+          '(max-width: 900px), (orientation: portrait)'
+        ).matches;
+
+        const SCRUB_END          = 0.70;
+        const FRAGMENTS_FADE_IN  = IS_NARROW ? 0.77 : 0.70;
+        const FRAGMENTS_FADE_OUT = IS_NARROW ? 0.83 : 0.76;
+        const STAGE_FADE_START   = IS_NARROW ? 0.70 : 0.76;
+        const STAGE_FADE_END     = IS_NARROW ? 0.76 : 0.80;
+        const REVEAL_AT          = IS_NARROW ? 0.83 : 0.80;
 
         const servicii = document.getElementById('servicii');
         const fragsCanvas = document.getElementById('fragments-canvas');
