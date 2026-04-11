@@ -2355,11 +2355,17 @@
     (function () {
       // Phone zoom — clicking any iPhone mockup pops a giant version
       // of itself into the centre of the screen + autoplays the video.
-      const phoneZoom  = document.getElementById('phone-zoom-overlay');
-      const zoomIframe = document.getElementById('zoom-iframe');
-      const zoomClose  = document.getElementById('phoneZoomClose');
+      const phoneZoom = document.getElementById('phone-zoom-overlay');
+      const zoomClose = document.getElementById('phoneZoomClose');
+      // Parent <div class="iphone-screen"> where the iframe lives.
+      // We intentionally DO NOT cache the iframe element — we rebuild
+      // it from scratch every open, because YT.Player.destroy() mangles
+      // the original iframe node and any cached reference becomes dead.
+      const zoomScreen = phoneZoom
+        ? phoneZoom.querySelector('.iphone-screen')
+        : null;
 
-      // Track the YT.Player instance so we can re-create it per video
+      // Track the YT.Player instance so we can tear it down on close
       let ytPlayer = null;
 
       // Try to nudge the player to the highest available quality.
@@ -2379,20 +2385,46 @@
         } catch (e) { /* API may have changed; safe to ignore */ }
       }
 
+      // Rip out any previous iframe (dead or alive) and build a fresh
+      // one each time. This is the only reliable way to reopen after a
+      // YT.Player.destroy() — reusing the same node gives a black screen.
+      function buildFreshIframe() {
+        if (!zoomScreen) return null;
+        // Nuke any leftover iframe from the previous open
+        const old = zoomScreen.querySelector('iframe');
+        if (old) old.remove();
+        const iframe = document.createElement('iframe');
+        iframe.id = 'zoom-iframe';
+        iframe.frameBorder = '0';
+        iframe.setAttribute('allow',
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        iframe.setAttribute('allowfullscreen', '');
+        zoomScreen.appendChild(iframe);
+        return iframe;
+      }
+
       function openPhoneZoom(src) {
-        if (!phoneZoom || !zoomIframe || !src) return;
+        if (!phoneZoom || !zoomScreen || !src) return;
         // Add the JS API + HD hints if not already there
         if (!/[?&]enablejsapi=/.test(src)) src += '&enablejsapi=1';
         if (!/[?&]vq=/.test(src))          src += '&vq=hd1080';
         if (!/[?&]hd=/.test(src))          src += '&hd=1';
-        zoomIframe.src = src;
+
+        // Tear down any previous YT.Player BEFORE we rebuild the iframe,
+        // so we don't leak the old instance pointing at a detached node.
+        if (ytPlayer && ytPlayer.destroy) {
+          try { ytPlayer.destroy(); } catch (e) {}
+          ytPlayer = null;
+        }
+        const iframe = buildFreshIframe();
+        if (!iframe) return;
+        iframe.src = src;
         phoneZoom.classList.add('open');
 
-        // Once the iframe loads, attach a YT.Player and bump quality
-        zoomIframe.onload = function () {
+        // Once the fresh iframe loads, attach a YT.Player and bump quality
+        iframe.onload = function () {
           if (!window.YT || !window.YT.Player) return;
           try {
-            if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
             ytPlayer = new window.YT.Player('zoom-iframe', {
               events: {
                 onReady: function (e) { pushHighestQuality(e.target); },
@@ -2408,12 +2440,16 @@
       function closePhoneZoom() {
         if (!phoneZoom) return;
         phoneZoom.classList.remove('open');
-        // Stop the video after the fade-out by clearing src
+        // After the fade-out, tear the iframe out completely. Next
+        // open will build a brand-new one from scratch.
         setTimeout(() => {
-          if (zoomIframe) zoomIframe.src = '';
           if (ytPlayer && ytPlayer.destroy) {
             try { ytPlayer.destroy(); } catch (e) {}
             ytPlayer = null;
+          }
+          if (zoomScreen) {
+            const iframe = zoomScreen.querySelector('iframe');
+            if (iframe) iframe.remove();
           }
         }, 450);
       }
