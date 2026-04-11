@@ -2828,8 +2828,18 @@ function tick() {
   const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
 
   if (titleEl && window._loaderDone) {
-    titleEl.style.opacity   = 1 - easeInOut(mapRange(scrollP, 0.03, 0.20));
-    titleEl.style.transform = `translateY(${scrollP * -40}px)`;
+    // The whole .hero wrapper fades via heroEl.style.opacity in the
+    // (0.82 → 0.98) scroll range below. Because titleEl is a child of
+    // heroEl, CSS opacity inheritance multiplies the two together —
+    // so keeping the title at opacity:1 lets it dissolve in PERFECT
+    // sync with the sphere (no more text disappearing at 20% while
+    // the sphere sits around until 98%).
+    titleEl.style.opacity = 1;
+    // Subtle upward drift tied to the SAME fade range, so the text
+    // only starts drifting away as it's being dissolved. Max 14px,
+    // gentle easeIn — feels like release, not flight.
+    const titleDrift = easeIn(mapRange(scrollP, 0.82, 0.98));
+    titleEl.style.transform = `translateY(${titleDrift * -14}px)`;
   }
   camera.position.z = 5 - pZoom * 1.0;
   camera.position.y = 0.3 + pRise * 0.5;
