@@ -1545,18 +1545,21 @@
         transform: none !important;
         object-fit: cover !important;
       }
-      /* ── 5-fragment mask section (.fragments-canvas + .mask-fragment)
-         — stays in a 100vw × 56.25vw centred box so the full mask +
-         annotations remain readable. Scaled up 14% to feel bigger
-         on small screens while still fitting comfortably; the
-         fragments-section has overflow:hidden so the 14% overflow
-         on the sides is clipped invisibly. */
+      /* ── 5-fragment mask section — bigger on mobile without
+         pushing labels off the edge of the viewport.
+         Strategy: box stays at 100vw × 56.25vw (exact image aspect)
+         so no crop; transform: scale(1.10) grows the whole thing
+         uniformly by 10% from the centre. Labels 01/02/04/05 sit
+         at x=7.5 / x=92.5 in the SVG viewBox which maps to the
+         visible viewport edges after the 10% scale (safer than
+         the 14% attempt that pushed labels to within ~1vw of the
+         edge). Annotations remain readable, mask feels larger. */
       .fragments-canvas {
         top: 50% !important;
         left: 0 !important;
         width: 100vw !important;
         height: 56.25vw !important;
-        transform: translateY(-50%) scale(1.14) !important;
+        transform: translateY(-50%) scale(1.10) !important;
         transform-origin: center center !important;
       }
       .mask-fragment { background-size: cover !important; }
@@ -1572,7 +1575,12 @@
       /* ── Contact scene — shrink the section from 350vh to 220vh
          so the user doesn't have to scroll forever to reach the
          buttons. Labels also need larger text. */
-      .contact-scroll-area { height: 220vh; }
+      /* Shorter scroll range on mobile — the clipboard + WhatsApp
+         meshes finish their fly-in at ~75% of this, so anything
+         beyond 150vh is just dead scroll past the footer. Was 220vh,
+         then users would keep scrolling into black void after the
+         WA button landed. */
+      .contact-scroll-area { height: 150vh; }
       #contact-clipLabel span,
       #contact-waLabel span {
         font-size: 13px !important;
@@ -1626,32 +1634,44 @@
         overflow: visible;
       }
 
-      /* ── Service panes — make them scrollable on mobile. Desktop
-         uses align-items:center so content sits vertically centred;
-         on a phone the content is often taller than the viewport
-         and the user couldn't reach the bottom of pane 05 (two
-         paragraphs) because scroll was blocked. Fix: overflow-y:
-         auto + flex-start alignment + generous top/bottom padding
-         so tall content flows naturally and can be scrolled. */
-      .service-pane {
+      /* ── Service panes — mobile architecture differs from desktop.
+         Desktop: each pane is position:absolute inset:0 and cross-fades
+         via opacity. That breaks scroll on mobile because absolute-
+         positioned elements don't contribute to their parent's scroll
+         height, so the overlay can't actually scroll the pane content.
+         Mobile fix: make #service-overlay itself the scroll container,
+         and turn .service-pane into a position:relative block that
+         only renders when .active (display:none otherwise). The active
+         pane flows naturally inside the overlay with min-height:100vh
+         and padding for top/bottom breathing room. iOS Safari then
+         gets a proper touch scroll on the whole overlay. */
+      #service-overlay {
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
+        touch-action: pan-y;
+      }
+      #service-overlay .service-pane {
+        display: none !important;
+        position: relative !important;
+        inset: auto !important;
+        width: 100% !important;
+        min-height: 100vh !important;
         align-items: flex-start !important;
-        padding: 88px 0 96px !important;
+        padding: 88px 16px 96px !important;
+      }
+      #service-overlay .service-pane.active {
+        display: flex !important;
       }
       .pane-content {
         width: 92vw !important;
         max-width: 640px !important;
-        /* Allow the content box to grow past viewport height on
-           mobile so the scroll container can scroll through it. */
         height: auto !important;
       }
       /* .pane-content-vp (pane 01/02/03) had 'max-height: 100vh;
          overflow: hidden' for the desktop 'no-scroll' compact
-         layout. On mobile that blocks the scroll container from
-         reaching the rest of the content (iPhone mockups, stats,
-         screenshots). Release those constraints on portrait. */
+         layout. Release those constraints on portrait so content
+         flows and participates in the overlay's scroll. */
       .pane-content.pane-content-vp,
       .pane-content-vp {
         max-width: 640px !important;
@@ -2323,13 +2343,20 @@
       // ── Float animation params ─────────────────────────
       // Each fragment drifts on its own sin/cos curve. Different phases,
       // amplitudes and speeds so the 5 pieces never feel synced. Kept
-      // small (<= 8px) so it reads as breathing, not sliding.
+      // small (<= 8px) on desktop so it reads as breathing, not sliding.
+      // On mobile we multiply the amplitudes by 0.35 — the mask is
+      // visually smaller on a phone so the same pixel drift made
+      // adjacent fragments overlap each other visibly.
+      const IS_MOBILE_FLOAT = window.matchMedia(
+        '(max-width: 900px), (orientation: portrait)'
+      ).matches;
+      const FLOAT_SCALE = IS_MOBILE_FLOAT ? 0.35 : 1.0;
       const FLOAT_PARAMS = {
-        'ochi-stang':   { ax: 6, ay: 5, phx: 0.0,  phy: 1.2, sx: 0.45, sy: 0.38 },
-        'ochi-drept':   { ax: 5, ay: 6, phx: 0.8,  phy: 0.4, sx: 0.42, sy: 0.50 },
-        'nas':          { ax: 4, ay: 4, phx: 2.0,  phy: 2.5, sx: 0.55, sy: 0.48 },
-        'gura-stanga':  { ax: 5, ay: 6, phx: 1.5,  phy: 0.7, sx: 0.38, sy: 0.52 },
-        'gura-dreapta': { ax: 6, ay: 5, phx: 0.4,  phy: 2.2, sx: 0.48, sy: 0.40 },
+        'ochi-stang':   { ax: 6 * FLOAT_SCALE, ay: 5 * FLOAT_SCALE, phx: 0.0,  phy: 1.2, sx: 0.45, sy: 0.38 },
+        'ochi-drept':   { ax: 5 * FLOAT_SCALE, ay: 6 * FLOAT_SCALE, phx: 0.8,  phy: 0.4, sx: 0.42, sy: 0.50 },
+        'nas':          { ax: 4 * FLOAT_SCALE, ay: 4 * FLOAT_SCALE, phx: 2.0,  phy: 2.5, sx: 0.55, sy: 0.48 },
+        'gura-stanga':  { ax: 5 * FLOAT_SCALE, ay: 6 * FLOAT_SCALE, phx: 1.5,  phy: 0.7, sx: 0.38, sy: 0.52 },
+        'gura-dreapta': { ax: 6 * FLOAT_SCALE, ay: 5 * FLOAT_SCALE, phx: 0.4,  phy: 2.2, sx: 0.48, sy: 0.40 },
       };
       // Live per-fragment pixel offsets — read by hitTest() so clicks
       // land on the visible drifted pixels, not the original PNG coords.
