@@ -3225,52 +3225,55 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 
 
 // ── 2. LOADING SCREEN ───────────────────────────────
+// Smooth rAF-driven counter 0 → 100 over a fixed duration with
+// ease-out cubic. No fake random steps, no 'sprint from 17 to 100'
+// jump — every frame pushes the bar forward by a smooth delta.
 (function () {
   const loader   = document.getElementById('loader');
   const fill     = document.getElementById('loader-bar-fill');
   const pctEl    = document.getElementById('loader-percent');
-  let progress   = 0;
-  let finished   = false;
 
-  // Ease progress up to 88% organically
-  const tick = setInterval(() => {
+  const DURATION = 3200;   // total time for 0 → 100
+  const startTime = performance.now();
+  let finished = false;
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function tickFrame(now) {
     if (finished) return;
-    const step = Math.max(0.4, (88 - progress) * 0.03 + Math.random() * 1.8);
-    progress = Math.min(progress + step, 88);
-    fill.style.width = progress + '%';
-    pctEl.textContent = Math.floor(progress) + '%';
-  }, 70);
+    const elapsed = now - startTime;
+    const t = Math.min(1, elapsed / DURATION);
+    const v = easeOutCubic(t) * 100;
+    fill.style.width = v + '%';
+    pctEl.textContent = Math.floor(v) + '%';
+    if (t < 1) {
+      requestAnimationFrame(tickFrame);
+    } else {
+      pctEl.textContent = '100%';
+      fill.style.width = '100%';
+      // Brief hold at 100 so the user registers the end state, then exit
+      setTimeout(complete, 260);
+    }
+  }
+  requestAnimationFrame(tickFrame);
 
   function complete() {
     if (finished) return;
     finished = true;
-    clearInterval(tick);
-    // Sprint 88 → 100
-    gsap.to({ p: progress }, {
-      p: 100, duration: 0.6, ease: 'power2.out',
-      onUpdate: function () {
-        const v = Math.floor(this.targets()[0].p);
-        fill.style.width = v + '%';
-        pctEl.textContent = v + '%';
-      },
+    // Dramatic mask-expand reveal (same feel as before)
+    gsap.to(loader, {
+      clipPath: 'circle(0% at 50% 50%)',
+      duration: 1.0, delay: 0.1,
+      ease: 'power3.inOut',
       onComplete: () => {
-        // Dramatic mask-expand reveal
-        gsap.to(loader, {
-          clipPath: 'circle(0% at 50% 50%)',
-          duration: 1.0, delay: 0.2,
-          ease: 'power3.inOut',
-          onComplete: () => {
-            loader.style.display = 'none';
-            revealPage();
-          }
-        });
+        loader.style.display = 'none';
+        revealPage();
       }
     });
   }
 
-  window.addEventListener('loaderAssetReady', complete, { once: true });
-  // Fallback — hide after 4s no matter what
-  setTimeout(complete, 4000);
+  // Hard fallback — fire reveal after 6s no matter what
+  setTimeout(complete, 6000);
 
   function revealPage() {
     window._loaderDone = true;
