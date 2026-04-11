@@ -107,6 +107,21 @@
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.3);
+      /* Start hidden; the .sub-reveal class added by the loader triggers
+         a CSS keyframe animation with 'forwards' fill mode. CSS keyframes
+         with forwards persist their end state at the computed-style level,
+         so even if the user scrolls fast and the parent hero briefly hides
+         via visibility:hidden, the sub can't get stuck at opacity:0 the
+         way a GSAP .from tween could. */
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    .hero-title-block .sub.sub-reveal {
+      animation: heroSubReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+    }
+    @keyframes heroSubReveal {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0);    }
     }
 
     /* Scroll hint */
@@ -1627,6 +1642,14 @@
       }
       #loader { display: none !important; }
       .hero-title-block { opacity: 1 !important; }
+      /* Under reduced motion the global rule kills our 0.9s sub reveal
+         to 0.01ms, but 'forwards' still applies the end state — force
+         the sub visible in case the class is never added (if loader
+         bails early). */
+      .hero-title-block .sub {
+        opacity: 1 !important;
+        transform: none !important;
+      }
       /* Marquee is decorative and NOT seizure-inducing — keep it looping even
          when users (or Windows) request reduced motion. Without this override,
          the global * rule kills it in 0.01ms. */
@@ -3272,7 +3295,12 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
       });
     }
     if (sub) {
-      gsap.from(sub, { opacity: 0, y: 14, duration: 0.9, ease: 'power2.out', delay: 0.55 });
+      // Trigger the CSS keyframe reveal (opacity + y). Using CSS here
+      // instead of gsap.from because the CSS animation's 'forwards' fill
+      // mode can't be interrupted by rapid scroll that toggles the hero's
+      // visibility — the old GSAP tween used to get stuck at opacity:0
+      // if visibility:hidden kicked in mid-tween.
+      sub.classList.add('sub-reveal');
     }
   }
 })();
