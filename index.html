@@ -3480,7 +3480,14 @@ window._contactVisible = true;
   const ctx = canvas.getContext('2d');
   let W, H;
 
-  const PARTICLE_COUNT = 110;
+  // On mobile / touch / narrow viewport we cut the particle count
+  // aggressively so the rAF loop doesn't steal frames from the
+  // Three.js hero sphere + scroll-scrub canvas. 110 was too heavy
+  // on iPhone when combined with the deform loop + bloom.
+  const IS_TOUCH_OR_NARROW = window.matchMedia(
+    '(max-width: 900px), (hover: none) and (pointer: coarse)'
+  ).matches;
+  const PARTICLE_COUNT = IS_TOUCH_OR_NARROW ? 32 : 110;
   const MOUSE_RADIUS   = 130;
   const MOUSE_FORCE    = 0.20;
 
