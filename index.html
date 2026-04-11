@@ -1122,14 +1122,11 @@
       height: 100%;
       opacity: 0;
       will-change: opacity, transform;
-      /* Shrink the whole mask (fragments + annotation SVG inside) by
-         10% so the full mask + its 04/05 labels fit comfortably inside
-         the viewport with breathing room. Scale is applied on the
-         parent so mask pieces AND annotation lines stay in sync.
-         hitTest() uses getBoundingClientRect which returns the
-         post-transform rect, so clicks map correctly without extra
-         math. */
-      transform: scale(0.90);
+      /* Shrink mask + annotation SVG uniformly. IMPORTANT: #stage canvas
+         above uses the EXACT same transform so the video scrub layer
+         and the PNG mask layer stay pixel-aligned during the crossfade
+         (breaking this alignment causes a visible double-mask bug). */
+      transform: scale(0.92);
       transform-origin: center center;
     }
 
@@ -1144,12 +1141,11 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      /* contain (not cover) so the entire PNG fits inside the box — no
-         crop on any edge. With the float animation translating the
-         fragment up to 6px, cover used to expose cropped edges on the
-         left-eye and similar pieces. contain guarantees the whole
-         shape is visible even at extreme drift offsets. */
-      background-size: contain;
+      /* cover — MUST match #stage canvas object-fit: cover so the video
+         layer and the PNG mask layer line up pixel-for-pixel during
+         the scroll-scrub crossfade. Using contain here caused a visible
+         double-mask bug where the two layers were at different scales. */
+      background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       pointer-events: none;
@@ -1314,6 +1310,12 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      /* Must match the scale applied to .fragments-canvas below — both
+         layers are sticky-stacked over the same viewport box and need
+         the exact same transform so the scroll-scrub video and the PNG
+         mask fragments stay pixel-aligned during the crossfade. */
+      transform: scale(0.92);
+      transform-origin: center center;
     }
 
     /* ── Contact Animation Section ──────────────────────── */
@@ -2168,9 +2170,8 @@
       requestAnimationFrame(floatTick);
 
       // Returns the data-frag name under the given client coords, or null.
-      // Uses object-fit: contain semantics so it matches the CSS
-      // background-size: contain on .mask-fragment (the PNG fits fully
-      // inside the box; the smaller dimension of viewport/image ratio wins).
+      // Uses object-fit: cover semantics so it matches the CSS
+      // background-size: cover on .mask-fragment + #stage canvas.
       // Subtracts each fragment's current float offset so the hit-test
       // follows the visibly drifted pixels, not the original PNG box.
       function hitTest(clientX, clientY) {
@@ -2184,9 +2185,8 @@
           const off = offscreens[name];
           if (!off) continue;
           const drift = fragmentOffsets[name] || { x: 0, y: 0 };
-          // contain: scale so the PNG fits fully inside the canvas,
-          // letterbox the leftover space on the dominant axis
-          const scale = Math.min(r.width / off.w, r.height / off.h);
+          // cover: scale so the PNG fully covers the canvas, crop the overflow
+          const scale = Math.max(r.width / off.w, r.height / off.h);
           const drawnW = off.w * scale;
           const drawnH = off.h * scale;
           const dx = (r.width - drawnW) / 2;  // could be negative
