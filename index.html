@@ -952,42 +952,49 @@
     .stat-block--highlight:hover {
       border-color: rgba(180, 130, 255, 0.55);
     }
-    /* Stat number — visually matched to .panel-title so the two feel like
-       one voice. Same font family, same real weight 900 (now loaded), same
-       letter-spacing, same white→grey gradient. Size is slightly smaller
-       because these cards sit beneath the title instead of carrying it. */
+    /* Stat number — switched from Syne to Inter because Syne's heavy-weight
+       digits (3, 0, 5) have ball terminals + wide apertures that read as
+       a retro bevel under a gradient text-clip. Inter is the site body font
+       (already loaded at 900), has crisp geometric digits, and tabular-nums
+       keeps the two cards optically aligned. Gradient + color match the rest
+       of the site voice. */
     .stat-number {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       font-weight: 900;
-      font-size: clamp(38px, 5.2vw, 68px);
-      letter-spacing: -0.03em;
-      line-height: 0.9;
-      background: linear-gradient(180deg, #ffffff 0%, #a0a0b0 100%);
+      font-size: clamp(44px, 5.6vw, 74px);
+      letter-spacing: -0.035em;
+      line-height: 0.95;
+      font-feature-settings: 'tnum' 1, 'lnum' 1, 'ss01' 1;
+      font-variant-numeric: tabular-nums lining-nums;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(200, 190, 230, 0.82) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      text-shadow: 0 0 30px rgba(180, 130, 255, 0.08);
     }
     .stat-block--highlight .stat-number {
       background: linear-gradient(180deg, #ffffff 0%, #c8a8ff 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      text-shadow: 0 0 30px rgba(180, 130, 255, 0.18);
     }
     .stat-unit {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      color: rgba(180, 130, 255, 0.85);
-      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      color: rgba(180, 130, 255, 0.92);
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-top: 4px;
+      letter-spacing: 0.14em;
+      margin-top: 8px;
     }
     .stat-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.74rem;
-      color: rgba(255, 255, 255, 0.4);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.76rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.5);
       margin: 0;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     /* Meta Ads screenshot — drag-scrollable, inverted to dark mode */
