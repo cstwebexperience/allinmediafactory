@@ -979,18 +979,27 @@
       background-clip: text;
       text-shadow: 0 0 30px rgba(180, 130, 255, 0.18);
     }
-    /* Thin separator between digits (used in "3-5"). Lighter weight +
-       smaller size + negative margins so it reads as a delicate dash,
-       not a bar as thick as the digits themselves. */
+    /* Thin separator between digits (used in "3-5"). The parent
+       .stat-number uses background-clip:text + text-fill-color:
+       transparent, which nested children inherit — meaning a naive
+       child span goes invisible. We explicitly set the child's own
+       text-fill-color + color so it bypasses the parent clip and
+       renders as a real, visible, thin dash. */
     .stat-number .stat-digit { display: inline-block; }
     .stat-number .stat-sep {
       display: inline-block;
-      font-weight: 300;
-      font-size: 0.55em;
+      font-weight: 400;
+      font-size: 0.6em;
       letter-spacing: 0;
-      vertical-align: 0.22em;
-      margin: 0 -0.02em;
-      opacity: 0.55;
+      vertical-align: 0.2em;
+      margin: 0 0.04em;
+      /* Override parent's transparent fill so the dash is actually visible */
+      -webkit-text-fill-color: rgba(235, 225, 255, 0.7);
+      color: rgba(235, 225, 255, 0.7);
+      /* Kill the gradient background clip for this child */
+      background: none;
+      -webkit-background-clip: initial;
+      background-clip: initial;
     }
     .stat-unit {
       font-family: 'Inter', sans-serif;
