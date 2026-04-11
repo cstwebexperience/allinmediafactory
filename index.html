@@ -80,178 +80,34 @@
       width: 100%; height: 100%;
     }
 
-    /* ── Hero title block (bottom-center) — redesigned ─────
-       Stacked layout: bracketed eyebrow → massive 2-line display type
-       with animated shimmer sweep on the top line → delicate subline
-       → two pill CTAs. Scroll-fade on #hero-title-block opacity is
-       preserved so Three.js tick() can still fade the whole block out
-       as you scroll past the hero. */
+    /* Title block — bottom center */
     .hero-title-block {
       position: absolute;
       z-index: 2;
-      bottom: 8%;
-      left: 50%;
-      width: 92%;
-      max-width: 1100px;
-      transform: translateX(-50%);
+      bottom: 10%;
+      width: 100%;
       text-align: center;
       pointer-events: none;
       user-select: none;
       opacity: 0; /* loader reveal will set this to 1 */
     }
-
-    /* Eyebrow — tiny violet label bracketed by gradient lines */
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: clamp(18px, 2.2vh, 28px);
-      opacity: 0;
-    }
-    .hero-eyebrow .eyebrow-line {
-      display: block;
-      width: clamp(28px, 4vw, 56px);
-      height: 1px;
-      background: linear-gradient(90deg,
-        transparent,
-        rgba(180, 140, 220, 0.55),
-        transparent);
-      transform-origin: center;
-    }
-    .hero-eyebrow .eyebrow-text {
-      font-family: 'DM Sans', sans-serif;
-      font-size: clamp(9px, 0.72vw, 11px);
-      font-weight: 600;
-      letter-spacing: 0.48em;
-      text-transform: uppercase;
-      color: rgba(200, 170, 240, 0.78);
-      text-shadow: 0 0 18px rgba(120, 60, 220, 0.35);
-      padding-left: 0.48em; /* optical balance against the tracked chars */
-    }
-
-    /* Main headline — massive 2-line display type */
     .hero-title-block h1 {
-      font-family: 'Syne', sans-serif;
-      font-weight: 900;
-      font-size: clamp(54px, 9.2vw, 158px);
-      line-height: 0.87;
-      letter-spacing: -0.04em;
-      margin: 0 0 clamp(16px, 2.2vh, 26px);
-      color: #fff;
-      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: clamp(24px, 3.5vw, 50px);
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
     }
-    .hero-title-block h1 .h-line {
-      display: block;
-      -webkit-background-clip: text;
-              background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    /* Line 1 — bright with animated shimmer sweep */
-    .hero-title-block h1 .h-line-1 {
-      background-image: linear-gradient(
-        100deg,
-        #ffffff 0%,
-        #ffffff 42%,
-        #e4d4ff 50%,
-        #ffffff 58%,
-        #ffffff 100%);
-      background-size: 260% 100%;
-      background-repeat: no-repeat;
-      animation: heroShimmer 5.5s cubic-bezier(0.65, 0.05, 0.35, 0.95) infinite;
-    }
-    /* Line 2 — slightly smaller + lighter, violet-tinted */
-    .hero-title-block h1 .h-line-2 {
-      font-weight: 800;
-      font-size: 0.78em;
-      letter-spacing: -0.03em;
-      background-image: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.92) 0%,
-        rgba(180, 140, 220, 0.80) 100%);
-      margin-top: 0.04em;
-    }
-    @keyframes heroShimmer {
-      0%   { background-position: 110% 0; }
-      55%  { background-position: -10% 0; }
-      100% { background-position: -10% 0; }
-    }
-
-    /* Delicate subline spec */
     .hero-title-block .sub {
       font-family: 'DM Sans', sans-serif;
       font-weight: 400;
-      font-size: clamp(10px, 0.85vw, 13px);
-      letter-spacing: 0.28em;
+      font-size: 12px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.44);
-      margin-bottom: clamp(24px, 3vh, 38px);
+      color: rgba(255,255,255,0.3);
     }
-
-    /* CTA row */
-    .hero-cta-row {
-      display: inline-flex;
-      gap: 14px;
-      pointer-events: auto;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 13px 26px;
-      border-radius: 999px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition: transform .35s cubic-bezier(.16, 1, .3, 1),
-                  box-shadow .35s ease,
-                  background-position .6s ease,
-                  background-color .3s ease,
-                  color .25s ease;
-      opacity: 0; /* revealed by JS */
-      will-change: transform;
-    }
-    .hero-cta-primary {
-      background: linear-gradient(135deg, #5a2398 0%, #8448d8 50%, #5a2398 100%);
-      background-size: 220% 100%;
-      background-position: 0% 0;
-      color: #fff;
-      box-shadow: 0 0 0 1px rgba(180, 140, 220, 0.30),
-                  0 14px 32px rgba(100, 40, 180, 0.25),
-                  0 0 42px rgba(120, 60, 220, 0.14);
-    }
-    .hero-cta-primary:hover {
-      transform: translateY(-2px);
-      background-position: 100% 0;
-      box-shadow: 0 0 0 1px rgba(200, 160, 240, 0.55),
-                  0 18px 42px rgba(100, 40, 180, 0.38),
-                  0 0 62px rgba(120, 60, 220, 0.30);
-    }
-    .hero-cta-secondary {
-      background: rgba(255, 255, 255, 0.035);
-      color: rgba(255, 255, 255, 0.82);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.11);
-    }
-    .hero-cta-secondary:hover {
-      transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28),
-                  0 12px 28px rgba(0, 0, 0, 0.4);
-    }
-    .hero-cta .arrow {
-      display: inline-block;
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      transition: transform .3s ease;
-    }
-    .hero-cta-primary:hover .arrow  { transform: translateY(3px); }
-    .hero-cta-secondary:hover .arrow { transform: translateX(4px); }
 
     /* Scroll hint */
     .scroll-hint {
@@ -1771,20 +1627,11 @@
       }
       #loader { display: none !important; }
       .hero-title-block { opacity: 1 !important; }
-      /* Hero child elements start at opacity:0 waiting on JS to fade them
-         in. Under reduced-motion JS transitions run in 0.01ms so they
-         effectively don't fire — force them visible. */
-      .hero-eyebrow,
-      .hero-cta { opacity: 1 !important; }
-      /* Marquee + hero shimmer are decorative and NOT seizure-inducing —
-         keep them looping even when users (or Windows) request reduced
-         motion. Without this override, the global * rule kills them. */
+      /* Marquee is decorative and NOT seizure-inducing — keep it looping even
+         when users (or Windows) request reduced motion. Without this override,
+         the global * rule kills it in 0.01ms. */
       .media-marquee-track {
         animation-duration: 22s !important;
-        animation-iteration-count: infinite !important;
-      }
-      .hero-title-block h1 .h-line-1 {
-        animation-duration: 5.5s !important;
         animation-iteration-count: infinite !important;
       }
     }
@@ -1821,24 +1668,8 @@
       <!-- Navigation -->
       <!-- Title -->
       <div class="hero-title-block" id="hero-title-block">
-        <div class="hero-eyebrow">
-          <span class="eyebrow-line"></span>
-          <span class="eyebrow-text">Beez Creative Studio</span>
-          <span class="eyebrow-line"></span>
-        </div>
-        <h1>
-          <span class="h-line h-line-1">ALL IN</span>
-          <span class="h-line h-line-2">MEDIA FACTORY</span>
-        </h1>
-        <div class="sub">5 servicii · O echipă · Zero compromis</div>
-        <div class="hero-cta-row">
-          <a href="#servicii" class="hero-cta hero-cta-primary">
-            Vezi serviciile <span class="arrow">↓</span>
-          </a>
-          <a href="https://wa.me/40743391581" target="_blank" rel="noopener" class="hero-cta hero-cta-secondary">
-            WhatsApp <span class="arrow">→</span>
-          </a>
-        </div>
+        <h1>All In Media</h1>
+        <div class="sub">Your brand is invisible. We fix that.</div>
       </div>
 
 
@@ -3411,59 +3242,27 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
   function revealPage() {
     window._loaderDone = true;
     const titleBlock = document.getElementById('hero-title-block');
-    const eyebrow    = document.querySelector('.hero-eyebrow');
-    const eyeLines   = document.querySelectorAll('.hero-eyebrow .eyebrow-line');
-    const hLines     = document.querySelectorAll('.hero-title-block h1 .h-line');
-    const sub        = document.querySelector('.hero-title-block .sub');
-    const ctas       = document.querySelectorAll('.hero-cta');
+    const h1  = document.querySelector('.hero-title-block h1');
+    const sub = document.querySelector('.hero-title-block .sub');
 
     // Ensure title block is visible for GSAP to animate
     if (titleBlock) titleBlock.style.opacity = '1';
 
-    // Eyebrow label fades in + its side lines scale from the centre
-    if (eyebrow) {
-      gsap.fromTo(eyebrow,
-        { opacity: 0, y: -6 },
-        { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out', delay: 0.05 });
-    }
-    if (eyeLines.length) {
-      gsap.fromTo(eyeLines,
-        { scaleX: 0 },
-        { scaleX: 1, duration: 0.85, ease: 'power2.out', delay: 0.12 });
-    }
-
-    // Headlines — split each line into chars so the stagger restarts
-    // on line 2 rather than continuing from line 1, giving a double
-    // cascade with blur + rotateX in.
-    if (hLines.length && window.SplitType) {
-      hLines.forEach((line, lineIdx) => {
-        const split = new SplitType(line, { types: 'chars' });
-        gsap.from(split.chars, {
-          y: 65, opacity: 0, rotateX: -55,
-          filter: 'blur(8px)',
-          duration: 0.9, stagger: 0.028,
-          ease: 'power3.out',
-          delay: 0.22 + lineIdx * 0.14,
-          transformPerspective: 620,
-          onComplete: () => {
-            // Revert split so the shimmer gradient applies to the
-            // whole line again (SplitType wraps each char in its own
-            // span which breaks background-clip continuity).
-            split.revert();
-          }
-        });
+    if (h1 && window.SplitType) {
+      const split = new SplitType(h1, { types: 'chars' });
+      gsap.from(split.chars, {
+        y: 50, opacity: 0, rotateX: -40,
+        duration: 0.75, stagger: 0.03,
+        ease: 'power3.out', delay: 0.08,
+        transformPerspective: 500,
+        onComplete: () => {
+          // Revert split so Three.js opacity control works cleanly
+          split.revert();
+        }
       });
     }
-
-    // Sub + CTA pop-in
     if (sub) {
-      gsap.from(sub, { opacity: 0, y: 14, duration: 0.9, ease: 'power2.out', delay: 0.78 });
-    }
-    if (ctas.length) {
-      gsap.fromTo(ctas,
-        { opacity: 0, y: 18, scale: 0.94 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.8,
-          stagger: 0.09, ease: 'power3.out', delay: 0.92 });
+      gsap.from(sub, { opacity: 0, y: 14, duration: 0.9, ease: 'power2.out', delay: 0.55 });
     }
   }
 })();
