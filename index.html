@@ -2542,6 +2542,96 @@
         currentPane = null;
       }
 
+      // Mobile check — used by openService/closeService to apply
+      // inline styles that override the CSS cascade entirely, so
+      // no matter what the stylesheet says the pane will scroll
+      // natively on iOS Safari.
+      const _isMobilePane = () => window.matchMedia(
+        '(max-width: 900px), (hover: none) and (pointer: coarse)'
+      ).matches;
+
+      // Apply mobile-only inline styles to the overlay + active pane
+      // the moment it opens. This bypasses the CSS cascade entirely —
+      // inline style beats any !important in a stylesheet. We also
+      // force every pane-content descendant visible (cancels the
+      // content-stagger reveal opacity:0 on mobile) and reset the
+      // desktop flex centring that otherwise pushes tall content's
+      // top above the viewport.
+      function applyMobileScrollStyles(paneEl) {
+        if (!_isMobilePane() || !paneEl) return;
+        // Overlay = scroll container
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.right = '0';
+        overlay.style.bottom = '0';
+        overlay.style.overflowY = 'auto';
+        overlay.style.overflowX = 'hidden';
+        overlay.style.webkitOverflowScrolling = 'touch';
+        overlay.style.touchAction = 'pan-y';
+        overlay.style.overscrollBehavior = 'contain';
+        // Active pane = normal block flow
+        paneEl.style.display = 'block';
+        paneEl.style.position = 'static';
+        paneEl.style.inset = 'auto';
+        paneEl.style.width = '100%';
+        paneEl.style.height = 'auto';
+        paneEl.style.minHeight = '100vh';
+        paneEl.style.padding = '92px 20px 108px';
+        paneEl.style.opacity = '1';
+        paneEl.style.pointerEvents = 'auto';
+        // pane-content as block, centred horizontally, full width
+        const pc = paneEl.querySelector('.pane-content');
+        if (pc) {
+          pc.style.display = 'block';
+          pc.style.position = 'relative';
+          pc.style.width = '100%';
+          pc.style.maxWidth = '640px';
+          pc.style.margin = '0 auto';
+          pc.style.padding = '0';
+          pc.style.height = 'auto';
+          pc.style.minHeight = '0';
+          pc.style.maxHeight = 'none';
+          pc.style.overflow = 'visible';
+          pc.style.textAlign = 'center';
+        }
+        // Force every content-stagger child visible (no transform,
+        // full opacity) so nothing stays hidden on mobile.
+        paneEl.querySelectorAll('.content-stagger').forEach(el => {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+          el.style.transition = 'none';
+        });
+        // Force results-grid → 1 column, iphone-track → wrap,
+        // sites-grid → 1 column on this specific pane
+        const rg = paneEl.querySelector('.results-grid');
+        if (rg) {
+          rg.style.display = 'grid';
+          rg.style.gridTemplateColumns = '1fr';
+          rg.style.gap = '12px';
+        }
+        const it = paneEl.querySelector('.iphone-track');
+        if (it) {
+          it.style.display = 'flex';
+          it.style.flexWrap = 'wrap';
+          it.style.justifyContent = 'center';
+          it.style.gap = '18px';
+        }
+        const sg = paneEl.querySelector('.sites-grid');
+        if (sg) {
+          sg.style.display = 'grid';
+          sg.style.gridTemplateColumns = '1fr';
+          sg.style.gap = '14px';
+        }
+        // Scroll to top so user starts at the pane label
+        overlay.scrollTop = 0;
+      }
+
+      function clearMobileScrollStyles(paneEl) {
+        overlay.style.cssText = '';
+        if (paneEl) paneEl.style.cssText = '';
+      }
+
       function openService(name) {
         const cfg = FRAG_BY_NAME[name];
         if (!cfg) return;
@@ -2556,8 +2646,23 @@
         // user always sees which mask piece the open panel belongs to.
         if (ghost) ghost.classList.add('ghost-' + name);
 
-        document.body.style.overflow = 'hidden';
-        window._lenis?.stop();
+        // Body lock — but on mobile we DON'T stop Lenis because Lenis
+        // has touch disabled anyway, and we don't set body overflow
+        // because the overlay's own overflow:auto needs touches to
+        // reach it directly.
+        if (!_isMobilePane()) {
+          document.body.style.overflow = 'hidden';
+          window._lenis?.stop();
+        } else {
+          // On mobile, prevent body from scrolling in the background
+          // by fixing its position. Restored in closeService.
+          document.body.dataset.serviceOpenScroll = String(window.scrollY || 0);
+          document.body.style.position = 'fixed';
+          document.body.style.top = '-' + (window.scrollY || 0) + 'px';
+          document.body.style.left = '0';
+          document.body.style.right = '0';
+          document.body.style.width = '100%';
+        }
 
         requestAnimationFrame(() => {
           overlay.classList.add('open');
@@ -2566,17 +2671,27 @@
           requestAnimationFrame(() => requestAnimationFrame(() => {
             if (!currentPane) return;
             currentPane.classList.add('active');
+            // Inject mobile inline styles AFTER .active is added so
+            // they override any CSS that would otherwise win.
+            applyMobileScrollStyles(currentPane);
             const h2 = currentPane.querySelector('.pane-h2');
             if (h2 && window.SplitType) {
               if (h2._st) { h2._st.revert(); delete h2._st; }
               const st = new SplitType(h2, { types: 'chars' });
               h2._st = st;
-              gsap.from(st.chars, {
-                y: 45, opacity: 0, rotateX: -40,
-                duration: 0.7, stagger: 0.022,
-                ease: 'power3.out', delay: 0.20,
-                transformPerspective: 600,
-              });
+              // Skip the SplitType animation on mobile — it sometimes
+              // leaves chars at opacity:0 if the reveal timing misses,
+              // and on mobile we want reliability over polish.
+              if (!_isMobilePane()) {
+                gsap.from(st.chars, {
+                  y: 45, opacity: 0, rotateX: -40,
+                  duration: 0.7, stagger: 0.022,
+                  ease: 'power3.out', delay: 0.20,
+                  transformPerspective: 600,
+                });
+              } else {
+                st.revert();
+              }
             }
           }));
         });
@@ -2585,11 +2700,27 @@
       function closeService() {
         if (!isOpen) return;
         cancelPending();
-        if (currentPane) currentPane.classList.remove('active');
+        const closingPane = currentPane;
+        if (closingPane) {
+          closingPane.classList.remove('active');
+          clearMobileScrollStyles(closingPane);
+        }
         later(() => {
           overlay.classList.remove('open');
-          document.body.style.overflow = '';
-          window._lenis?.start();
+          // Restore body — different unwind for mobile vs desktop
+          if (document.body.dataset.serviceOpenScroll !== undefined) {
+            const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            delete document.body.dataset.serviceOpenScroll;
+            window.scrollTo(0, savedY);
+          } else {
+            document.body.style.overflow = '';
+            window._lenis?.start();
+          }
           later(() => { hardReset(); isOpen = false; }, 550);
         }, 160);
       }
