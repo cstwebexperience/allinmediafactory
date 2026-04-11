@@ -1592,16 +1592,36 @@
         width: 140px !important;
       }
 
-      /* ── Service panes — tighter padding + room for content */
+      /* ── Service panes — make them scrollable on mobile. Desktop
+         uses align-items:center so content sits vertically centred;
+         on a phone the content is often taller than the viewport
+         and the user couldn't reach the bottom of pane 05 (two
+         paragraphs) because scroll was blocked. Fix: overflow-y:
+         auto + flex-start alignment + generous top/bottom padding
+         so tall content flows naturally and can be scrolled. */
+      .service-pane {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        align-items: flex-start !important;
+        padding: 88px 0 96px !important;
+      }
       .pane-content {
         width: 92vw !important;
         max-width: 640px !important;
+        /* Allow the content box to grow past viewport height on
+           mobile so the scroll container can scroll through it. */
+        height: auto !important;
       }
+      #pane-left-eye   .pane-content,
+      #pane-right-eye  .pane-content,
+      #pane-nose       .pane-content,
       #pane-left-mouth .pane-content,
       #pane-right-mouth .pane-content {
         margin-left: 0 !important;
         margin-right: 0 !important;
-        margin-bottom: 10vh !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
       }
 
       /* Overlay close button — bigger touch target on mobile */
