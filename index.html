@@ -124,32 +124,6 @@
       to   { opacity: 1; transform: translateY(0);    }
     }
 
-    /* Scroll hint */
-    .scroll-hint {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      pointer-events: none;
-    }
-    .scroll-hint span {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 9px;
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.15);
-    }
-    .scroll-hint i {
-      display: block;
-      width: 1px; height: 40px;
-      background: linear-gradient(rgba(255,255,255,0.15), transparent);
-    }
-
     /* ── Service Overlay ────────────────────────────────── */
     #service-overlay {
       position: fixed;
@@ -329,16 +303,6 @@
       letter-spacing: -0.025em;
       margin-bottom: 18px;
     }
-    .pane-sub {
-      font-family: 'DM Sans', sans-serif;
-      font-size: clamp(13px, 1.2vw, 16px);
-      color: rgba(255,255,255,0.42);
-      text-align: center;
-      max-width: 460px;
-      line-height: 1.7;
-      margin-bottom: 44px;
-    }
-
     /* iPhone Carousel — single row, fits the viewport without scroll */
     .iphone-carousel {
       width: 100%;
@@ -923,18 +887,6 @@
 
     /* ── Panel 02: Performance Ads ───────────────────────── */
 
-    /* Smaller descriptive subtitle (different from .panel-subtitle's
-       big "Conţinut. Pur." statement — this one carries longer copy) */
-    .panel-subtitle-sm {
-      font-family: 'DM Sans', sans-serif;
-      font-size: clamp(13px, 1.2vw, 16px);
-      color: rgba(255,255,255,0.55);
-      text-align: center;
-      max-width: 620px;
-      line-height: 1.6;
-      margin: 0 auto;
-    }
-
     /* Stats row — 2 numbers side by side, second one violet-highlighted */
     .stats-row {
       display: grid;
@@ -1099,38 +1051,6 @@
       margin: 6px 0 0;
       letter-spacing: 0.05em;
     }
-
-    /* Placeholder cards (other services) */
-    .placeholder-cards {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 8px;
-    }
-    .placeholder-card {
-      width: 220px;
-      height: 130px;
-      background: rgba(255,255,255,0.025);
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.055);
-    }
-
-    /* ── Nav link hover underline ─────────────────────── */
-    .nav-link {
-      position: relative;
-      transition: color .3s ease;
-    }
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      left: 0; bottom: -4px;
-      width: 0; height: 1.5px;
-      background: linear-gradient(90deg, #8b5cf6, #a78bfa);
-      transition: width .35s cubic-bezier(.4,0,.2,1);
-    }
-    .nav-link:hover::after { width: 100%; }
-    .nav-link:hover { color: #c4b5fd; }
 
     /* Servicii title — sits above the mask, hidden until .revealed */
     .servicii-eyebrow {
@@ -1345,10 +1265,6 @@
       opacity: 0.6 !important;
     }
 
-    /* (Per-fragment clip-path polygons removed — each PNG carries its
-       own shape via its alpha channel now. Same for the 5 breathe
-       animations; they made sense for the cropped polygons but on
-       full-screen PNGs they'd just shake the whole image.) */
 
 
     /* ── Scroll-Scrub Stage ────────────────────────────── */
@@ -1372,72 +1288,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-    }
-
-    /* ── Entrance animations ──────────────────────────── */
-    @keyframes fadeSlideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .animate-fade-up {
-      animation: fadeSlideUp .9s cubic-bezier(.16, 1, .3, 1) forwards;
-      opacity: 0;
-    }
-
-    .delay-100 {
-      animation-delay: .1s;
-    }
-
-    .delay-200 {
-      animation-delay: .2s;
-    }
-
-    .delay-300 {
-      animation-delay: .3s;
-    }
-
-    .delay-400 {
-      animation-delay: .4s;
-    }
-
-    .delay-500 {
-      animation-delay: .5s;
-    }
-
-    .delay-600 {
-      animation-delay: .6s;
-    }
-
-    /* ── Mobile menu ──────────────────────────────────── */
-    .mobile-menu {
-      transform: translateY(-100%);
-      transition: transform .4s cubic-bezier(.4, 0, .2, 1), opacity .3s ease;
-      opacity: 0;
-    }
-
-    .mobile-menu.open {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    /* ── Nav (absolute inside fixed hero) ──────────────── */
-    #hero-nav {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 24px clamp(24px, 5vw, 80px);
-      transition: background 0.3s ease, backdrop-filter 0.3s ease;
     }
 
     /* ── Contact Animation Section ──────────────────────── */
@@ -1549,12 +1399,6 @@
     }
     .contact-form-box input::placeholder,
     .contact-form-box textarea::placeholder { color: rgba(255,255,255,0.18); }
-    .contact-form-box input:focus,
-    .contact-form-box select:focus,
-    .contact-form-box textarea:focus {
-      border-color: rgba(160,140,220,0.35);
-      box-shadow: 0 0 20px rgba(120,80,200,0.08);
-    }
     .contact-form-box select {
       appearance: none; cursor: pointer;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.3)' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
@@ -1618,9 +1462,9 @@
       margin-top: 14px;
     }
 
-    /* ── GSAP text reveal helpers ────────────────────────── */
+    /* SplitType-generated chars inherit this so the revealing GSAP
+       translateY stays clipped inside each character box. */
     .char { display: inline-block; overflow: hidden; }
-    .split-hidden .word, .split-hidden .char { opacity: 0; transform: translateY(60%); }
 
     /* ── Form input animated focus ring ─────────────────── */
     .contact-form-box input:focus,
@@ -1688,7 +1532,6 @@
     <section class="hero" id="hero">
       <canvas id="hero-canvas"></canvas>
 
-      <!-- Navigation -->
       <!-- Title -->
       <div class="hero-title-block" id="hero-title-block">
         <h1>All In Media</h1>
@@ -2138,7 +1981,6 @@
             sizeCanvas(this);
             ctx.drawImage(this, 0, 0);
             currentFrame = 0;
-            window.dispatchEvent(new Event('loaderAssetReady'));
           }
         };
         img.src = 'frames/frame_' + pad(idx + 1) + '.webp';
@@ -2241,13 +2083,9 @@
         'gura-stanga':  { id: 'frag-left-mouth',  pane: 'pane-left-mouth',  ann: 'ann-left-mouth' },
         'gura-dreapta': { id: 'frag-right-mouth', pane: 'pane-right-mouth', ann: 'ann-right-mouth' },
       };
-      // Reverse: id -> name
-      const NAME_BY_ID = {};
-      Object.entries(FRAG_BY_NAME).forEach(([name, cfg]) => { NAME_BY_ID[cfg.id] = name; });
 
       // ── Pre-load every PNG into an offscreen canvas for alpha hit testing
       const offscreens = {};
-      let imgsLoaded = 0;
       Object.keys(FRAG_BY_NAME).forEach(name => {
         const img = new Image();
         img.onload = function () {
@@ -2256,7 +2094,6 @@
           c.height = img.naturalHeight;
           c.getContext('2d').drawImage(img, 0, 0);
           offscreens[name] = { ctx: c.getContext('2d'), w: img.naturalWidth, h: img.naturalHeight };
-          imgsLoaded++;
         };
         img.src = 'frag-' + name + '.png';
       });
@@ -2946,7 +2783,6 @@ const C_HW = navigator.hardwareConcurrency || 4;
 const C_LOW_POWER = C_IS_MOBILE || C_HW <= 4 || !!window._lowPowerGpu;
 
 const contactArea  = document.getElementById('contact');
-const contactStage = document.getElementById('contact-stage');
 const cCanvas      = document.getElementById('contact-canvas');
 const renderer2    = new THREE.WebGLRenderer({ canvas: cCanvas, antialias: true, powerPreference: C_LOW_POWER ? 'low-power' : 'high-performance' });
 renderer2.setPixelRatio(Math.min(window.devicePixelRatio, C_LOW_POWER ? 1.5 : 2));
@@ -2961,10 +2797,6 @@ camera2.position.set(0, 0, 4);
 const pmrem2 = new THREE.PMREMGenerator(renderer2);
 scene2.environment = pmrem2.fromScene(new RoomEnvironment(), 0.04).texture;
 
-const chromeMat = new THREE.MeshPhysicalMaterial({
-  color: 0x0a0a12, metalness: 1, roughness: 0.02,
-  clearcoat: 0.3, reflectivity: 0.7,
-});
 
 // ── Load textures ──
 const loader = new THREE.TextureLoader();
@@ -2999,8 +2831,6 @@ loader.load('whatsapp-t.png', (tex) => {
   scene2.add(waMesh);
 });
 
-// (chrome particles removed — they were 10 deforming meshes the user
-// couldn't even see clearly behind the clipboard / WhatsApp icons)
 
 // ── Lights ──
 const clipGlow = new THREE.PointLight(0x8050d0, 4, 8);
@@ -3309,16 +3139,8 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 })();
 
 
-// ── 3. (custom cursor removed — use native browser cursor) ──
-
-
-// ── 4. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
+// ── 3. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
 (function () {
-  // (The eyebrow text "SERVICII" is now revealed via the .revealed
-  //  class on #servicii — same trigger as the annotation animations.
-  //  The previous SplitType char-reveal here was firing on its own
-  //  ScrollTrigger 'top 88%' which leaked the first char "A" early.)
-
   ScrollTrigger.refresh();
 
   // ── Contact labels fade in (lightweight, no scale/blur on the stage)
@@ -3335,12 +3157,7 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 })();
 
 
-// ── 5. (micro-interactions removed: 3D tilt, link underlines, focus
-//        glows and overlay close hover were drainage on the GPU and
-//        were not visually load-bearing) ─────────────────────────────
-
-
-// ── 6. RENDERER PAUSING (off-screen Three.js scenes) ─────
+// ── 4. RENDERER PAUSING (off-screen Three.js scenes) ─────
 window._heroVisible = true;
 window._contactVisible = true;
 (function () {
@@ -3355,10 +3172,6 @@ window._contactVisible = true;
       .observe(contactStageEl);
   }
 })();
-
-
-// (infinite loop removed entirely — page is linear, no more
-//  fade-to-black artefacts when scrolling backwards)
 
 
 </script>
