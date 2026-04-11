@@ -99,31 +99,6 @@
       letter-spacing: 0.35em;
       text-transform: uppercase;
       margin-bottom: 14px;
-      perspective: 1000px; /* so rotateX on the inner span reads as depth */
-    }
-    /* Word-mask reveal — each word sits inside an overflow:hidden box
-       and the inner span starts translated down + tilted back, then
-       lifts into place on reveal with a per-word stagger. */
-    .hero-title-block h1 .word {
-      display: inline-block;
-      overflow: hidden;
-      vertical-align: top;
-      padding-bottom: 0.18em; /* room for descenders in "y", "p", "g" */
-      margin-right: 0.22em;
-    }
-    .hero-title-block h1 .word:last-child { margin-right: 0; }
-    .hero-title-block h1 .word > span {
-      display: inline-block;
-      transform: translateY(110%) rotateX(40deg);
-      transform-origin: 50% 100%;
-      opacity: 0;
-      transition:
-        transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-        opacity   0.9s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .hero-title-block h1.animate .word > span {
-      transform: translateY(0) rotateX(0);
-      opacity: 1;
     }
     .hero-title-block .sub {
       font-family: 'DM Sans', sans-serif;
@@ -1599,90 +1574,49 @@
     .cf-success { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.7); font-size: 15px; letter-spacing: 0.1em; }
     .cf-success .cf-check { font-size: 52px; display: block; margin-bottom: 20px; color: rgba(37,211,102,0.7); }
 
-    /* ── Loading Screen ──────────────────────────────────
-       Lusion-style cinematic loader:
-       - Pure #080808 background
-       - Minimal monospace counter 00 → 100 over 3 seconds
-       - Thin 200×1px progress line under the counter
-       - On finish: hold → fade counter+line → clip-path curtain lift */
+    /* ── Loading Screen ──────────────────────────────────── */
     #loader {
-      position: fixed;
-      inset: 0;
-      z-index: 10000;
-      background: #080808;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      clip-path: inset(0 0 0 0);
-      transition: clip-path 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+      position: fixed; inset: 0; z-index: 10000;
+      background: #030305;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0;
+      clip-path: circle(100% at 50% 50%);
     }
-    #loader.lifted {
-      clip-path: inset(0 0 100% 0);
-    }
-    #loader-counter {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 96px;
+    #loader-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 2.5vw, 22px);
       font-weight: 300;
-      letter-spacing: 0.1em;
-      line-height: 1;
-      color: #fff;
-      font-variant-numeric: tabular-nums;
-      transition: opacity 0.3s ease-out;
+      letter-spacing: 0.6em;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.95), rgba(180,140,255,0.9), rgba(255,255,255,0.95), rgba(255,255,255,0.35));
+      background-size: 300% 100%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: loaderShimmer 2.8s ease-in-out infinite;
+    }
+    @keyframes loaderShimmer {
+      0%   { background-position: 100% 50%; }
+      100% { background-position: -100% 50%; }
     }
     #loader-bar-track {
-      width: 200px;
+      width: clamp(180px, 28vw, 360px);
       height: 1px;
-      background: rgba(255, 255, 255, 0.2);
-      margin-top: 32px;
+      background: rgba(255,255,255,0.08);
+      position: relative;
       overflow: hidden;
-      transition: opacity 0.3s ease-out;
     }
     #loader-bar-fill {
-      width: 0%;
-      height: 100%;
-      background: #fff;
+      position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+      background: linear-gradient(90deg, transparent, rgba(140,90,255,0.7), rgba(180,130,255,1));
     }
-    #loader.fading #loader-counter,
-    #loader.fading #loader-bar-track { opacity: 0; }
-    @media (max-width: 640px) {
-      #loader-counter { font-size: 68px; }
-      #loader-bar-track { width: 160px; }
+    #loader-percent {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; letter-spacing: 0.35em;
+      color: rgba(255,255,255,0.2);
+      margin-top: 14px;
     }
-
-    /* ── Custom cursor — 12px white dot with 100ms lag, scales to
-       40px with 10% white fill + 60% white border on hoverables. */
-    #cursor {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 12px;
-      height: 12px;
-      border: 1px solid transparent;
-      border-radius: 50%;
-      background: #fff;
-      pointer-events: none;
-      z-index: 10001;
-      transform: translate(-50%, -50%);
-      will-change: transform;
-      transition:
-        width       0.3s cubic-bezier(0.16, 1, 0.3, 1),
-        height      0.3s cubic-bezier(0.16, 1, 0.3, 1),
-        background  0.3s ease,
-        border-color 0.3s ease;
-    }
-    #cursor.hover {
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.6);
-    }
-    body:not(.touch) { cursor: none; }
-    body:not(.touch) a,
-    body:not(.touch) button,
-    body:not(.touch) .mask-fragment,
-    body:not(.touch) [data-hover] { cursor: none; }
-    body.touch #cursor { display: none; }
 
     /* ── GSAP text reveal helpers ────────────────────────── */
     .char { display: inline-block; overflow: hidden; }
@@ -1740,14 +1674,14 @@
 
 <body>
 
-  <!-- Loading Screen — minimal Lusion-style counter + line -->
-  <div id="loader" aria-hidden="true">
-    <div id="loader-counter">00</div>
-    <div id="loader-bar-track"><div id="loader-bar-fill"></div></div>
+  <!-- Loading Screen -->
+  <div id="loader">
+    <div id="loader-logo">All In Media</div>
+    <div id="loader-bar-track">
+      <div id="loader-bar-fill"></div>
+    </div>
+    <div id="loader-percent">0%</div>
   </div>
-
-  <!-- Custom cursor — 12px dot with lag follow, scales on hoverables -->
-  <div id="cursor" aria-hidden="true"></div>
 
   <!-- HERO SECTION: Three.js metallic sphere -->
   <div class="scroll-container" id="hero-scroll-container">
@@ -1757,11 +1691,7 @@
       <!-- Navigation -->
       <!-- Title -->
       <div class="hero-title-block" id="hero-title-block">
-        <h1>
-          <span class="word"><span>All</span></span>
-          <span class="word"><span>In</span></span>
-          <span class="word"><span>Media</span></span>
-        </h1>
+        <h1>All In Media</h1>
         <div class="sub">Your brand is invisible. We fix that.</div>
       </div>
 
@@ -3294,134 +3224,89 @@ gsap.ticker.lagSmoothing(0);
 if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 
 
-// ── 2. LOADING SCREEN — Lusion-style ─────────────────
-// Piecewise counter: 0→60 in 1s, 60→100 in 2s (total 3s). When 100
-// is reached, hold 400ms → fade counter+line 300ms → clip-path
-// curtain lift 900ms cubic-bezier(0.76, 0, 0.24, 1).
+// ── 2. LOADING SCREEN ───────────────────────────────
 (function () {
-  const loader    = document.getElementById('loader');
-  const counterEl = document.getElementById('loader-counter');
-  const barEl     = document.getElementById('loader-bar-fill');
-  let finished    = false;
+  const loader   = document.getElementById('loader');
+  const fill     = document.getElementById('loader-bar-fill');
+  const pctEl    = document.getElementById('loader-percent');
+  let progress   = 0;
+  let finished   = false;
 
-  const startTime = performance.now();
+  // Ease progress up to 88% organically
+  const tick = setInterval(() => {
+    if (finished) return;
+    const step = Math.max(0.4, (88 - progress) * 0.03 + Math.random() * 1.8);
+    progress = Math.min(progress + step, 88);
+    fill.style.width = progress + '%';
+    pctEl.textContent = Math.floor(progress) + '%';
+  }, 70);
 
-  function counterTick(now) {
-    const elapsed = now - startTime;
-    let progress;
-    if (elapsed < 1000) {
-      progress = (elapsed / 1000) * 60;        // fast segment
-    } else if (elapsed < 3000) {
-      progress = 60 + ((elapsed - 1000) / 2000) * 40; // slow segment
-    } else {
-      progress = 100;
-    }
-    counterEl.textContent = Math.floor(progress).toString().padStart(2, '0');
-    barEl.style.width = progress + '%';
-    if (progress < 100) {
-      requestAnimationFrame(counterTick);
-    } else {
-      runExit();
-    }
-  }
-  requestAnimationFrame(counterTick);
-
-  function runExit() {
+  function complete() {
     if (finished) return;
     finished = true;
-    // 100 → hold 400ms → fade counter+line 300ms → lift curtain 900ms
-    setTimeout(() => {
-      loader.classList.add('fading');
-      setTimeout(() => {
-        loader.classList.add('lifted');
-        revealPage();
-        // Fully remove the loader node after the curtain animation so
-        // it can't steal pointer events on mobile.
-        setTimeout(() => { loader.style.display = 'none'; }, 950);
-      }, 300);
-    }, 400);
+    clearInterval(tick);
+    // Sprint 88 → 100
+    gsap.to({ p: progress }, {
+      p: 100, duration: 0.6, ease: 'power2.out',
+      onUpdate: function () {
+        const v = Math.floor(this.targets()[0].p);
+        fill.style.width = v + '%';
+        pctEl.textContent = v + '%';
+      },
+      onComplete: () => {
+        // Dramatic mask-expand reveal
+        gsap.to(loader, {
+          clipPath: 'circle(0% at 50% 50%)',
+          duration: 1.0, delay: 0.2,
+          ease: 'power3.inOut',
+          onComplete: () => {
+            loader.style.display = 'none';
+            revealPage();
+          }
+        });
+      }
+    });
   }
 
-  // Hard fallback — if rAF never fires for some reason, still exit
-  setTimeout(runExit, 6000);
+  window.addEventListener('loaderAssetReady', complete, { once: true });
+  // Fallback — hide after 4s no matter what
+  setTimeout(complete, 4000);
 
   function revealPage() {
     window._loaderDone = true;
     const titleBlock = document.getElementById('hero-title-block');
-    const h1         = document.querySelector('.hero-title-block h1');
-    const sub        = document.querySelector('.hero-title-block .sub');
+    const h1  = document.querySelector('.hero-title-block h1');
+    const sub = document.querySelector('.hero-title-block .sub');
 
+    // Ensure title block is visible for GSAP to animate
     if (titleBlock) titleBlock.style.opacity = '1';
 
-    // Headline word-mask reveal — each .word > span lifts into view
-    // with per-word stagger. We add .animate to the h1 which enables
-    // the end-state CSS transition, then set inline transition-delay
-    // on each inner span for the cascade.
-    if (h1) {
-      const innerSpans = h1.querySelectorAll('.word > span');
-      innerSpans.forEach((s, i) => {
-        s.style.transitionDelay = (i * 80) + 'ms';
+    if (h1 && window.SplitType) {
+      const split = new SplitType(h1, { types: 'chars' });
+      gsap.from(split.chars, {
+        y: 50, opacity: 0, rotateX: -40,
+        duration: 0.75, stagger: 0.03,
+        ease: 'power3.out', delay: 0.08,
+        transformPerspective: 500,
+        onComplete: () => {
+          // Revert split so Three.js opacity control works cleanly
+          split.revert();
+        }
       });
-      h1.classList.add('animate');
     }
-
     if (sub) {
-      // CSS keyframe reveal with forwards fill-mode. See note in the
-      // .sub CSS block above — this is interruption-safe vs a GSAP
-      // tween that could get stuck if visibility:hidden kicked in.
+      // Trigger the CSS keyframe reveal (opacity + y). Using CSS here
+      // instead of gsap.from because the CSS animation's 'forwards' fill
+      // mode can't be interrupted by rapid scroll that toggles the hero's
+      // visibility — the old GSAP tween used to get stuck at opacity:0
+      // if visibility:hidden kicked in mid-tween.
       sub.classList.add('sub-reveal');
     }
   }
 })();
 
 
-// ── 3. CUSTOM CURSOR — 12px white dot, 100ms lerp lag, grows on
-//      hoverables. Hidden on touch devices via body.touch selector.
-(function initCursor() {
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-    document.body.classList.add('touch');
-    return;
-  }
-  const cursor = document.getElementById('cursor');
-  if (!cursor) return;
-
-  let mx = window.innerWidth / 2;
-  let my = window.innerHeight / 2;
-  let cx = mx, cy = my;
-  const LERP = 0.15; // ≈ 100ms time constant at 60fps
-
-  window.addEventListener('mousemove', e => {
-    mx = e.clientX;
-    my = e.clientY;
-  });
-
-  function loop() {
-    cx += (mx - cx) * LERP;
-    cy += (my - cy) * LERP;
-    cursor.style.transform =
-      'translate3d(' + cx.toFixed(1) + 'px, ' + cy.toFixed(1) + 'px, 0) translate(-50%, -50%)';
-    requestAnimationFrame(loop);
-  }
-  loop();
-
-  // Grow the cursor when hovering <a>, <button>, mask fragments, or
-  // anything explicitly marked with data-hover.
-  const addHover  = () => cursor.classList.add('hover');
-  const dropHover = () => cursor.classList.remove('hover');
-  document.querySelectorAll('a, button, .mask-fragment, [data-hover]').forEach(el => {
-    el.addEventListener('mouseenter', addHover);
-    el.addEventListener('mouseleave', dropHover);
-  });
-  // Also grow over the contact 3D canvas when hovering the clipboard/
-  // whatsapp icons (those swap to cursor:pointer via JS).
-  const cCanvas = document.getElementById('contact-canvas');
-  if (cCanvas) {
-    cCanvas.addEventListener('mousemove', () => {
-      if (cCanvas.style.cursor === 'pointer') addHover();
-      else dropHover();
-    });
-  }
-})();
+// ── 3. (custom cursor removed — use native browser cursor) ──
 
 
 // ── 4. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
