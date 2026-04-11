@@ -1109,7 +1109,16 @@
       width: 100%;
       height: 100%;
       opacity: 0;
-      will-change: opacity;
+      will-change: opacity, transform;
+      /* Shrink the whole mask (fragments + annotation SVG inside) by
+         8% so the full mask + its 04/05 labels fit comfortably inside
+         the viewport with breathing room. Scale is applied on the
+         parent so mask pieces AND annotation lines stay perfectly in
+         sync. hitTest() uses getBoundingClientRect which returns the
+         post-transform rect, so clicks map correctly without extra
+         math. */
+      transform: scale(0.92);
+      transform-origin: center center;
     }
 
     /* Each fragment is full-screen + uses its own transparent PNG.
