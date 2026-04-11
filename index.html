@@ -1634,46 +1634,57 @@
         overflow: visible;
       }
 
-      /* ── Service panes — mobile uses BLOCK layout, not flex.
-         Desktop: .service-pane is 'display:flex; align-items:center'
-         which vertically centres content and prevents scroll. On
-         mobile the active pane becomes a fixed position:fixed
-         block-level scroll container. Inner content flows from top. */
+      /* ══════════════════════════════════════════════════════
+         SERVICE PANES ON MOBILE — GROUND-UP REWRITE
+         ══════════════════════════════════════════════════════
+         Every previous attempt tried to make the pane itself a
+         scroll container. That fails on iOS Safari when flex
+         centring, absolute positioning, or nested scroll contexts
+         get in the way. Simplest reliable pattern:
+         - #service-overlay is THE ONLY scroll container. Fixed to
+           the viewport, overflow-y:auto. iOS handles this natively.
+         - .service-pane.active is a plain BLOCK in the overlay's
+           normal flow. Its height is whatever its content demands.
+           Because it flows normally, its height contributes to the
+           overlay's scrollHeight and the overlay scrolls over it.
+         - Inactive panes are display:none (so they don't stack into
+           the flow and break layout).
+         - .pane-content is display:block too — no more flex
+           centring. Content inside stacks top-down naturally.
+         - Inner grids/flex (results-grid, iphone-track) stay as they
+           are but with forced single-column / wrap so narrow-screen
+           content doesn't overflow horizontally.
+         This matches desktop functionality 1:1 (all 5 panes, all
+         content, all click handlers) and is reachable via native
+         touch scroll. */
+
       #service-overlay {
-        overflow: hidden !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        touch-action: pan-y !important;
       }
       #service-overlay .service-pane {
         display: none !important;
       }
       #service-overlay .service-pane.active {
         display: block !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        height: 100dvh !important;
-        overflow-y: scroll !important;
-        overflow-x: hidden !important;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        touch-action: pan-y !important;
-        padding: 88px 16px 96px !important;
-        align-items: initial !important;
-        justify-content: initial !important;
-        z-index: 210;
+        position: static !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        padding: 88px 20px 100px !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
       }
-      /* pane-content is a flex column INSIDE the block pane,
-         centred horizontally via margin:0 auto. Grows to natural
-         content height so the pane's own scrollbar engages. */
+      /* Kill the desktop flex-centring on pane-content so content
+         flows naturally from the top of the scrolling overlay. */
       #service-overlay .pane-content,
       #service-overlay .pane-content-vp {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
+        display: block !important;
+        position: relative !important;
         width: 100% !important;
         max-width: 640px !important;
         margin: 0 auto !important;
@@ -1682,8 +1693,33 @@
         min-height: 0 !important;
         max-height: none !important;
         overflow: visible !important;
+        text-align: center;
       }
-      /* Cancel all desktop side/top/bottom offsets on every pane */
+      /* Every child of .pane-content lays out as a block with
+         vertical rhythm — titles, subtitles, cards, grids all
+         stack top-to-bottom with a small gap. */
+      #service-overlay .pane-content > *,
+      #service-overlay .pane-content-vp > * {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-top: 14px !important;
+        margin-bottom: 0 !important;
+      }
+      #service-overlay .pane-content > *:first-child,
+      #service-overlay .pane-content-vp > *:first-child {
+        margin-top: 0 !important;
+      }
+      /* Force content-stagger visible on mobile in case the
+         delayed reveal doesn't fire for some reason (iOS
+         transition-delay edge cases). */
+      #service-overlay.open .service-pane.active .content-stagger {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      /* Cancel desktop side/top/bottom offsets on every pane */
       #pane-left-eye   .pane-content,
       #pane-right-eye  .pane-content,
       #pane-nose       .pane-content,
@@ -1694,16 +1730,43 @@
         margin-top: 0 !important;
         margin-bottom: 0 !important;
       }
-      /* Results grid → 1 column on mobile so all 3 cards stack */
+      /* Results grid → 1 column so all 3 cards stack */
       #service-overlay .results-grid {
+        display: grid !important;
         grid-template-columns: 1fr !important;
         gap: 12px !important;
       }
-      /* iPhone carousel → wrap to multiple rows on narrow screens */
+      /* iPhone carousel → wrap to multiple rows */
       #service-overlay .iphone-track {
+        display: flex !important;
         flex-wrap: wrap !important;
         justify-content: center !important;
         gap: 18px !important;
+      }
+      #service-overlay .iphone-carousel {
+        width: 100% !important;
+        overflow: visible !important;
+      }
+      /* Site cards grid in pane 03 — single column */
+      #service-overlay .sites-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      /* Stats row in pane 02 — side by side but flex with wrap */
+      #service-overlay .stats-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+      }
+      /* Meta ads screenshot wrapper — allow horizontal drag scroll */
+      #service-overlay .meta-screenshot-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      /* Marquee (pane 04) — full width of pane-content */
+      #service-overlay .media-marquee {
+        max-width: 100% !important;
       }
 
       /* Overlay close button — bigger touch target on mobile */
