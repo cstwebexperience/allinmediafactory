@@ -76,6 +76,12 @@
     .scroll-container {
       height: 110vh;
       position: relative;
+      /* Filter on this parent creates a containing block for the
+         position:fixed .hero child, so when the scroll-blur engine
+         applies blur() to the container, the Three.js hero inside
+         actually receives it (fixed descendants normally escape
+         their non-transformed/filtered ancestors). */
+      will-change: filter, transform, opacity;
     }
 
     .hero {
@@ -3941,8 +3947,15 @@ window._contactVisible = true;
      ═══════════════════════════════════════════════════ -->
 <script>
 (function () {
+  // Note: we target #hero-scroll-container (not .hero) because
+  // .hero is position:fixed and its getBoundingClientRect() never
+  // changes regardless of scroll — so dist stays 0 and the blur
+  // never engaged on the hero → stage transition. The container
+  // is a normal-flow 110vh block with will-change:filter, which
+  // (a) tracks real scroll position and (b) creates a containing
+  // block for the fixed .hero child so filter cascades visually.
   const targets = [
-    document.querySelector('.hero'),
+    document.getElementById('hero-scroll-container'),
     document.getElementById('stage'),
     document.getElementById('servicii'),
     document.getElementById('contact-stage'),
