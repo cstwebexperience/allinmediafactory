@@ -3491,6 +3491,11 @@ window._contactVisible = true;
   const MOUSE_RADIUS   = 130;
   const MOUSE_FORCE    = 0.20;
 
+  // Flag consumed by Particle.update() to apply a sphere-exclusion
+  // zone on mobile while the hero section is on screen. Updated by
+  // syncMobileVisibility() below. Always false on desktop.
+  let _inHeroMobile = false;
+
   const mouse = { x: -999, y: -999 };
   window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
   window.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
@@ -3536,6 +3541,35 @@ window._contactVisible = true;
     this.x  += this.px;
     this.y  += this.py;
 
+    // Sphere exclusion — only on mobile hero state. Any particle
+    // that ends up inside the sphere's screen-space radius is
+    // snapped to the edge and has its inward velocity flipped
+    // outward, so they physically cannot overlap the sphere.
+    if (_inHeroMobile) {
+      const scx = W * 0.5;
+      const scy = H * 0.46;
+      const sr  = Math.min(W, H) * 0.38;
+      const sdx = this.x - scx;
+      const sdy = this.y - scy;
+      const sd  = Math.sqrt(sdx * sdx + sdy * sdy);
+      if (sd < sr) {
+        if (sd === 0) {
+          this.x = scx + sr;
+          this.y = scy;
+        } else {
+          const nx = sdx / sd;
+          const ny = sdy / sd;
+          this.x = scx + nx * sr;
+          this.y = scy + ny * sr;
+          // If velocity was pointing into the sphere, flip it out
+          if (this.vx * nx + this.vy * ny < 0) {
+            this.vx = nx * 0.22;
+            this.vy = ny * 0.22;
+          }
+        }
+      }
+    }
+
     if (this.x < -8)  this.x = W + 8;
     if (this.x > W+8) this.x = -8;
     if (this.y < -8 || this.y > H + 8) this.reset(false);
@@ -3562,21 +3596,31 @@ window._contactVisible = true;
   })();
 
   // ── Mobile-only visibility gating ─────────────────────
-  // On phones the particles used to sit on top of the hero sphere
-  // (bad overlap) and stay visible through the scroll-scrub video
-  // (too busy). Rule: start hidden, reveal only when the mask
-  // fragments are .revealed (which stays true through contact as
-  // well). Hero + scroll-scrub stay clean. Desktop unchanged.
+  // On phones the particles live in THREE states:
+  //   hero     → visible, BUT with a sphere-exclusion zone so
+  //              particles can never overlap the metal sphere
+  //   hidden   → opacity 0 through the entire scroll-scrub video
+  //              section so the footage stays clean
+  //   revealed → visible, no exclusion, on the broken-mask +
+  //              contact sections (#servicii.revealed is true)
+  // Desktop code path is unchanged — always visible, 110 dots.
   if (IS_TOUCH_OR_NARROW) {
     canvas.style.transition = 'opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
-    canvas.style.opacity = '0';
+    canvas.style.opacity = '1';
     const serviciiEl = document.getElementById('servicii');
-    let lastRevealed = false;
+    let lastVisible = true;
     function syncMobileVisibility() {
+      const sy = window.scrollY || window.pageYOffset || 0;
+      const vh = window.innerHeight;
       const revealed = !!(serviciiEl && serviciiEl.classList.contains('revealed'));
-      if (revealed !== lastRevealed) {
-        canvas.style.opacity = revealed ? '1' : '0';
-        lastRevealed = revealed;
+      const onHero = sy < vh * 0.9;
+      // Active sphere exclusion flag — read by Particle.update()
+      _inHeroMobile = onHero;
+      // Visible on hero OR when fragments+contact are revealed
+      const visible = onHero || revealed;
+      if (visible !== lastVisible) {
+        canvas.style.opacity = visible ? '1' : '0';
+        lastVisible = visible;
       }
     }
     window.addEventListener('scroll', syncMobileVisibility, { passive: true });
