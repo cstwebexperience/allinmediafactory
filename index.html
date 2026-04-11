@@ -1574,48 +1574,601 @@
     .cf-success { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.7); font-size: 15px; letter-spacing: 0.1em; }
     .cf-success .cf-check { font-size: 52px; display: block; margin-bottom: 20px; color: rgba(37,211,102,0.7); }
 
-    /* ── Loading Screen ──────────────────────────────────── */
+    /* ══════════════════════════════════════════════════════
+       LOADING SCREEN — cinematic "studio boot" (ported from
+       localhost:8765). All CSS is scoped to #loader and its
+       descendants so it cannot leak into the real page. Every
+       overlay (grain, scanline, vignette, flicker) lives INSIDE
+       #loader so they disappear together with it.
+       ══════════════════════════════════════════════════════ */
     #loader {
-      position: fixed; inset: 0; z-index: 10000;
-      background: #030305;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 0;
-      clip-path: circle(100% at 50% 50%);
-    }
-    #loader-logo {
-      font-family: 'DM Sans', sans-serif;
-      font-size: clamp(13px, 2.5vw, 22px);
-      font-weight: 300;
-      letter-spacing: 0.6em;
-      text-transform: uppercase;
-      margin-bottom: 36px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.95), rgba(180,140,255,0.9), rgba(255,255,255,0.95), rgba(255,255,255,0.35));
-      background-size: 300% 100%;
-      -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: loaderShimmer 2.8s ease-in-out infinite;
-    }
-    @keyframes loaderShimmer {
-      0%   { background-position: 100% 50%; }
-      100% { background-position: -100% 50%; }
-    }
-    #loader-bar-track {
-      width: clamp(180px, 28vw, 360px);
-      height: 1px;
-      background: rgba(255,255,255,0.08);
-      position: relative;
+      --l-bg:      #050608;
+      --l-fg:      #ffffff;
+      --l-dim:     rgba(255, 255, 255, 0.5);
+      --l-faint:   rgba(255, 255, 255, 0.25);
+      --l-accent:  rgba(150, 255, 180, 0.9);
+      --l-cyan:    rgba(80, 230, 255, 0.78);
+      --l-magenta: rgba(255, 80, 180, 0.78);
+      --l-mono:    "SF Mono", "JetBrains Mono", "Menlo", "Consolas", "Courier New", monospace;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: var(--l-bg);
+      color: var(--l-fg);
+      font-family: var(--l-mono);
       overflow: hidden;
+      clip-path: inset(0 0 0 0);
+      will-change: clip-path, transform, filter;
     }
-    #loader-bar-fill {
-      position: absolute; top: 0; left: 0; height: 100%; width: 0%;
-      background: linear-gradient(90deg, transparent, rgba(140,90,255,0.7), rgba(180,130,255,1));
+    #loader.exit {
+      clip-path: inset(0 0 100% 0);
+      transition: clip-path 1200ms cubic-bezier(0.76, 0, 0.24, 1);
     }
-    #loader-percent {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 10px; letter-spacing: 0.35em;
-      color: rgba(255,255,255,0.2);
+    #loader * { box-sizing: border-box; }
+    #loader .parallax {
+      position: absolute;
+      inset: 0;
+      will-change: transform;
+    }
+
+    /* Film grain */
+    #loader .grain {
+      position: absolute; inset: -100px;
+      pointer-events: none; z-index: 10002;
+      opacity: 0.11; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      animation: lGrainShift 0.5s steps(6) infinite;
+    }
+    @keyframes lGrainShift {
+      0%   { transform: translate(0, 0); }
+      16%  { transform: translate(-6px, 4px); }
+      32%  { transform: translate(4px, -6px); }
+      48%  { transform: translate(-4px, -4px); }
+      64%  { transform: translate(6px, 2px); }
+      80%  { transform: translate(-2px, 6px); }
+      100% { transform: translate(0, 0); }
+    }
+    /* Scan sweep */
+    #loader .scanline {
+      position: absolute; left: 0; right: 0; top: -20%;
+      height: 180px;
+      background: linear-gradient(to bottom,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.022) 50%,
+        rgba(255,255,255,0) 100%);
+      pointer-events: none; z-index: 9998;
+      animation: lScanSweep 5.5s linear infinite;
+    }
+    @keyframes lScanSweep { 0% { top: -20%; } 100% { top: 120%; } }
+    /* Vignette */
+    #loader .vignette {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 9997;
+      background: radial-gradient(ellipse at center,
+        rgba(0,0,0,0) 40%, rgba(0,0,0,0.75) 100%);
+    }
+    /* Flicker */
+    #loader .flicker {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 10003;
+      background: #fff; opacity: 0;
+      mix-blend-mode: overlay;
+      transition: opacity 60ms linear;
+    }
+
+    /* Star field */
+    #loader .stars {
+      position: absolute; inset: 0;
+      pointer-events: none; opacity: 0;
+      transition: opacity 1600ms ease 300ms;
+      z-index: 1;
+    }
+    #loader.s2 .stars { opacity: 1; }
+    #loader .star {
+      position: absolute; width: 2px; height: 2px;
+      background: #fff; border-radius: 50%;
+      animation: lStarPulse var(--dur, 4s) ease-in-out infinite;
+      animation-delay: var(--dl, 0s);
+      will-change: opacity, transform;
+    }
+    @keyframes lStarPulse {
+      0%, 100% { opacity: var(--min, 0.15); transform: scale(0.7); }
+      50%      { opacity: var(--max, 0.9);  transform: scale(1.2); }
+    }
+    #loader .star--big { box-shadow: 0 0 4px rgba(255,255,255,0.8); }
+
+    /* Tron perspective terrain */
+    #loader .terrain {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      height: 55vh;
+      pointer-events: none;
+      perspective: 420px; perspective-origin: 50% 0%;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 1600ms ease 600ms;
+      z-index: 2;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 35%, black 100%);
+              mask-image: linear-gradient(to bottom, transparent 0%, black 35%, black 100%);
+    }
+    #loader.s2 .terrain { opacity: 0.55; }
+    #loader .terrain__grid {
+      position: absolute; top: 0; left: -50%;
+      width: 200%; height: 220%;
+      background-image:
+        linear-gradient(to right,  rgba(140,180,255,0.38) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(140,180,255,0.38) 1px, transparent 1px);
+      background-size: 72px 72px;
+      transform: rotateX(74deg);
+      transform-origin: center top;
+      animation: lTerrainMove 2.4s linear infinite;
+    }
+    @keyframes lTerrainMove {
+      0%   { background-position: 0 0; }
+      100% { background-position: 0 72px; }
+    }
+    #loader .terrain::before {
+      content: ""; position: absolute;
+      left: 0; right: 0; bottom: 0; height: 60%;
+      background: radial-gradient(ellipse at center bottom,
+        rgba(120,80,255,0.2) 0%, rgba(120,80,255,0.05) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Dust particles */
+    #loader .dust-field {
+      position: absolute; inset: 0;
+      pointer-events: none; opacity: 0;
+      transition: opacity 1400ms ease 700ms;
+      z-index: 3;
+    }
+    #loader.s2 .dust-field { opacity: 1; }
+    #loader .dust {
+      position: absolute; width: 2px; height: 2px;
+      background: rgba(255,255,255,0.55);
+      border-radius: 50%;
+      box-shadow: 0 0 4px rgba(255,255,255,0.35);
+      animation: lDrift linear infinite;
+    }
+    @keyframes lDrift {
+      0%   { transform: translate3d(0, 100vh, 0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translate3d(var(--dx), -10vh, 0); opacity: 0; }
+    }
+
+    /* Corner brackets */
+    #loader .bracket {
+      position: absolute; width: 56px; height: 56px;
+      opacity: 0;
+      transition: opacity 700ms ease, transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 25;
+    }
+    #loader .bracket::before, #loader .bracket::after {
+      content: ""; position: absolute; background: rgba(255,255,255,0.55);
+    }
+    #loader .bracket--tl { top: 44px; left: 44px; transform: translate(-16px, -16px); }
+    #loader .bracket--tl::before { top: 0; left: 0; width: 100%; height: 1px; }
+    #loader .bracket--tl::after  { top: 0; left: 0; width: 1px; height: 100%; }
+    #loader .bracket--tr { top: 44px; right: 44px; transform: translate(16px, -16px); }
+    #loader .bracket--tr::before { top: 0; right: 0; width: 100%; height: 1px; }
+    #loader .bracket--tr::after  { top: 0; right: 0; width: 1px; height: 100%; }
+    #loader .bracket--bl { bottom: 44px; left: 44px; transform: translate(-16px, 16px); }
+    #loader .bracket--bl::before { bottom: 0; left: 0; width: 100%; height: 1px; }
+    #loader .bracket--bl::after  { bottom: 0; left: 0; width: 1px; height: 100%; }
+    #loader .bracket--br { bottom: 44px; right: 44px; transform: translate(16px, 16px); }
+    #loader .bracket--br::before { bottom: 0; right: 0; width: 100%; height: 1px; }
+    #loader .bracket--br::after  { bottom: 0; right: 0; width: 1px; height: 100%; }
+    #loader.s1 .bracket { opacity: 1; transform: translate(0, 0); }
+
+    /* Meta rows */
+    #loader .meta-row {
+      position: absolute; left: 100px; right: 100px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 10.5px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--l-dim); opacity: 0;
+      transition: opacity 800ms ease 250ms; z-index: 25;
+    }
+    #loader .meta-row--top { top: 64px; }
+    #loader .meta-row--bot { bottom: 64px; }
+    #loader.s2 .meta-row { opacity: 1; }
+    #loader .meta-item { display: flex; align-items: center; gap: 12px; }
+    #loader .meta-item .k { color: var(--l-faint); }
+    #loader .meta-item .v { color: rgba(255,255,255,0.8); font-variant-numeric: tabular-nums; }
+    #loader .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--l-accent);
+      box-shadow: 0 0 10px var(--l-accent);
+      animation: lPulseDot 1.3s ease-in-out infinite;
+    }
+    @keyframes lPulseDot {
+      0%, 100% { opacity: 0.35; transform: scale(0.85); }
+      50%      { opacity: 1;    transform: scale(1.1); }
+    }
+
+    /* Boot log */
+    #loader .bootlog {
+      position: absolute; top: 114px; left: 100px;
+      font-size: 10px; line-height: 1.9; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.42); text-transform: lowercase;
+      opacity: 0;
+      transition: opacity 600ms ease 300ms;
+      max-width: 340px; z-index: 22; pointer-events: none;
+    }
+    #loader.s2 .bootlog { opacity: 1; }
+    #loader .bootlog__line { white-space: pre; }
+    #loader .bootlog__line--current::after {
+      content: "▌";
+      animation: lBlinkBar 0.7s steps(2) infinite;
+      color: rgba(255,255,255,0.9);
+      margin-left: 2px;
+    }
+    @keyframes lBlinkBar { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+    /* Gyroscope */
+    #loader .gyro-stage {
+      position: absolute; top: 50%; left: 50%;
+      width: 640px; height: 640px;
+      max-width: 72vw; max-height: 72vw;
+      transform: translate(-50%, -50%);
+      perspective: 1600px; perspective-origin: center;
+      opacity: 0;
+      transition: opacity 1400ms ease 400ms;
+      z-index: 10;
+    }
+    #loader.s2 .gyro-stage { opacity: 1; }
+    #loader .gyro {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: lGyroRot 42s linear infinite;
+    }
+    @keyframes lGyroRot {
+      0%   { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg);    }
+      100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(-360deg); }
+    }
+    #loader .gyro__ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow: 0 0 80px rgba(120,160,255,0.05) inset;
+    }
+    #loader .gyro__ring--1 { transform: rotateY(0deg); }
+    #loader .gyro__ring--2 { transform: rotateY(90deg); }
+    #loader .gyro__ring--3 { transform: rotateX(90deg); }
+    #loader .gyro__ring--4 { transform: rotateY(45deg);                    border-color: rgba(255,255,255,0.14); inset: 44px; }
+    #loader .gyro__ring--5 { transform: rotateX(45deg) rotateY(45deg);     border-color: rgba(255,255,255,0.14); inset: 44px; }
+    #loader .gyro__ring--6 { transform: rotateX(60deg) rotateZ(30deg);     inset: 90px;  border-color: rgba(120,220,255,0.22); }
+    #loader .gyro__ring--7 { transform: rotateY(120deg);                   inset: 90px;  border-color: rgba(200,140,255,0.18); border-style: dashed; }
+    #loader .gyro__ring--8 { transform: rotateX(30deg) rotateY(60deg);     inset: 140px; border-color: rgba(255,255,255,0.3); }
+    #loader .gyro__axis { position: absolute; background: rgba(255,255,255,0.22); }
+    #loader .gyro__axis--x { top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-50%); }
+    #loader .gyro__axis--y { left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); }
+    #loader .gyro__axis--z { top: 50%; left: 50%; width: 100%; height: 1px; transform: translate(-50%, -50%) rotateY(90deg); }
+    #loader .gyro__core {
+      position: absolute; top: 50%; left: 50%;
+      width: 10px; height: 10px;
+      background: #fff; border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 22px rgba(255,255,255,0.9),
+                  0 0 48px rgba(120,160,255,0.65),
+                  0 0 80px rgba(120,160,255,0.35);
+      animation: lCorePulse 2.2s ease-in-out infinite;
+    }
+    @keyframes lCorePulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1);   }
+      50%      { transform: translate(-50%, -50%) scale(1.4); }
+    }
+
+    /* Circular audio visualizer */
+    #loader .visualizer {
+      position: absolute; top: 50%; left: 50%;
+      width: 0; height: 0;
+      pointer-events: none; opacity: 0;
+      transition: opacity 1200ms ease 700ms;
+      z-index: 11;
+    }
+    #loader.s2 .visualizer { opacity: 1; }
+    #loader .viz-slot {
+      position: absolute; top: 0; left: 0;
+      width: 0; height: 0;
+      transform: rotate(var(--angle));
+    }
+    #loader .viz-bar {
+      position: absolute; left: -1px; bottom: 290px;
+      width: 2px; height: 44px;
+      background: linear-gradient(to top,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.35) 30%,
+        rgba(255,255,255,0.95) 100%);
+      transform-origin: 50% 100%;
+      transform: scaleY(0.2);
+      animation: lVizPulse var(--dur) ease-in-out infinite;
+      animation-delay: var(--dl);
+      filter: drop-shadow(0 0 4px rgba(255,255,255,0.4));
+    }
+    @keyframes lVizPulse {
+      0%, 100% { transform: scaleY(0.2); }
+      50%      { transform: scaleY(1); }
+    }
+
+    /* Outer 2D ring system + satellites */
+    #loader .outer-ring {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(820px, 86vw); height: min(820px, 86vw);
+      pointer-events: none; opacity: 0;
+      transition: opacity 1100ms ease 600ms;
+      z-index: 9;
+    }
+    #loader.s2 .outer-ring { opacity: 1; }
+    #loader .outer-ring svg { width: 100%; height: 100%; overflow: visible; }
+    #loader .outer-ring__cw  { transform-origin: 240px 240px; animation: lSpinCw 60s linear infinite; }
+    #loader .outer-ring__ccw { transform-origin: 240px 240px; animation: lSpinCcw 44s linear infinite; }
+    @keyframes lSpinCw  { to { transform: rotate(360deg); } }
+    @keyframes lSpinCcw { to { transform: rotate(-360deg); } }
+    #loader .sat-orbit {
+      position: absolute; top: 50%; left: 50%;
+      width: min(820px, 86vw); height: min(820px, 86vw);
+      transform: translate(-50%, -50%);
+      pointer-events: none; opacity: 0;
+      transition: opacity 1100ms ease 800ms;
+      z-index: 12;
+    }
+    #loader.s2 .sat-orbit { opacity: 1; }
+    #loader .sat-orbit--1 { animation: lSatOrbit 18s linear infinite; }
+    #loader .sat-orbit--2 { animation: lSatOrbit 28s linear infinite reverse; animation-delay: -4s; }
+    #loader .sat-orbit--3 { animation: lSatOrbit 44s linear infinite;         animation-delay: -11s; }
+    @keyframes lSatOrbit {
+      0%   { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    #loader .satellite {
+      position: absolute; top: -4px; left: 50%;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #fff;
+      transform: translateX(-50%);
+      box-shadow: 0 0 10px rgba(255,255,255,0.9),
+                  0 0 22px rgba(120,180,255,0.7),
+                  0 0 44px rgba(120,180,255,0.3);
+    }
+    #loader .satellite--cyan {
+      background: rgba(150,230,255,0.95);
+      box-shadow: 0 0 10px rgba(150,230,255,1),
+                  0 0 22px rgba(80,200,255,0.7),
+                  0 0 44px rgba(80,200,255,0.35);
+    }
+    #loader .satellite--magenta {
+      background: rgba(255,180,230,0.95);
+      box-shadow: 0 0 10px rgba(255,180,230,1),
+                  0 0 22px rgba(255,100,200,0.7),
+                  0 0 44px rgba(255,100,200,0.35);
+    }
+    #loader .satellite::after {
+      content: ""; position: absolute;
+      top: 2px; left: 50%;
+      width: 60px; height: 2px;
+      background: linear-gradient(to left, rgba(255,255,255,0.6), rgba(255,255,255,0));
+      transform: translate(-100%, 0);
+      filter: blur(2px);
+    }
+
+    /* Center counter with chromatic split */
+    #loader .center {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center; z-index: 50;
+      opacity: 0;
+      transition: opacity 900ms ease 500ms;
+    }
+    #loader.s2 .center { opacity: 1; }
+    #loader .center__label {
+      font-size: 10px; letter-spacing: 0.6em;
+      color: var(--l-dim); text-transform: uppercase;
+      margin-bottom: 38px; white-space: nowrap;
+      transition: opacity 400ms ease;
+    }
+    #loader .counter-wrap {
+      display: inline-flex; align-items: flex-start; justify-content: center; gap: 10px;
+    }
+    #loader .counter-stack { position: relative; display: inline-block; min-width: 3.2ch; }
+    #loader .counter,
+    #loader .counter-cyan,
+    #loader .counter-magenta {
+      font-size: clamp(110px, 16vw, 220px);
+      font-weight: 200; line-height: 0.82; letter-spacing: -0.05em;
+      font-variant-numeric: tabular-nums;
+      display: block; min-width: 3.2ch; text-align: center;
+      font-family: var(--l-mono);
+    }
+    #loader .counter {
+      color: #fff; position: relative; z-index: 3;
+      text-shadow: 0 0 60px rgba(255,255,255,0.15), 0 0 120px rgba(120,160,255,0.2);
+    }
+    #loader .counter-cyan, #loader .counter-magenta {
+      position: absolute; top: 0; left: 0; right: 0;
+      pointer-events: none; mix-blend-mode: screen;
+      transition: transform 120ms ease;
+    }
+    #loader .counter-cyan    { color: var(--l-cyan);    transform: translateX(-1.5px); z-index: 1; }
+    #loader .counter-magenta { color: var(--l-magenta); transform: translateX(1.5px);  z-index: 2; }
+    #loader .counter-wrap.glitch .counter-cyan    { transform: translateX(-10px) skewX(-3deg); }
+    #loader .counter-wrap.glitch .counter-magenta { transform: translateX(10px)  skewX(3deg);  }
+    #loader .counter-wrap.glitch .counter         { transform: translateX(-1px)  skewX(0.5deg); }
+    #loader .counter__pct {
+      font-size: clamp(18px, 2vw, 30px);
+      font-weight: 300; color: var(--l-faint);
+      letter-spacing: 0.08em;
+      margin-top: clamp(24px, 3.2vw, 40px);
+      position: relative; z-index: 3;
+      transition: opacity 400ms ease;
+    }
+
+    /* Frequency bars */
+    #loader .freq {
+      position: absolute; top: calc(50% + 210px); left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 3px;
+      width: clamp(280px, 40vw, 480px);
+      height: 38px;
+      align-items: flex-end;
+      opacity: 0;
+      transition: opacity 800ms ease 800ms;
+      z-index: 40;
+    }
+    #loader.s2 .freq { opacity: 1; }
+    #loader .freq__bar {
+      flex: 1; min-width: 2px;
+      background: linear-gradient(to top, rgba(255,255,255,0.85), rgba(255,255,255,0.15));
+      height: 15%;
+      animation: lFreqPulse var(--dur, 1s) ease-in-out infinite;
+      animation-delay: var(--dl, 0ms);
+      box-shadow: 0 0 6px rgba(255,255,255,0.35);
+    }
+    @keyframes lFreqPulse {
+      0%, 100% { height: 10%; }
+      50%      { height: 95%; }
+    }
+
+    /* Telemetry + status log */
+    #loader .stream {
+      position: absolute; top: 50%; left: 100px;
+      transform: translateY(-50%);
+      font-size: 10px; line-height: 2;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase; letter-spacing: 0.12em;
+      font-variant-numeric: tabular-nums;
+      opacity: 0;
+      transition: opacity 900ms ease 900ms;
+      z-index: 30;
+    }
+    #loader.s2 .stream { opacity: 1; }
+    #loader .stream__title, #loader .log__title {
+      color: var(--l-faint);
+      font-size: 9px; letter-spacing: 0.35em;
+      margin-bottom: 14px; padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    #loader .stream__row { display: flex; gap: 14px; }
+    #loader .stream__row .k { color: rgba(255,255,255,0.3); display: inline-block; width: 48px; }
+    #loader .stream__row .v { color: rgba(255,255,255,0.8); }
+    #loader .log {
+      position: absolute; top: 50%; right: 100px;
+      transform: translateY(-50%);
+      text-align: right;
+      font-size: 10px; line-height: 2;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      opacity: 0;
+      transition: opacity 900ms ease 900ms;
+      min-width: 220px; z-index: 30;
+    }
+    #loader.s2 .log { opacity: 1; }
+    #loader .log__line { display: block; opacity: 0; transform: translateX(6px); }
+    #loader .log__line.show {
+      opacity: 1; transform: translateX(0);
+      transition: opacity 350ms ease, transform 350ms ease, color 350ms ease;
+    }
+    #loader .log__line.done { color: rgba(255,255,255,0.22); }
+    #loader .log__line.done::before { content: "[ok] "; color: var(--l-accent); }
+    #loader .log__line.active::before {
+      content: "[..] ";
+      color: rgba(255,255,255,0.75);
+      animation: lBlinkBar 0.6s steps(2) infinite;
+    }
+
+    /* Progress bar */
+    #loader .progress {
+      position: absolute; left: 100px; right: 100px; bottom: 140px;
+      opacity: 0;
+      transition: opacity 800ms ease 700ms;
+      z-index: 30;
+    }
+    #loader.s2 .progress { opacity: 1; }
+    #loader .progress__head {
+      display: flex; justify-content: space-between;
+      font-size: 9px; letter-spacing: 0.3em;
+      color: var(--l-faint); text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    #loader .progress__ticks { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    #loader .progress__tick { width: 1px; height: 5px; background: rgba(255,255,255,0.15); }
+    #loader .progress__tick--major { height: 11px; background: rgba(255,255,255,0.4); }
+    #loader .progress__bar {
+      position: relative; width: 100%; height: 1px;
+      background: rgba(255,255,255,0.12);
+    }
+    #loader .progress__fill {
+      position: absolute; top: 0; left: 0;
+      height: 100%; width: 0;
+      background: #fff;
+      box-shadow: 0 0 22px rgba(255,255,255,0.75);
+    }
+    #loader .progress__fill::after {
+      content: ""; position: absolute;
+      right: -1px; top: -4px;
+      width: 2px; height: 9px;
+      background: #fff;
+      box-shadow: 0 0 14px rgba(255,255,255,1);
+    }
+    #loader .progress__foot {
+      display: flex; justify-content: space-between;
       margin-top: 14px;
+      font-size: 9px; letter-spacing: 0.25em;
+      color: var(--l-faint); text-transform: uppercase;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Exit choreography */
+    #loader.exit-pre .meta-row,
+    #loader.exit-pre .stream,
+    #loader.exit-pre .log,
+    #loader.exit-pre .progress,
+    #loader.exit-pre .outer-ring,
+    #loader.exit-pre .sat-orbit,
+    #loader.exit-pre .bracket,
+    #loader.exit-pre .center__label,
+    #loader.exit-pre .counter__pct,
+    #loader.exit-pre .freq,
+    #loader.exit-pre .bootlog,
+    #loader.exit-pre .dust-field,
+    #loader.exit-pre .stars,
+    #loader.exit-pre .terrain {
+      opacity: 0;
+      transition: opacity 550ms cubic-bezier(0.33, 0, 0.67, 1);
+    }
+    #loader.exit-pre .gyro-stage {
+      animation: lGyroBlowout 1100ms cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    }
+    @keyframes lGyroBlowout {
+      0%   { transform: translate(-50%, -50%) scale(1);   opacity: 1;    filter: blur(0);   }
+      35%  { transform: translate(-50%, -50%) scale(1.2); opacity: 0.85; filter: blur(0);   }
+      100% { transform: translate(-50%, -50%) scale(3.8); opacity: 0;    filter: blur(22px);}
+    }
+    #loader.exit-pre .gyro {
+      animation: lGyroRotFast 2s linear infinite;
+    }
+    @keyframes lGyroRotFast {
+      0%   { transform: rotateX(0deg)   rotateY(0deg);    }
+      100% { transform: rotateX(720deg) rotateY(1440deg); }
+    }
+    #loader.exit-pre .visualizer {
+      animation: lVizBlowout 900ms cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    }
+    @keyframes lVizBlowout {
+      0%   { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
+    }
+    #loader.exit-pre .parallax {
+      animation: lCameraPush 1100ms cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    }
+    @keyframes lCameraPush {
+      0%   { transform: scale(1)    translate3d(0,0,0); filter: blur(0); }
+      100% { transform: scale(1.18) translate3d(0,0,0); filter: blur(8px); }
+    }
+    #loader.exit-hide .center {
+      opacity: 0;
+      transition: opacity 400ms ease;
     }
 
     /* ── GSAP text reveal helpers ────────────────────────── */
@@ -1674,13 +2227,139 @@
 
 <body>
 
-  <!-- Loading Screen -->
-  <div id="loader">
-    <div id="loader-logo">All In Media</div>
-    <div id="loader-bar-track">
-      <div id="loader-bar-fill"></div>
+  <!-- Loading Screen — cinematic studio boot sequence.
+       All children live inside #loader so they disappear together. -->
+  <div id="loader" aria-hidden="true">
+    <div class="parallax" id="loader-parallax">
+
+      <!-- Star field background -->
+      <div class="stars" id="loader-stars"></div>
+
+      <!-- Tron perspective terrain -->
+      <div class="terrain">
+        <div class="terrain__grid"></div>
+      </div>
+
+      <!-- Dust particles -->
+      <div class="dust-field" id="loader-dustfield"></div>
+
+      <!-- Corner brackets -->
+      <div class="bracket bracket--tl"></div>
+      <div class="bracket bracket--tr"></div>
+      <div class="bracket bracket--bl"></div>
+      <div class="bracket bracket--br"></div>
+
+      <!-- Top meta row -->
+      <div class="meta-row meta-row--top">
+        <div class="meta-item"><span class="k">SESSION</span><span class="v" id="loader-mSession">—</span></div>
+        <div class="meta-item"><span class="k">NODE</span><span class="v">EU-CENTRAL-01</span></div>
+        <div class="meta-item"><span class="k">TC</span><span class="v" id="loader-mTimecode">00:00:00:00</span></div>
+      </div>
+
+      <!-- Boot log typed -->
+      <div class="bootlog" id="loader-bootlog"></div>
+
+      <!-- 3D Gyroscope -->
+      <div class="gyro-stage" id="loader-gyroStage">
+        <div class="gyro">
+          <div class="gyro__ring gyro__ring--1"></div>
+          <div class="gyro__ring gyro__ring--2"></div>
+          <div class="gyro__ring gyro__ring--3"></div>
+          <div class="gyro__ring gyro__ring--4"></div>
+          <div class="gyro__ring gyro__ring--5"></div>
+          <div class="gyro__ring gyro__ring--6"></div>
+          <div class="gyro__ring gyro__ring--7"></div>
+          <div class="gyro__ring gyro__ring--8"></div>
+          <div class="gyro__axis gyro__axis--x"></div>
+          <div class="gyro__axis gyro__axis--y"></div>
+          <div class="gyro__axis gyro__axis--z"></div>
+          <div class="gyro__core"></div>
+        </div>
+      </div>
+
+      <!-- Circular audio visualizer (120 radial bars) -->
+      <div class="visualizer" id="loader-visualizer"></div>
+
+      <!-- Outer 2D ring system -->
+      <div class="outer-ring" aria-hidden="true">
+        <svg viewBox="0 0 480 480">
+          <g class="outer-ring__cw">
+            <circle cx="240" cy="240" r="236" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="1 5"/>
+            <g id="loader-outerTicks"></g>
+          </g>
+          <g class="outer-ring__ccw">
+            <circle cx="240" cy="240" r="210" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="80 12"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Orbiting satellites -->
+      <div class="sat-orbit sat-orbit--1"><div class="satellite"></div></div>
+      <div class="sat-orbit sat-orbit--2"><div class="satellite satellite--cyan"></div></div>
+      <div class="sat-orbit sat-orbit--3"><div class="satellite satellite--magenta"></div></div>
+
+      <!-- Center counter -->
+      <div class="center">
+        <div class="center__label" id="loader-centerLabel">LOADING EXPERIENCE</div>
+        <div class="counter-wrap" id="loader-counterWrap">
+          <div class="counter-stack">
+            <div class="counter-cyan"    id="loader-counterCyan">00</div>
+            <div class="counter-magenta" id="loader-counterMagenta">00</div>
+            <div class="counter"         id="loader-counter">00</div>
+          </div>
+          <div class="counter__pct">%</div>
+        </div>
+      </div>
+
+      <!-- Frequency bars -->
+      <div class="freq" id="loader-freq"></div>
+
+      <!-- Left telemetry -->
+      <div class="stream">
+        <div class="stream__title">TELEMETRY / 01</div>
+        <div class="stream__row"><span class="k">LAT</span><span class="v" id="loader-sLat">48.856614</span></div>
+        <div class="stream__row"><span class="k">LON</span><span class="v" id="loader-sLon">2.352221</span></div>
+        <div class="stream__row"><span class="k">HASH</span><span class="v" id="loader-sHash">0x0000</span></div>
+        <div class="stream__row"><span class="k">MEM</span><span class="v" id="loader-sMem">000 / 512</span></div>
+        <div class="stream__row"><span class="k">GPU</span><span class="v" id="loader-sGpu">00%</span></div>
+        <div class="stream__row"><span class="k">TMP</span><span class="v" id="loader-sTmp">00°C</span></div>
+        <div class="stream__row"><span class="k">NET</span><span class="v" id="loader-sNet">0.00 ms</span></div>
+      </div>
+
+      <!-- Right status log -->
+      <div class="log" id="loader-log">
+        <div class="log__title">STATUS / 02</div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress">
+        <div class="progress__head">
+          <span>BUFFER</span>
+          <span>/ STREAM 01</span>
+        </div>
+        <div class="progress__ticks" id="loader-progressTicks"></div>
+        <div class="progress__bar"><div class="progress__fill" id="loader-progressFill"></div></div>
+        <div class="progress__foot">
+          <span>0%</span>
+          <span id="loader-progressLabel">00%</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+      <!-- Bottom meta row -->
+      <div class="meta-row meta-row--bot">
+        <div class="meta-item"><span class="pulse-dot"></span><span class="v">SIGNAL LOCKED</span></div>
+        <div class="meta-item"><span class="k">BUILD</span><span class="v">2.6.0 / PROD</span></div>
+        <div class="meta-item"><span class="k">©</span><span class="v">STUDIO 2026</span></div>
+      </div>
+
     </div>
-    <div id="loader-percent">0%</div>
+
+    <!-- Overlays INSIDE #loader so they disappear with it -->
+    <div class="vignette"></div>
+    <div class="scanline"></div>
+    <div class="grain"></div>
+    <div class="flicker" id="loader-flicker"></div>
   </div>
 
   <!-- HERO SECTION: Three.js metallic sphere -->
@@ -3224,61 +3903,435 @@ gsap.ticker.lagSmoothing(0);
 if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 
 
-// ── 2. LOADING SCREEN ───────────────────────────────
+// ── 2. LOADING SCREEN — cinematic studio boot ──────
+// Ported from the localhost:8765 reference Lucian picked. All DOM ids
+// are prefixed with 'loader-' to avoid collision with the rest of
+// the site. After the "100" counter finishes, it scrambles to "GO",
+// the gyro blows out + the parallax camera-pushes, then a clip-path
+// curtain lift exposes the Three.js hero sphere underneath.
 (function () {
-  const loader   = document.getElementById('loader');
-  const fill     = document.getElementById('loader-bar-fill');
-  const pctEl    = document.getElementById('loader-percent');
-  let progress   = 0;
-  let finished   = false;
+  const L = id => document.getElementById(id);
+  const $$ = sel => document.querySelector(sel);
+  const rand = (a,b) => Math.random()*(b-a)+a;
+  const randInt = (a,b) => Math.floor(rand(a, b+1));
+  const pad = (n, l=2) => String(n).padStart(l, "0");
+  const randHex = n => {
+    let s = ""; for (let i=0;i<n;i++) s += Math.floor(Math.random()*16).toString(16);
+    return s.toUpperCase();
+  };
 
-  // Ease progress up to 88% organically
-  const tick = setInterval(() => {
-    if (finished) return;
-    const step = Math.max(0.4, (88 - progress) * 0.03 + Math.random() * 1.8);
-    progress = Math.min(progress + step, 88);
-    fill.style.width = progress + '%';
-    pctEl.textContent = Math.floor(progress) + '%';
-  }, 70);
+  const loader = L('loader');
+  if (!loader) return;
 
-  function complete() {
-    if (finished) return;
-    finished = true;
-    clearInterval(tick);
-    // Sprint 88 → 100
-    gsap.to({ p: progress }, {
-      p: 100, duration: 0.6, ease: 'power2.out',
-      onUpdate: function () {
-        const v = Math.floor(this.targets()[0].p);
-        fill.style.width = v + '%';
-        pctEl.textContent = v + '%';
-      },
-      onComplete: () => {
-        // Dramatic mask-expand reveal
-        gsap.to(loader, {
-          clipPath: 'circle(0% at 50% 50%)',
-          duration: 1.0, delay: 0.2,
-          ease: 'power3.inOut',
-          onComplete: () => {
-            loader.style.display = 'none';
-            revealPage();
-          }
-        });
+  // ── Populate static content ─────────────────────
+  L('loader-mSession').textContent = randHex(8);
+
+  // Progress ticks (21 dividers)
+  (function() {
+    const w = L('loader-progressTicks');
+    for (let i=0;i<=20;i++) {
+      const t = document.createElement("div");
+      t.className = "progress__tick" + (i%4===0 ? " progress__tick--major" : "");
+      w.appendChild(t);
+    }
+  })();
+
+  // Outer ring tick marks
+  (function() {
+    const g = L('loader-outerTicks');
+    const NS = "http://www.w3.org/2000/svg";
+    for (let a=0; a<360; a+=10) {
+      const rad = (a-90) * Math.PI / 180;
+      const isMajor = a % 30 === 0;
+      const r1 = 236;
+      const r2 = isMajor ? 212 : 228;
+      const x1 = 240 + Math.cos(rad)*r1;
+      const y1 = 240 + Math.sin(rad)*r1;
+      const x2 = 240 + Math.cos(rad)*r2;
+      const y2 = 240 + Math.sin(rad)*r2;
+      const line = document.createElementNS(NS, "line");
+      line.setAttribute("x1", x1);
+      line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2);
+      line.setAttribute("y2", y2);
+      line.setAttribute("stroke", "rgba(255,255,255," + (isMajor ? 0.5 : 0.16) + ")");
+      line.setAttribute("stroke-width", "1");
+      g.appendChild(line);
+    }
+  })();
+
+  // Status log lines
+  const LOG_MESSAGES = [
+    "Initializing core",
+    "Compiling shaders",
+    "Loading geometry",
+    "Streaming textures",
+    "Calibrating lights",
+    "Warming engine",
+    "Finalizing scene",
+  ];
+  const logLines = [];
+  (function() {
+    const log = L('loader-log');
+    LOG_MESSAGES.forEach(msg => {
+      const line = document.createElement("div");
+      line.className = "log__line";
+      line.textContent = msg;
+      log.appendChild(line);
+      logLines.push(line);
+    });
+  })();
+
+  // Frequency bars (40)
+  (function() {
+    const freq = L('loader-freq');
+    for (let i=0; i<40; i++) {
+      const bar = document.createElement("div");
+      bar.className = "freq__bar";
+      bar.style.setProperty("--dur", rand(0.55, 1.8).toFixed(2) + "s");
+      bar.style.setProperty("--dl",  rand(0, 2000).toFixed(0) + "ms");
+      freq.appendChild(bar);
+    }
+  })();
+
+  // Dust particles (50)
+  (function() {
+    const field = L('loader-dustfield');
+    for (let i=0; i<50; i++) {
+      const d = document.createElement("div");
+      d.className = "dust";
+      d.style.left = rand(0,100) + "%";
+      d.style.bottom = rand(-20, 0) + "vh";
+      d.style.animationDuration = rand(16, 34) + "s";
+      d.style.animationDelay = rand(0, 22) + "s";
+      d.style.setProperty("--dx", rand(-60, 60) + "px");
+      d.style.opacity = rand(0.25, 0.7);
+      field.appendChild(d);
+    }
+  })();
+
+  // Star field (220 stars)
+  (function() {
+    const stars = L('loader-stars');
+    for (let i=0; i<220; i++) {
+      const s = document.createElement("div");
+      const big = Math.random() < 0.1;
+      s.className = "star" + (big ? " star--big" : "");
+      s.style.left = rand(0, 100) + "%";
+      s.style.top  = rand(0, 100) + "%";
+      s.style.setProperty("--dur", rand(2.5, 6).toFixed(2) + "s");
+      s.style.setProperty("--dl",  rand(0, 6).toFixed(2) + "s");
+      s.style.setProperty("--min", rand(0.05, 0.2).toFixed(2));
+      s.style.setProperty("--max", rand(0.5, 1).toFixed(2));
+      if (big) { s.style.width = "3px"; s.style.height = "3px"; }
+      stars.appendChild(s);
+    }
+  })();
+
+  // Circular audio visualizer (120 radial bars)
+  (function() {
+    const viz = L('loader-visualizer');
+    const COUNT = 120;
+    for (let i=0; i<COUNT; i++) {
+      const slot = document.createElement("div");
+      slot.className = "viz-slot";
+      slot.style.setProperty("--angle", (i * (360 / COUNT)) + "deg");
+      const bar = document.createElement("div");
+      bar.className = "viz-bar";
+      bar.style.setProperty("--dur", rand(0.6, 2.2).toFixed(2) + "s");
+      bar.style.setProperty("--dl",  rand(0, 3000).toFixed(0) + "ms");
+      slot.appendChild(bar);
+      viz.appendChild(slot);
+    }
+  })();
+
+  // ── Timecode ───────────────────────────────────
+  const tStart = performance.now();
+  const timecodeEl = L('loader-mTimecode');
+  function updateTimecode(now) {
+    const ms = now - tStart;
+    const ff = Math.floor((ms % 1000) / (1000/30));
+    const ss = Math.floor(ms/1000) % 60;
+    const mm = Math.floor(ms/60000) % 60;
+    const hh = Math.floor(ms/3600000);
+    timecodeEl.textContent = pad(hh)+":"+pad(mm)+":"+pad(ss)+":"+pad(ff);
+  }
+
+  // ── Telemetry jitter ──────────────────────────
+  const T = {
+    lat:  L('loader-sLat'),
+    lon:  L('loader-sLon'),
+    hash: L('loader-sHash'),
+    mem:  L('loader-sMem'),
+    gpu:  L('loader-sGpu'),
+    tmp:  L('loader-sTmp'),
+    net:  L('loader-sNet'),
+  };
+  function jitter() {
+    T.lat.textContent  = (48.856614 + rand(-0.00025, 0.00025)).toFixed(6);
+    T.lon.textContent  = (2.352221  + rand(-0.00025, 0.00025)).toFixed(6);
+    T.hash.textContent = "0x" + randHex(4);
+    T.mem.textContent  = pad(randInt(122, 180), 3) + " / 512";
+    T.gpu.textContent  = pad(randInt(38, 68)) + "%";
+    T.tmp.textContent  = pad(randInt(54, 70)) + "°C";
+    T.net.textContent  = rand(10, 38).toFixed(2) + " ms";
+  }
+  let jitterInterval = null;
+
+  // ── Boot log typed ─────────────────────────────
+  const BOOT_LINES = [
+    "> boot sequence initiated",
+    "> checksum 0x4A2F passed",
+    "> core modules online",
+    "> network handshake ok",
+    "> rendering pipeline ready",
+    "> awaiting user",
+  ];
+  const bootEl = L('loader-bootlog');
+  function typeBootLog() {
+    let li = 0, ci = 0;
+    let currentDiv = null;
+    function step() {
+      if (li >= BOOT_LINES.length) return;
+      const line = BOOT_LINES[li];
+      if (ci === 0) {
+        bootEl.querySelectorAll(".bootlog__line--current")
+          .forEach(el => el.classList.remove("bootlog__line--current"));
+        currentDiv = document.createElement("div");
+        currentDiv.className = "bootlog__line bootlog__line--current";
+        bootEl.appendChild(currentDiv);
+      }
+      if (ci < line.length) {
+        currentDiv.textContent = line.slice(0, ci+1);
+        ci++;
+        setTimeout(step, rand(18, 44));
+      } else {
+        li++; ci = 0;
+        if (li < BOOT_LINES.length) setTimeout(step, rand(140, 300));
+      }
+    }
+    step();
+  }
+
+  // ── Label scramble ─────────────────────────────
+  const SCRAMBLE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789█▓▒░";
+  const centerLabel = L('loader-centerLabel');
+  function scrambleText(el, target, duration = 500) {
+    const start = performance.now();
+    const len = target.length;
+    const lockStep = duration / len;
+    function tick(now) {
+      const e = now - start;
+      let out = "";
+      for (let i = 0; i < len; i++) {
+        const ch = target[i];
+        if (ch === " ") { out += " "; continue; }
+        if (e >= (i + 1) * lockStep) out += ch;
+        else out += SCRAMBLE_CHARS[Math.floor(Math.random()*SCRAMBLE_CHARS.length)];
+      }
+      el.textContent = out;
+      if (e < duration) requestAnimationFrame(tick);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ── Counter + glitch ──────────────────────────
+  const counterEl    = L('loader-counter');
+  const counterCy    = L('loader-counterCyan');
+  const counterMg    = L('loader-counterMagenta');
+  const counterWrap  = L('loader-counterWrap');
+  const progressFill = L('loader-progressFill');
+  const progressLabel= L('loader-progressLabel');
+  const flickerEl    = L('loader-flicker');
+
+  function setCounter(text) {
+    counterEl.textContent = text;
+    counterCy.textContent = text;
+    counterMg.textContent = text;
+  }
+  function flicker(opacity = 0.2, duration = 80) {
+    flickerEl.style.opacity = opacity;
+    setTimeout(() => { flickerEl.style.opacity = 0; }, duration);
+  }
+  function triggerGlitch(duration = 140) {
+    counterWrap.classList.add("glitch");
+    flicker(0.12, 50);
+    setTimeout(() => counterWrap.classList.remove("glitch"), duration);
+  }
+
+  function updateLogByProgress(p) {
+    const total = LOG_MESSAGES.length;
+    const idx = Math.min(total-1, Math.floor((p/100)*total));
+    logLines.forEach((line, i) => {
+      if (i < idx) {
+        line.classList.remove("active");
+        line.classList.add("show","done");
+      } else if (i === idx) {
+        line.classList.add("show","active");
+        line.classList.remove("done");
       }
     });
   }
 
-  window.addEventListener('loaderAssetReady', complete, { once: true });
-  // Fallback — hide after 4s no matter what
-  setTimeout(complete, 4000);
+  // ── Choreography ──────────────────────────────
+  const COUNTER_START_DELAY = 1000;
+  const PHASE_1 = 1300;   // 0 -> 60 fast
+  const PHASE_2 = 2400;   // 60 -> 100 ease-out
+  const HOLD = 550;
+  const SCRAMBLE = 420;
+  const POST_SCRAMBLE = 280;
+  const EXIT_HIDE = 420;
+  const CURTAIN = 1200;
+
+  // Power-on flash sequence
+  setTimeout(() => flicker(0.30, 90),  60);
+  setTimeout(() => flicker(0.15, 60), 200);
+  setTimeout(() => flicker(0.40, 120), 340);
+  setTimeout(() => flicker(0.12, 50), 500);
+
+  // Random glitches during loading
+  [950, 1700, 2500, 3300, 4000].forEach(t =>
+    setTimeout(() => triggerGlitch(), t)
+  );
+
+  // Label scramble bursts
+  setTimeout(() => scrambleText(centerLabel, "LOADING EXPERIENCE", 600), 1300);
+  setTimeout(() => scrambleText(centerLabel, "LOADING EXPERIENCE", 500), 2700);
+  setTimeout(() => scrambleText(centerLabel, "LOADING EXPERIENCE", 500), 4100);
+
+  // Stage 1: brackets
+  requestAnimationFrame(() => loader.classList.add("s1"));
+
+  // Stage 2: everything else
+  setTimeout(() => {
+    loader.classList.add("s2");
+    jitter();
+    jitterInterval = setInterval(jitter, 70);
+    typeBootLog();
+  }, 400);
+
+  let counterStarted = false;
+  let counterDone = false;
+  let counterStartTime = 0;
+  let exitScheduled = false;
+  let loaderHidden = false;
+
+  function mainLoop(now) {
+    if (loaderHidden) return;
+    updateTimecode(now);
+
+    if (!counterStarted && (now - tStart) >= COUNTER_START_DELAY) {
+      counterStarted = true;
+      counterStartTime = now;
+    }
+
+    if (counterStarted && !counterDone) {
+      const ce = now - counterStartTime;
+      let v;
+      if (ce < PHASE_1) {
+        v = (ce / PHASE_1) * 60;
+      } else if (ce < PHASE_1 + PHASE_2) {
+        const t = (ce - PHASE_1) / PHASE_2;
+        const eased = 1 - Math.pow(1 - t, 3);
+        v = 60 + eased * 40;
+      } else {
+        v = 100;
+        counterDone = true;
+      }
+      setCounter(pad(Math.floor(v)));
+      progressFill.style.width = v + "%";
+      progressLabel.textContent = pad(Math.floor(v)) + "%";
+      updateLogByProgress(v);
+    }
+
+    if (counterDone && !exitScheduled) {
+      exitScheduled = true;
+      scheduleExit();
+    }
+
+    requestAnimationFrame(mainLoop);
+  }
+
+  function scrambleCounter(target, duration, cb) {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+    const start = performance.now();
+    const len = target.length;
+    const lockStep = duration / len;
+    function tick(now) {
+      const e = now - start;
+      let out = "";
+      for (let i=0; i<len; i++) {
+        if (e >= (i+1)*lockStep) out += target[i];
+        else out += chars[Math.floor(Math.random()*chars.length)];
+      }
+      setCounter(out);
+      if (e < duration) requestAnimationFrame(tick);
+      else { setCounter(target); cb && cb(); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function scheduleExit() {
+    setCounter("100");
+    progressFill.style.width = "100%";
+    progressLabel.textContent = "100%";
+    logLines.forEach(l => {
+      l.classList.remove("active");
+      l.classList.add("show","done");
+    });
+
+    setTimeout(() => {
+      // Violent glitch burst at release
+      triggerGlitch(280);
+      flicker(0.28, 100);
+      setTimeout(() => triggerGlitch(140), 140);
+
+      // Stage A: fade chrome + gyro blowout + camera push
+      loader.classList.add("exit-pre");
+      clearInterval(jitterInterval);
+
+      // Stage B: scramble "100" → "GO"
+      setTimeout(() => {
+        scrambleCounter("GO", SCRAMBLE, () => {
+          setTimeout(() => {
+            // Final white flash, fade center
+            flicker(0.6, 180);
+            loader.classList.add("exit-hide");
+            setTimeout(() => {
+              loader.classList.add("exit");
+              // Once the curtain starts lifting, reveal the real hero
+              // underneath (Three.js sphere was already rendering in
+              // the background the whole time) — the GO → sphere zoom
+              // effect Lucian asked for.
+              revealPage();
+              setTimeout(() => {
+                loader.style.display = "none";
+                loaderHidden = true;
+              }, CURTAIN + 50);
+            }, EXIT_HIDE);
+          }, POST_SCRAMBLE);
+        });
+      }, 220);
+    }, HOLD);
+  }
+
+  requestAnimationFrame(mainLoop);
+
+  // Respect reduced-motion preference — skip the whole sequence
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    loader.style.display = "none";
+    loaderHidden = true;
+    revealPage();
+  }
 
   function revealPage() {
+    if (window._loaderDone) return;
     window._loaderDone = true;
     const titleBlock = document.getElementById('hero-title-block');
     const h1  = document.querySelector('.hero-title-block h1');
     const sub = document.querySelector('.hero-title-block .sub');
 
-    // Ensure title block is visible for GSAP to animate
     if (titleBlock) titleBlock.style.opacity = '1';
 
     if (h1 && window.SplitType) {
@@ -3288,20 +4341,10 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
         duration: 0.75, stagger: 0.03,
         ease: 'power3.out', delay: 0.08,
         transformPerspective: 500,
-        onComplete: () => {
-          // Revert split so Three.js opacity control works cleanly
-          split.revert();
-        }
+        onComplete: () => { split.revert(); }
       });
     }
-    if (sub) {
-      // Trigger the CSS keyframe reveal (opacity + y). Using CSS here
-      // instead of gsap.from because the CSS animation's 'forwards' fill
-      // mode can't be interrupted by rapid scroll that toggles the hero's
-      // visibility — the old GSAP tween used to get stuck at opacity:0
-      // if visibility:hidden kicked in mid-tween.
-      sub.classList.add('sub-reveal');
-    }
+    if (sub) sub.classList.add('sub-reveal');
   }
 })();
 
