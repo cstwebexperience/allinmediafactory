@@ -1574,111 +1574,156 @@
     .cf-success { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.7); font-size: 15px; letter-spacing: 0.1em; }
     .cf-success .cf-check { font-size: 52px; display: block; margin-bottom: 20px; color: rgba(37,211,102,0.7); }
 
-    /* ── Loading Screen ──────────────────────────────────── */
+    /* ── Loading Screen — cinematic orb + radial rays ──────
+       Inspired by high-end product-launch loaders. A halftone orb
+       sits centre-stage; 14 soft curves radiate outward like petals
+       and draw in one-by-one as assets finish loading. On complete,
+       the orb zooms forward to hand off to the hero sphere. */
     #loader {
       position: fixed;
       inset: 0;
       z-index: 10000;
       background: radial-gradient(ellipse at center,
-        #120724 0%,
-        #080412 42%,
-        #030305 85%);
+        #1a0d2e 0%,
+        #0c0620 35%,
+        #050410 70%,
+        #020208 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      clip-path: circle(100% at 50% 50%);
       overflow: hidden;
     }
-    /* Subtle animated grid scanlines across the whole loader */
+    /* Soft violet haze that hangs over the centre and breathes */
     #loader::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 860px;
+      height: 860px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle,
+        rgba(140, 80, 220, 0.26) 0%,
+        rgba(120, 70, 200, 0.12) 25%,
+        rgba(80, 50, 160, 0.05) 50%,
+        transparent 72%);
+      filter: blur(40px);
+      animation: loaderHazeBreathe 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes loaderHazeBreathe {
+      0%, 100% { opacity: 0.75; transform: translate(-50%, -50%) scale(1);    }
+      50%      { opacity: 1.00; transform: translate(-50%, -50%) scale(1.10); }
+    }
+    /* Faint grain overlay (repeating-linear in screen blend) for that
+       "filmed on analog" texture without bringing a PNG noise asset. */
+    #loader::after {
       content: '';
       position: absolute;
       inset: 0;
       background-image:
         repeating-linear-gradient(0deg,
-          rgba(180, 140, 220, 0.03) 0px,
-          rgba(180, 140, 220, 0.03) 1px,
-          transparent 1px,
-          transparent 44px),
-        repeating-linear-gradient(90deg,
-          rgba(180, 140, 220, 0.02) 0px,
-          rgba(180, 140, 220, 0.02) 1px,
-          transparent 1px,
-          transparent 44px);
-      pointer-events: none;
-      opacity: 0.55;
+          rgba(160, 130, 220, 0.025) 0px,
+          rgba(160, 130, 220, 0.025) 1px,
+          transparent 1px, transparent 3px);
       mix-blend-mode: screen;
-    }
-    /* Big blurry violet bloom pulsing behind the dial */
-    #loader::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 620px;
-      height: 620px;
-      transform: translate(-50%, -50%);
-      background: radial-gradient(circle,
-        rgba(140, 80, 220, 0.22) 0%,
-        rgba(140, 80, 220, 0.08) 30%,
-        transparent 65%);
-      filter: blur(42px);
-      animation: loaderGlow 4.2s ease-in-out infinite;
       pointer-events: none;
     }
-    @keyframes loaderGlow {
-      0%, 100% { opacity: 0.60; transform: translate(-50%, -50%) scale(1); }
-      50%      { opacity: 1.00; transform: translate(-50%, -50%) scale(1.14); }
-    }
 
-    /* Floating particle field — 6 dots drifting at different speeds.
-       Pure CSS to avoid a JS loop during the most CPU-sensitive moment
-       of the load. */
-    .loader-particle {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: rgba(200, 170, 240, 0.75);
-      box-shadow: 0 0 10px rgba(180, 130, 255, 0.55);
-      pointer-events: none;
-      opacity: 0;
-      animation: loaderParticleFloat 9s ease-in-out infinite;
-    }
-    .loader-particle:nth-child(1) { left: 12%; top: 78%;  animation-delay: 0s;   }
-    .loader-particle:nth-child(2) { left: 88%; top: 22%;  animation-delay: 1.4s; }
-    .loader-particle:nth-child(3) { left: 18%; top: 18%;  animation-delay: 2.8s; }
-    .loader-particle:nth-child(4) { left: 82%; top: 82%;  animation-delay: 4.2s; }
-    .loader-particle:nth-child(5) { left: 50%; top: 8%;   animation-delay: 5.6s; }
-    .loader-particle:nth-child(6) { left: 50%; top: 92%;  animation-delay: 7.0s; }
-    @keyframes loaderParticleFloat {
-      0%   { opacity: 0;    transform: translate(0, 0) scale(0.6); }
-      15%  { opacity: 0.8;  }
-      50%  { transform: translate(18px, -24px) scale(1.1); }
-      85%  { opacity: 0.8;  }
-      100% { opacity: 0;    transform: translate(36px, -48px) scale(0.6); }
-    }
-
-    .loader-center {
+    .loader-stage {
       position: relative;
+      width: clamp(300px, 42vw, 560px);
+      height: clamp(300px, 42vw, 560px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      /* JS scales + fades this whole stage at completion to hand off
+         to the hero sphere underneath. */
+      transform-origin: center center;
+      will-change: transform, opacity;
+    }
+    .loader-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    /* Outer rotating halo ring (decorative) */
+    .halo-outer {
+      fill: none;
+      stroke: rgba(200, 170, 240, 0.12);
+      stroke-width: 0.6;
+      stroke-dasharray: 1 8;
+      transform-origin: 200px 200px;
+      animation: haloRotate 38s linear infinite;
+    }
+    @keyframes haloRotate {
+      from { transform: rotate(0deg);   }
+      to   { transform: rotate(360deg); }
+    }
+    /* Inner orb body — dark disc + dot grid + outline + inner highlight */
+    .orb-body {
+      fill: rgba(10, 6, 22, 0.82);
+      stroke: rgba(220, 200, 255, 0.92);
+      stroke-width: 1.4;
+      filter: drop-shadow(0 0 14px rgba(180, 130, 255, 0.55))
+              drop-shadow(0 0 28px rgba(140, 90, 220, 0.35));
+    }
+    .orb-dots {
+      fill: url(#dotPattern);
+    }
+    .orb-highlight {
+      fill: url(#orbHighlight);
+    }
+    .orb-core {
+      fill: rgba(255, 255, 255, 0.98);
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9))
+              drop-shadow(0 0 18px rgba(200, 170, 255, 0.7));
+      animation: corePulse 1.8s ease-in-out infinite;
+    }
+    @keyframes corePulse {
+      0%, 100% { opacity: 0.90; transform: scale(1);    transform-origin: 200px 200px; }
+      50%      { opacity: 1.00; transform: scale(1.35); transform-origin: 200px 200px; }
+    }
+    /* Curved rays — 14 of them, each drawn in by stroke-dashoffset
+       as progress grows. JS handles the offset-per-ray math. */
+    .ray {
+      fill: none;
+      stroke: url(#rayGradient);
+      stroke-width: 1.3;
+      stroke-linecap: round;
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+      filter: drop-shadow(0 0 3px rgba(200, 170, 255, 0.7))
+              drop-shadow(0 0 9px rgba(160, 110, 240, 0.45));
+      transition: stroke-dashoffset 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+
+    /* Label row underneath — brand + small status + count */
+    .loader-hud {
+      position: absolute;
+      bottom: clamp(40px, 6vh, 72px);
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
-      z-index: 2;
+      gap: 10px;
+      z-index: 3;
+      pointer-events: none;
     }
-
-    /* Brand row — 'ALL IN · MEDIA FACTORY' with shimmer */
     .loader-brand {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: clamp(12px, 1.1vw, 16px);
-      letter-spacing: 0.52em;
+      font-size: clamp(11px, 1.05vw, 15px);
+      letter-spacing: 0.54em;
       text-transform: uppercase;
       display: flex;
       align-items: center;
-      gap: 1.4em;
-      margin-bottom: clamp(32px, 5vh, 52px);
-      padding-left: 0.52em;
+      gap: 1.3em;
+      padding-left: 0.54em;
       background: linear-gradient(90deg,
         rgba(255, 255, 255, 0.35),
         rgba(255, 255, 255, 0.95),
@@ -1693,7 +1738,7 @@
     }
     .loader-brand .sep {
       display: inline-block;
-      width: 26px;
+      width: 22px;
       height: 1px;
       background: linear-gradient(90deg,
         transparent,
@@ -1704,127 +1749,34 @@
       0%, 100% { background-position: 100% 50%; }
       50%      { background-position: -50% 50%; }
     }
-
-    /* Circular dial with progress ring + rotating decorative dashes */
-    .loader-dial {
-      position: relative;
-      width: clamp(180px, 22vw, 260px);
-      height: clamp(180px, 22vw, 260px);
-    }
-    .loader-dial svg {
-      width: 100%;
-      height: 100%;
-      transform: rotate(-90deg); /* so 0% starts at 12 o'clock */
-    }
-    .dial-ring-bg {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.06);
-      stroke-width: 1.3;
-    }
-    .dial-ring-fill {
-      fill: none;
-      stroke: url(#dialGradient);
-      stroke-width: 2.4;
-      stroke-linecap: round;
-      /* JS sets stroke-dasharray to full circumference (2π·88 ≈ 553)
-         and animates stroke-dashoffset as progress ticks up. */
-      stroke-dasharray: 553;
-      stroke-dashoffset: 553;
-      transition: stroke-dashoffset 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      filter: drop-shadow(0 0 10px rgba(180, 130, 255, 0.65));
-    }
-    .dial-ring-inner {
-      fill: none;
-      stroke: rgba(200, 170, 240, 0.14);
-      stroke-width: 0.6;
-      stroke-dasharray: 2 7;
-      transform-origin: 100px 100px;
-      animation: dialRotate 26s linear infinite;
-    }
-    .dial-ring-outer {
-      fill: none;
-      stroke: rgba(200, 170, 240, 0.08);
-      stroke-width: 0.6;
-      stroke-dasharray: 1 9;
-      transform-origin: 100px 100px;
-      animation: dialRotate 42s linear infinite reverse;
-    }
-    @keyframes dialRotate {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-    /* Big percentage number in the centre */
-    .dial-pct {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      gap: 0.04em;
-      font-family: 'Inter', sans-serif;
-      font-weight: 900;
-      font-size: clamp(56px, 7.5vw, 92px);
-      font-feature-settings: 'tnum' 1, 'lnum' 1;
-      font-variant-numeric: tabular-nums lining-nums;
-      line-height: 1;
-      letter-spacing: -0.03em;
-      background: linear-gradient(180deg,
-        #ffffff 0%,
-        #c8a8ff 100%);
-      -webkit-background-clip: text;
-              background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px rgba(180, 130, 255, 0.20);
-    }
-    .dial-pct .pct-num { display: inline-block; }
-    .dial-pct .pct-sym {
-      font-size: 0.40em;
-      font-weight: 700;
-      padding-bottom: 0.55em;
-      opacity: 0.65;
-      -webkit-text-fill-color: rgba(200, 170, 240, 0.68);
-    }
-
-    /* Status row — label on the left + count on the right, separated */
-    .loader-status {
+    .loader-meta {
       display: inline-flex;
       align-items: center;
-      gap: 16px;
-      margin-top: clamp(30px, 4vh, 42px);
+      gap: 14px;
       font-family: 'Inter', sans-serif;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 500;
-      letter-spacing: 0.28em;
+      letter-spacing: 0.32em;
       text-transform: uppercase;
+      color: rgba(200, 170, 240, 0.72);
     }
-    .loader-status .status-label {
-      color: rgba(200, 170, 240, 0.82);
-      min-width: 220px;
+    .loader-meta .status-label {
+      min-width: 200px;
       text-align: right;
       transition: opacity 0.3s ease;
     }
-    .loader-status .status-divider {
+    .loader-meta .status-divider {
       display: inline-block;
       width: 1px;
-      height: 11px;
+      height: 10px;
       background: rgba(200, 170, 240, 0.35);
     }
-    .loader-status .status-count {
-      color: rgba(255, 255, 255, 0.38);
-      min-width: 82px;
+    .loader-meta .status-count {
+      min-width: 72px;
       text-align: left;
+      color: rgba(255, 255, 255, 0.38);
       font-feature-settings: 'tnum' 1;
       font-variant-numeric: tabular-nums;
-    }
-
-    .loader-tagline {
-      margin-top: 18px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.34em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.22);
     }
 
     /* ── GSAP text reveal helpers ────────────────────────── */
@@ -1883,57 +1835,68 @@
 
 <body>
 
-  <!-- Loading Screen — interactive, asset-driven -->
+  <!-- Loading Screen — halftone orb + 14 radial rays, asset-driven -->
   <div id="loader">
-    <!-- Floating particle field (6 dots) -->
-    <span class="loader-particle"></span>
-    <span class="loader-particle"></span>
-    <span class="loader-particle"></span>
-    <span class="loader-particle"></span>
-    <span class="loader-particle"></span>
-    <span class="loader-particle"></span>
+    <div class="loader-stage" id="loader-stage">
+      <svg class="loader-svg" viewBox="0 0 400 400">
+        <defs>
+          <!-- Halftone dot pattern — tiny circles on a 6px grid -->
+          <pattern id="dotPattern" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+            <circle cx="3" cy="3" r="1.1" fill="rgba(220, 200, 255, 0.88)"/>
+          </pattern>
+          <!-- Clip so the dot pattern fills the orb perfectly -->
+          <clipPath id="orbClip">
+            <circle cx="200" cy="200" r="58"/>
+          </clipPath>
+          <!-- Inner highlight bloom -->
+          <radialGradient id="orbHighlight" cx="50%" cy="50%">
+            <stop offset="0%"   stop-color="rgba(255, 255, 255, 0.55)"/>
+            <stop offset="40%"  stop-color="rgba(200, 170, 255, 0.20)"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </radialGradient>
+          <!-- Ray stroke gradient — white core fading to deep violet -->
+          <linearGradient id="rayGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stop-color="rgba(255, 255, 255, 0.95)"/>
+            <stop offset="45%"  stop-color="rgba(200, 170, 255, 0.85)"/>
+            <stop offset="100%" stop-color="rgba(120, 70, 200, 0.10)"/>
+          </linearGradient>
+        </defs>
 
-    <div class="loader-center">
+        <!-- Outer decorative halo -->
+        <circle class="halo-outer" cx="200" cy="200" r="178"/>
+        <circle class="halo-outer" cx="200" cy="200" r="140" style="animation-duration: 52s; animation-direction: reverse;"/>
+
+        <!-- Curved rays go BEHIND the orb so the orb always reads on top -->
+        <g id="loader-rays"></g>
+
+        <!-- The orb body -->
+        <circle class="orb-body"      cx="200" cy="200" r="58"/>
+        <circle class="orb-dots"      cx="200" cy="200" r="58" clip-path="url(#orbClip)"/>
+        <circle class="orb-highlight" cx="200" cy="200" r="58" clip-path="url(#orbClip)"/>
+        <!-- Bright pulsing core at the centre -->
+        <circle class="orb-core"      cx="200" cy="200" r="3.5"/>
+      </svg>
+    </div>
+
+    <div class="loader-hud">
       <div class="loader-brand">
         <span>ALL IN</span>
         <span class="sep"></span>
         <span>MEDIA FACTORY</span>
       </div>
-
-      <div class="loader-dial">
-        <svg viewBox="0 0 200 200">
-          <defs>
-            <linearGradient id="dialGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%"   stop-color="#ffffff"/>
-              <stop offset="50%"  stop-color="#c8a8ff"/>
-              <stop offset="100%" stop-color="#7a40d0"/>
-            </linearGradient>
-          </defs>
-          <circle class="dial-ring-outer" cx="100" cy="100" r="96"/>
-          <circle class="dial-ring-inner" cx="100" cy="100" r="72"/>
-          <circle class="dial-ring-bg"    cx="100" cy="100" r="88"/>
-          <circle class="dial-ring-fill"  cx="100" cy="100" r="88"/>
-        </svg>
-        <div class="dial-pct">
-          <span class="pct-num" id="loader-pct-num">0</span><span class="pct-sym">%</span>
-        </div>
-      </div>
-
-      <div class="loader-status">
+      <div class="loader-meta">
         <span class="status-label" id="loader-status-label">Initializing</span>
         <span class="status-divider"></span>
         <span class="status-count" id="loader-status-count">0 / 582</span>
       </div>
-      <div class="loader-tagline">Preparing immersive scene</div>
     </div>
   </div>
 
-  <!-- Preloader API — defined early so every asset loader below can
-       hook in via window._preloader.onFrame() / onMask() / onHDRI().
-       Progress counts 576 video frames + 5 mask PNGs + 1 HDRI = 582
-       items. The loader waits for all of them before firing
-       loaderAssetReady, so the page only reveals once the scene is
-       fully cached — smooth on fast PCs, patient on slow ones. -->
+  <!-- Preloader API + ray generator — defined early so every asset
+       loader below can hook in via window._preloader.onFrame() /
+       onMask() / onHDRI(). Progress counts 576 video frames + 5 mask
+       PNGs + 1 HDRI = 582 items. The ray draw-in is tied directly to
+       real load progress (not faked) so the visual *is* the truth. -->
   <script>
     (function () {
       var TOTAL_FRAMES = 576;
@@ -1941,15 +1904,52 @@
       var TOTAL_HDRI   = 1;
       var TOTAL = TOTAL_FRAMES + TOTAL_MASKS + TOTAL_HDRI;
 
-      var pctNumEl    = document.getElementById('loader-pct-num');
       var statusLabel = document.getElementById('loader-status-label');
       var statusCount = document.getElementById('loader-status-count');
-      var dialFillEl  = document.querySelector('.dial-ring-fill');
+      var raysGroup   = document.getElementById('loader-rays');
 
-      var CIRC = 2 * Math.PI * 88; // SVG circle r=88 → circumference ≈ 553
-      if (dialFillEl) {
-        dialFillEl.style.strokeDasharray  = CIRC;
-        dialFillEl.style.strokeDashoffset = CIRC;
+      // ── Generate 14 curved rays radiating from the orb ──────
+      // Each ray starts just outside the orb (r=58) and curves out to
+      // r≈175 at its own angle. A cubic bezier with the control point
+      // offset perpendicular to the radial line gives the organic
+      // "petal" curvature seen in the reference clip.
+      var NUM_RAYS = 14;
+      var CX = 200, CY = 200;
+      var R_START = 60;
+      var R_END   = 178;
+      var PATH_LEN = 420; // matches stroke-dasharray in CSS
+      var rayEls = [];
+
+      function polar(cx, cy, r, angleDeg) {
+        var a = (angleDeg - 90) * Math.PI / 180;
+        return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+      }
+
+      if (raysGroup) {
+        for (var i = 0; i < NUM_RAYS; i++) {
+          var angle = (360 / NUM_RAYS) * i;
+          // Bend direction alternates so adjacent rays curl opposite
+          // ways, giving a flower-of-life look instead of a wheel.
+          var bend = (i % 2 === 0) ? 22 : -22;
+
+          var start = polar(CX, CY, R_START, angle);
+          var end   = polar(CX, CY, R_END,   angle);
+          // Two control points along the radial but tangentially offset
+          var c1    = polar(CX, CY, R_START + (R_END - R_START) * 0.35, angle + bend * 0.6);
+          var c2    = polar(CX, CY, R_START + (R_END - R_START) * 0.70, angle + bend);
+
+          var d =
+            'M ' + start[0].toFixed(2) + ' ' + start[1].toFixed(2) +
+            ' C ' + c1[0].toFixed(2)    + ' ' + c1[1].toFixed(2)    +
+            ' '   + c2[0].toFixed(2)    + ' ' + c2[1].toFixed(2)    +
+            ' '   + end[0].toFixed(2)   + ' ' + end[1].toFixed(2);
+
+          var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          p.setAttribute('class', 'ray');
+          p.setAttribute('d', d);
+          raysGroup.appendChild(p);
+          rayEls.push(p);
+        }
       }
 
       var frames = 0, masks = 0, hdri = 0;
@@ -1964,10 +1964,20 @@
 
       function update() {
         var loaded = frames + masks + hdri;
-        var pct = Math.min(100, Math.round((loaded / TOTAL) * 100));
-        if (pctNumEl)    pctNumEl.textContent = pct;
+        var prog   = Math.min(1, loaded / TOTAL);
         if (statusCount) statusCount.textContent = loaded + ' / ' + TOTAL;
-        if (dialFillEl)  dialFillEl.style.strokeDashoffset = CIRC * (1 - loaded / TOTAL);
+
+        // Draw the rays in over the progress window [0.05 → 0.96].
+        // Each ray has its own slice so later ones wait for earlier
+        // ones to start — cascading reveal tied to real load progress.
+        for (var k = 0; k < rayEls.length; k++) {
+          var sliceStart = 0.05 + (k / rayEls.length) * 0.88;
+          var sliceEnd   = sliceStart + (1 / rayEls.length) * 1.6;
+          var local = (prog - sliceStart) / (sliceEnd - sliceStart);
+          if (local < 0) local = 0;
+          if (local > 1) local = 1;
+          rayEls[k].style.strokeDashoffset = (PATH_LEN * (1 - local)).toFixed(1);
+        }
 
         // Rotating status label driven by which bucket is still loading
         if (frames < TOTAL_FRAMES * 0.25)      setLabel('Loading scene frames');
@@ -1982,11 +1992,11 @@
         if (finished) return;
         if (frames + masks + hdri >= TOTAL) {
           finished = true;
-          // Small delay so the user sees 100% briefly before the
-          // mask-reveal exit animation takes over.
+          // Brief hold so every ray finishes its draw-in before the
+          // exit takes over — the reference clip has this beat too.
           setTimeout(function () {
             window.dispatchEvent(new Event('loaderAssetReady'));
-          }, 420);
+          }, 520);
         }
       }
 
@@ -3573,23 +3583,48 @@ gsap.ticker.lagSmoothing(0);
 if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 
 
-// ── 2. LOADING SCREEN ───────────────────────────────
-// The dial + percentage + count + status label are driven by the
-// inline preloader script at the top of <body> that lives next to
-// the loader HTML. This IIFE just handles the EXIT animation once
-// every tracked asset has been loaded (event 'loaderAssetReady').
+// ── 2. LOADING SCREEN EXIT ──────────────────────────
+// The progress, rays and percentage are driven by the inline
+// preloader script at the top of <body>. This IIFE only handles
+// the EXIT once every tracked asset has been loaded.
+//
+// Exit sequence (matches the reference clip feel):
+//   1. The orb + rays pulse + scale UP like a lens bloom
+//   2. The whole loader fades to transparent
+//   3. Underneath it, the hero sphere is already rendering — so
+//      the handoff feels like the loader orb *becomes* the sphere
 (function () {
   const loader = document.getElementById('loader');
+  const stage  = document.getElementById('loader-stage');
+  const hud    = document.querySelector('.loader-hud');
   let finished = false;
 
   function complete() {
     if (finished) return;
     finished = true;
-    // Dramatic mask-expand reveal — same feel as before.
+
+    // Fade the HUD (brand + meta) out first, it's distraction.
+    if (hud) gsap.to(hud, { opacity: 0, y: 10, duration: 0.45, ease: 'power2.out' });
+
+    // Zoom the orb stage up and fade — the hero sphere behind is
+    // already drawing so this feels like a handoff, not a cut.
+    if (stage) {
+      gsap.to(stage, {
+        scale: 3.4,
+        opacity: 0,
+        duration: 1.25,
+        delay: 0.15,
+        ease: 'power3.in',
+      });
+    }
+
+    // Fade the whole loader bg in parallel, slightly delayed so the
+    // orb grows into visible darkness before the page breaks through.
     gsap.to(loader, {
-      clipPath: 'circle(0% at 50% 50%)',
-      duration: 1.0, delay: 0.15,
-      ease: 'power3.inOut',
+      opacity: 0,
+      duration: 0.9,
+      delay: 0.55,
+      ease: 'power2.out',
       onComplete: () => {
         loader.style.display = 'none';
         revealPage();
