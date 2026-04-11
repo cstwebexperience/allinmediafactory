@@ -1509,6 +1509,116 @@
                   inset 0 0 12px rgba(120,70,220,0.04);
     }
 
+    /* ══════════════════════════════════════════════════════
+       MOBILE / PORTRAIT OVERRIDES
+       Triggered on narrow viewports OR portrait orientation OR
+       touch-only devices. Addresses the three big mobile pain
+       points: (1) the mask becomes a thin horizontal strip on
+       portrait because the 16:9 image contains to viewport width,
+       (2) the Three.js contact scene has its WhatsApp mesh at
+       world-x = 1.5 which falls OUTSIDE the camera's horizontal
+       FOV on narrow portrait, (3) the hero title is too small.
+       ══════════════════════════════════════════════════════ */
+    @media (max-width: 900px), (orientation: portrait) {
+
+      /* ── Hero title — make it readable on a 390px wide screen */
+      .hero-title-block {
+        bottom: 12%;
+        width: 94%;
+      }
+      .hero-title-block h1 {
+        font-size: clamp(26px, 7.2vw, 38px);
+        letter-spacing: 0.22em;
+        margin-bottom: 12px;
+      }
+      .hero-title-block .sub {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+      }
+
+      /* ── Mask section — lay the 16:9 scene out as a full-width
+         box centred vertically in the viewport. Both #stage canvas
+         (scroll-scrub video) and .fragments-canvas (PNG mask layer)
+         become the same 16:9 box so they stay pixel-aligned, and
+         the rest of the tall portrait viewport is black breathing
+         room. The mask + annotations fill ~100% of the screen
+         width instead of collapsing to a thin horizontal strip. */
+      #stage canvas,
+      .fragments-canvas {
+        top: 50% !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 56.25vw !important;       /* 16:9 aspect box */
+        transform: translateY(-50%) scale(0.98) !important;
+        transform-origin: center center !important;
+      }
+      /* Since the box is an exact 16:9 match for the image aspect,
+         cover and contain give identical results — switch both
+         layers to cover so every last pixel of the image fills the
+         box (Math.min in hitTest still works: at identical aspect
+         ratios min == max). */
+      #stage canvas { object-fit: cover !important; }
+      .mask-fragment { background-size: cover !important; }
+
+      /* Annotation text — needs to be larger so 01..05 labels are
+         readable on a 390px wide screen. The ann-svg viewBox is
+         100×56.25, so bumping font-size on .ann-num/.ann-lbl in svg
+         user units propagates to display. */
+      .ann-num { font-size: 2.2px !important; }
+      .ann-lbl { font-size: 1.6px !important; }
+      .ann-line { stroke-width: 0.22 !important; }
+
+      /* ── Contact scene — shrink the section from 350vh to 220vh
+         so the user doesn't have to scroll forever to reach the
+         buttons. Labels also need larger text. */
+      .contact-scroll-area { height: 220vh; }
+      #contact-clipLabel span,
+      #contact-waLabel span {
+        font-size: 13px !important;
+        letter-spacing: 0.22em !important;
+      }
+
+      /* ── Servicii eyebrow — keep it visible above the 16:9 box */
+      .servicii-eyebrow {
+        top: 18% !important;
+      }
+
+      /* ── Loader counter — a bit smaller on very narrow screens */
+      #loader-counter {
+        font-size: 58px !important;
+      }
+      #loader-bar-track {
+        width: 140px !important;
+      }
+
+      /* ── Service panes — tighter padding + room for content */
+      .pane-content {
+        width: 92vw !important;
+        max-width: 640px !important;
+      }
+      #pane-left-mouth .pane-content,
+      #pane-right-mouth .pane-content {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 10vh !important;
+      }
+
+      /* Overlay close button — bigger touch target on mobile */
+      #overlay-close {
+        font-size: 13px !important;
+        padding: 14px 4px !important;
+      }
+    }
+
+    /* Very narrow phones (iPhone SE width ~320px) — extra tightening */
+    @media (max-width: 380px) {
+      .hero-title-block h1 {
+        font-size: 22px !important;
+      }
+      .ann-num { font-size: 2.6px !important; }
+      .ann-lbl { font-size: 1.85px !important; }
+    }
+
     /* ── prefers-reduced-motion ─────────────────────────── */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -2856,15 +2966,35 @@ scene2.environment = pmrem2.fromScene(new RoomEnvironment(), 0.04).texture;
 const loader = new THREE.TextureLoader();
 let clipMesh = null, waMesh = null;
 
-const clipFinal = { x: -0.45, y: 0 };
-const waFinal   = { x: 1.5,  y: -0.1 };
-const clipStart = { x: -5.5, y: 0.5 };
-const waStart   = { x: 5.5,  y: 0.3 };
+// Mesh target positions depend on viewport aspect. On a portrait
+// phone (aspect < 0.8) the clipboard + WhatsApp meshes stack
+// vertically because the camera's horizontal FOV can't fit the
+// desktop side-by-side layout (waMesh at x=1.5 is OUTSIDE the
+// ~±0.67 horizontal view at z=4 on a narrow portrait). On
+// desktop/tablet landscape they stay side-by-side as designed.
+const C_PORTRAIT = window.innerWidth / window.innerHeight < 0.8;
+
+// Mesh scale is also smaller on mobile so the two stacked meshes
+// don't collide in the middle of the screen.
+const C_MESH_SCALE = C_PORTRAIT ? 0.72 : 1.0;
+
+const clipFinal = C_PORTRAIT
+  ? { x: 0,    y:  0.62 }   // top-center on portrait
+  : { x: -0.45, y: 0 };     // left on desktop
+const waFinal   = C_PORTRAIT
+  ? { x: 0,    y: -0.62 }   // bottom-center on portrait
+  : { x: 1.5,  y: -0.1 };   // right on desktop
+const clipStart = C_PORTRAIT
+  ? { x: 0, y:  5.0 }       // fly down from top
+  : { x: -5.5, y: 0.5 };
+const waStart   = C_PORTRAIT
+  ? { x: 0, y: -5.0 }       // fly up from bottom
+  : { x: 5.5, y: 0.3 };
 
 loader.load('clipboard-t.png', (tex) => {
   tex.colorSpace = THREE.SRGBColorSpace;
   const aspect = tex.image.width / tex.image.height;
-  const h = 1.6;
+  const h = 1.6 * C_MESH_SCALE;
   clipMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(h * aspect, h),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
@@ -2876,7 +3006,7 @@ loader.load('clipboard-t.png', (tex) => {
 loader.load('whatsapp-t.png', (tex) => {
   tex.colorSpace = THREE.SRGBColorSpace;
   const aspect = tex.image.width / tex.image.height;
-  const h = 0.85;
+  const h = 0.85 * C_MESH_SCALE;
   waMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(h * aspect, h),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
