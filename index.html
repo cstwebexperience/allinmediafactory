@@ -1533,15 +1533,24 @@
         letter-spacing: 0.18em;
       }
 
-      /* ── Mask section — 16:9 centred box on portrait.
-         Full-viewport cover cropped so much of the 16:9 image that
-         only the nose/mouth were visible — useless. A centred
-         100vw × 56.25vw box (the exact image aspect) shows the
-         ENTIRE mask at full phone width, with black breathing room
-         above and below. The fragments + annotations remain readable.
-         Both layers must share identical sizing so the crossfade
-         alignment holds. */
-      #stage canvas,
+      /* ── Scroll-scrub video (#stage canvas) — FULL VIEWPORT on
+         portrait. User scrolls through it as a full-screen video.
+         Cover crops a bit on the sides but the scrub content is
+         photogenic enough for that to feel cinematic. */
+      #stage canvas {
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        transform: none !important;
+        object-fit: cover !important;
+      }
+      /* ── 5-fragment mask section (.fragments-canvas + .mask-fragment)
+         — stays in a 100vw × 56.25vw centred box so the full mask +
+         annotations remain readable. Explicitly DIFFERENT from the
+         stage canvas above: the crossfade snaps from full-screen
+         video to boxed mask in a few % of scroll, which is a clean
+         compositional cut rather than a blurry overlap. */
       .fragments-canvas {
         top: 50% !important;
         left: 0 !important;
@@ -1550,10 +1559,6 @@
         transform: translateY(-50%) !important;
         transform-origin: center center !important;
       }
-      /* On a box with exactly the image aspect, cover and contain
-         give identical results, so either works. Using cover keeps
-         the edge pixels flush with the box. */
-      #stage canvas { object-fit: cover !important; }
       .mask-fragment { background-size: cover !important; }
 
       /* Annotation text — needs to be larger so 01..05 labels are
@@ -2263,12 +2268,26 @@
       Object.entries(FRAG_BY_NAME).forEach(([name, cfg]) => {
         fragmentEls[name] = document.getElementById(cfg.id);
       });
+      // The float animation must NOT start until the scroll-scrub
+      // crossfade is fully done (at which point #servicii has the
+      // .revealed class). Otherwise the last video frames show the
+      // mask static and centred while the PNG overlay drifts — the
+      // two layers interleave visibly. We ramp the blend from 0 to
+      // 1 over ~700ms once revealed to avoid snapping into motion.
+      const serviciiEl = document.getElementById('servicii');
+      let floatBlendStart = -1;
+      let floatBlend = 0;
       function floatTick(tMs) {
+        const revealed = serviciiEl && serviciiEl.classList.contains('revealed');
+        if (revealed && floatBlendStart < 0) floatBlendStart = tMs;
+        if (!revealed) { floatBlendStart = -1; floatBlend = 0; }
+        else floatBlend = Math.min(1, (tMs - floatBlendStart) / 700);
+
         const t = tMs * 0.001;
         for (const name in FLOAT_PARAMS) {
           const p = FLOAT_PARAMS[name];
-          const fx = Math.sin(t * p.sx + p.phx) * p.ax;
-          const fy = Math.cos(t * p.sy + p.phy) * p.ay;
+          const fx = Math.sin(t * p.sx + p.phx) * p.ax * floatBlend;
+          const fy = Math.cos(t * p.sy + p.phy) * p.ay * floatBlend;
           fragmentOffsets[name].x = fx;
           fragmentOffsets[name].y = fy;
           const el = fragmentEls[name];
@@ -2645,6 +2664,7 @@
 <script type="module">
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -2698,13 +2718,21 @@ const mat = new THREE.MeshPhysicalMaterial({
   reflectivity: 0.7,
 });
 
-// Environment map: we use Three.js's built-in RoomEnvironment via
-// PMREM (already generated above for `envMap`). No remote HDRI fetch
-// anymore — saves a 1.6MB cross-origin HTTP request per visit. On a
-// dark metallic sphere with heavy deformation the user can't tell
-// the difference between polyhaven's studio_small_09 and the
-// procedural RoomEnvironment, but they WILL feel the extra 1.6MB
-// download on a slow connection.
+// HDRI environment map — restored because it gives the sphere its
+// distinctive "smileyface" highlights on the forehead and nose that
+// Lucian specifically asked to keep. RoomEnvironment alone gave a
+// flatter, less characterful look.
+new RGBELoader().load(
+  'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
+  function(hdr) {
+    hdr.mapping = THREE.EquirectangularReflectionMapping;
+    const env = pmrem.fromEquirectangular(hdr).texture;
+    scene.environment = env;
+    mat.envMap = env;
+    mat.needsUpdate = true;
+    hdr.dispose();
+  }
+);
 
 // Geometry detail drops on low-power GPUs: level 6 = ~10k tris
 // on desktop, level 4 = ~2.5k tris on mobile/weak integrated graphics.
@@ -2826,7 +2854,33 @@ let frameCounter = 0;
 
 function tick() {
   requestAnimationFrame(tick);
+
+  // Always update the hero wrapper's CSS state from scrollP — even
+  // when the hero is off-screen and we'll skip the Three.js render.
+  // This is what restores the sphere when the user scrolls back to
+  // the hero from below: scrollP updates via the scroll listener,
+  // this block sets opacity/visibility back to visible, then the
+  // render resumes once IntersectionObserver flags hero visible.
+  if (heroEl) {
+    const op = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
+    heroEl.style.opacity = op;
+    if (op < 0.02) {
+      heroEl.style.visibility = 'hidden';
+      heroEl.style.pointerEvents = 'none';
+    } else {
+      heroEl.style.visibility = '';
+      heroEl.style.pointerEvents = '';
+    }
+  }
+  if (titleEl && window._loaderDone) {
+    titleEl.style.opacity = 1;
+    const titleDrift = easeIn(mapRange(scrollP, 0.82, 0.98));
+    titleEl.style.transform = `translateY(${titleDrift * -14}px)`;
+  }
+
+  // GPU-heavy work pauses when hero is off-screen for battery savings
   if (window._heroVisible === false) return;
+
   frameCounter++;
   const t = clock.getElapsedTime();
 
@@ -2838,20 +2892,7 @@ function tick() {
   const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20, 0.50));
   const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
 
-  if (titleEl && window._loaderDone) {
-    // The whole .hero wrapper fades via heroEl.style.opacity in the
-    // (0.82 → 0.98) scroll range below. Because titleEl is a child of
-    // heroEl, CSS opacity inheritance multiplies the two together —
-    // so keeping the title at opacity:1 lets it dissolve in PERFECT
-    // sync with the sphere (no more text disappearing at 20% while
-    // the sphere sits around until 98%).
-    titleEl.style.opacity = 1;
-    // Subtle upward drift tied to the SAME fade range, so the text
-    // only starts drifting away as it's being dissolved. Max 14px,
-    // gentle easeIn — feels like release, not flight.
-    const titleDrift = easeIn(mapRange(scrollP, 0.82, 0.98));
-    titleEl.style.transform = `translateY(${titleDrift * -14}px)`;
-  }
+  // (titleEl state is already set in the always-run block above)
   camera.position.z = 5 - pZoom * 1.0;
   camera.position.y = 0.3 + pRise * 0.5;
   sphere.position.y = 0.4 + pRise * 6;
@@ -2902,20 +2943,8 @@ function tick() {
   lights[0].position.y = 2 + Math.cos(t*0.4)*0.4;
   lights[1].position.x = -3 + Math.sin(t*0.25)*0.4;
 
-  if (heroEl) {
-    const op = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
-    heroEl.style.opacity = op;
-    // Hard-hide the fixed hero once it has fully faded so its purple lights
-    // can never bleed through later sections (this was the source of the
-    // purple flashes when scrolling fast).
-    if (op < 0.02) {
-      heroEl.style.visibility = 'hidden';
-      heroEl.style.pointerEvents = 'none';
-    } else {
-      heroEl.style.visibility = '';
-      heroEl.style.pointerEvents = '';
-    }
-  }
+  // (heroEl opacity/visibility is already set in the always-run
+  // block at the top of tick() — don't duplicate it here.)
 
   // Render path: full composer (bloom + CA + OutputPass) on capable
   // GPUs, plain renderer.render() on low-power. The plain path skips
