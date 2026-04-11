@@ -570,11 +570,13 @@
       color: rgba(255, 255, 255, 0.72);
       box-shadow: 0 0 18px rgba(180, 130, 255, 0.05) inset;
     }
-    /* -50% would land half a gap short of the duplicated set (24 items + 23 gaps).
-       The seamless loop point is 12 items + 12 gaps = -50% minus half a gap (7px). */
+    /* Left → right scroll: track starts shifted left (items pre-buffered on the
+       left side) and slides right to 0. Seamless loop because the duplicated
+       second half is identical to the first half. The -7px accounts for the
+       half-gap offset (24 items + 23 gaps → -50% is half a gap short). */
     @keyframes media-marquee-scroll {
-      0%   { transform: translate3d(0, 0, 0); }
-      100% { transform: translate3d(calc(-50% - 7px), 0, 0); }
+      0%   { transform: translate3d(calc(-50% - 7px), 0, 0); }
+      100% { transform: translate3d(0, 0, 0); }
     }
 
     /* Results section — dark moody screenshot grid (compact) */
@@ -1543,6 +1545,13 @@
       }
       #loader { display: none !important; }
       .hero-title-block { opacity: 1 !important; }
+      /* Marquee is decorative and NOT seizure-inducing — keep it looping even
+         when users (or Windows) request reduced motion. Without this override,
+         the global * rule kills it in 0.01ms. */
+      .media-marquee-track {
+        animation-duration: 22s !important;
+        animation-iteration-count: infinite !important;
+      }
     }
   </style>
 
