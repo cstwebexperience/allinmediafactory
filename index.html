@@ -3072,7 +3072,15 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x030305);
 
 const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 0.3, 5);
+// On mobile the default FOV + z=5 makes the sphere fill most of the
+// portrait viewport — too dominant. Pull the camera back to z=8.5
+// on narrow screens so the sphere reads at ~60% of the previous
+// size, leaving room for the "All In Media" title block underneath.
+// Desktop keeps the original z=5 so the hero is unchanged there.
+(function () {
+  const mobile = window.innerWidth < 768;
+  camera.position.set(0, 0.3, mobile ? 8.5 : 5);
+})();
 
 const pmrem = new THREE.PMREMGenerator(renderer);
 let envMap = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
@@ -3206,6 +3214,8 @@ const titleEl     = document.getElementById('hero-title-block');
 const heroEl      = document.getElementById('hero');
 
 window.addEventListener('resize', () => {
+  const mobile = window.innerWidth < 768;
+  camera.position.z = mobile ? 8.5 : 5;
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -3264,7 +3274,12 @@ function tick() {
   const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
 
   // (titleEl state is already set in the always-run block above)
-  camera.position.z = 5 - pZoom * 1.0;
+  // Camera base z is 5 on desktop, 8.5 on mobile (sphere reads
+  // smaller in the portrait viewport). The scroll-driven pZoom
+  // ease still pulls the camera in by 1 unit either way.
+  const _mobileHero = window.innerWidth < 768;
+  const _camZBase = _mobileHero ? 8.5 : 5;
+  camera.position.z = _camZBase - pZoom * 1.0;
   camera.position.y = 0.3 + pRise * 0.5;
   sphere.position.y = 0.4 + pRise * 6;
 
