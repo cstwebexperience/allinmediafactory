@@ -1141,11 +1141,11 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      /* cover — MUST match #stage canvas object-fit: cover so the video
-         layer and the PNG mask layer line up pixel-for-pixel during
-         the scroll-scrub crossfade. Using contain here caused a visible
-         double-mask bug where the two layers were at different scales. */
-      background-size: cover;
+      /* contain — MUST match #stage canvas object-fit: contain above.
+         Both layers use contain semantics so nothing gets cropped at
+         the top (forehead) or bottom (chin) of the viewport, and both
+         layers stay pixel-aligned during the scroll-scrub crossfade. */
+      background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
       pointer-events: none;
@@ -1309,11 +1309,16 @@
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      /* Must match the scale applied to .fragments-canvas below — both
-         layers are sticky-stacked over the same viewport box and need
-         the exact same transform so the scroll-scrub video and the PNG
-         mask fragments stay pixel-aligned during the crossfade. */
+      /* contain (not cover) so the video frame is never cropped at
+         the top or bottom edges. #stage canvas + .mask-fragment MUST
+         use identical fit semantics (both contain) so the scroll-scrub
+         video layer and the PNG mask layer stay pixel-aligned during
+         the crossfade — a cover/contain mismatch causes a visible
+         double-mask. */
+      object-fit: contain;
+      /* Same scale as .fragments-canvas below — both layers shrink
+         together so the whole mask gets breathing room inside the
+         viewport and the forehead never touches the top edge. */
       transform: scale(0.92);
       transform-origin: center center;
     }
@@ -2170,10 +2175,11 @@
       requestAnimationFrame(floatTick);
 
       // Returns the data-frag name under the given client coords, or null.
-      // Uses object-fit: cover semantics so it matches the CSS
-      // background-size: cover on .mask-fragment + #stage canvas.
-      // Subtracts each fragment's current float offset so the hit-test
-      // follows the visibly drifted pixels, not the original PNG box.
+      // Uses object-fit: contain semantics so it matches the CSS
+      // background-size: contain on .mask-fragment AND the object-fit:
+      // contain on #stage canvas. Subtracts each fragment's current
+      // float offset so the hit-test follows the visibly drifted
+      // pixels, not the original PNG box.
       function hitTest(clientX, clientY) {
         const r = canvas.getBoundingClientRect();
         if (clientX < r.left || clientX > r.right || clientY < r.top || clientY > r.bottom) return null;
@@ -2185,8 +2191,9 @@
           const off = offscreens[name];
           if (!off) continue;
           const drift = fragmentOffsets[name] || { x: 0, y: 0 };
-          // cover: scale so the PNG fully covers the canvas, crop the overflow
-          const scale = Math.max(r.width / off.w, r.height / off.h);
+          // contain: PNG fits fully inside the canvas box, letterbox
+          // on the axis where the image is too small — matches the CSS
+          const scale = Math.min(r.width / off.w, r.height / off.h);
           const drawnW = off.w * scale;
           const drawnH = off.h * scale;
           const dx = (r.width - drawnW) / 2;  // could be negative
