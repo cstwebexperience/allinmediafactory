@@ -3560,6 +3560,32 @@ window._contactVisible = true;
     }
     requestAnimationFrame(loop);
   })();
+
+  // ── Mobile-only visibility gating ─────────────────────
+  // On phones the particles used to sit on top of the hero sphere
+  // (bad overlap) and stay visible through the scroll-scrub video
+  // (too busy). Rule: start hidden, reveal only when the mask
+  // fragments are .revealed (which stays true through contact as
+  // well). Hero + scroll-scrub stay clean. Desktop unchanged.
+  if (IS_TOUCH_OR_NARROW) {
+    canvas.style.transition = 'opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
+    canvas.style.opacity = '0';
+    const serviciiEl = document.getElementById('servicii');
+    let lastRevealed = false;
+    function syncMobileVisibility() {
+      const revealed = !!(serviciiEl && serviciiEl.classList.contains('revealed'));
+      if (revealed !== lastRevealed) {
+        canvas.style.opacity = revealed ? '1' : '0';
+        lastRevealed = revealed;
+      }
+    }
+    window.addEventListener('scroll', syncMobileVisibility, { passive: true });
+    // Poll at 220ms — the scroll-scrub onUpdate that toggles
+    // .revealed can fire slightly off-phase with native scroll
+    // events on mobile, so a low-rate poll keeps the canvas in sync.
+    setInterval(syncMobileVisibility, 220);
+    syncMobileVisibility();
+  }
 })();
 </script>
 
