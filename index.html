@@ -1202,26 +1202,27 @@
     .mask-fragment[data-frag="gura-stanga"]  { background-image: url('frag-gura-stanga.png'); }
     .mask-fragment[data-frag="gura-dreapta"] { background-image: url('frag-gura-dreapta.png'); }
 
-    /* The two mouth pieces sit at the bottom of the mask PNG; the
-       broken inner side of the papier-mâché shows as a pale yellow/tan
-       jagged edge right at the viewport bottom, which reads as a
-       rendering glitch. Fade the bottom ~14% of each mouth fragment
-       into transparent so that raw edge dissolves into the black bg.
-       Eyes + nose are NOT masked because their alpha ends well above
-       the fragment box's bottom. Hit-testing is unaffected — the
-       alpha canvas still carries the original pixels. */
-    .mask-fragment[data-frag="gura-stanga"],
-    .mask-fragment[data-frag="gura-dreapta"] {
-      -webkit-mask-image: linear-gradient(180deg,
-        #000 0%,
-        #000 82%,
-        rgba(0,0,0,0.55) 92%,
-        transparent 100%);
-              mask-image: linear-gradient(180deg,
-        #000 0%,
-        #000 82%,
-        rgba(0,0,0,0.55) 92%,
-        transparent 100%);
+    /* Soft bottom overlay — hides the pale inner edge of the mouth
+       fragments where the papier-mâché is broken by blending them
+       smoothly into the page background (#050507). Sits above the
+       fragments (default z) but BELOW the annotation SVG (z: 5), so
+       the "04 SEO + GOOGLE" / "05 AUTOMATIZĂRI BUSINESS" numbers and
+       lines stay crisp on top of the fade. */
+    .fragments-section::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 26%;
+      background: linear-gradient(180deg,
+        rgba(5, 5, 7, 0) 0%,
+        rgba(5, 5, 7, 0.35) 25%,
+        rgba(5, 5, 7, 0.75) 55%,
+        rgba(5, 5, 7, 0.96) 80%,
+        #050507 100%);
+      pointer-events: none;
+      z-index: 4;
     }
 
     /* Revealed: only after stage canvas has fully faded out, so
