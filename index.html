@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@600;700;800;900&family=DM+Sans:wght@400;500&display=swap"
     rel="stylesheet">
 
   <!-- Three.js import map -->
@@ -952,13 +952,17 @@
     .stat-block--highlight:hover {
       border-color: rgba(180, 130, 255, 0.55);
     }
+    /* Stat number — visually matched to .panel-title so the two feel like
+       one voice. Same font family, same real weight 900 (now loaded), same
+       letter-spacing, same white→grey gradient. Size is slightly smaller
+       because these cards sit beneath the title instead of carrying it. */
     .stat-number {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(40px, 6vw, 76px);
       font-weight: 900;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      background: linear-gradient(180deg, #ffffff 0%, #b4b4c8 100%);
+      font-size: clamp(38px, 5.2vw, 68px);
+      letter-spacing: -0.03em;
+      line-height: 0.9;
+      background: linear-gradient(180deg, #ffffff 0%, #a0a0b0 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -966,6 +970,7 @@
     .stat-block--highlight .stat-number {
       background: linear-gradient(180deg, #ffffff 0%, #c8a8ff 100%);
       -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     .stat-unit {
