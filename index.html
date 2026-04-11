@@ -1178,7 +1178,11 @@
     }
 
     /* Each fragment is full-screen + uses its own transparent PNG.
-       The mask shape comes from the PNG's alpha channel — no clip-path. */
+       The mask shape comes from the PNG's alpha channel — no clip-path.
+       --fx / --fy are updated per frame by the float animation below so
+       each fragment drifts independently. The JS hit-test reads the same
+       values so clicks still land on the visible pixels, not the
+       original un-drifted PNG position. */
     .mask-fragment {
       position: absolute;
       inset: 0;
@@ -1188,8 +1192,9 @@
       background-position: center;
       background-repeat: no-repeat;
       pointer-events: none;
+      transform: translate3d(var(--fx, 0px), var(--fy, 0px), 0);
       transition: filter .4s cubic-bezier(.4, 0, .2, 1);
-      will-change: filter;
+      will-change: filter, transform;
     }
     .mask-fragment[data-frag="ochi-stang"]   { background-image: url('frag-ochi-stang.png'); }
     .mask-fragment[data-frag="ochi-drept"]   { background-image: url('frag-ochi-drept.png'); }
@@ -2191,8 +2196,53 @@
         img.src = 'frag-' + name + '.png';
       });
 
+      // ── Float animation params ─────────────────────────
+      // Each fragment drifts on its own sin/cos curve. Different phases,
+      // amplitudes and speeds so the 5 pieces never feel synced. Kept
+      // small (<= 8px) so it reads as breathing, not sliding.
+      const FLOAT_PARAMS = {
+        'ochi-stang':   { ax: 6, ay: 5, phx: 0.0,  phy: 1.2, sx: 0.45, sy: 0.38 },
+        'ochi-drept':   { ax: 5, ay: 6, phx: 0.8,  phy: 0.4, sx: 0.42, sy: 0.50 },
+        'nas':          { ax: 4, ay: 4, phx: 2.0,  phy: 2.5, sx: 0.55, sy: 0.48 },
+        'gura-stanga':  { ax: 5, ay: 6, phx: 1.5,  phy: 0.7, sx: 0.38, sy: 0.52 },
+        'gura-dreapta': { ax: 6, ay: 5, phx: 0.4,  phy: 2.2, sx: 0.48, sy: 0.40 },
+      };
+      // Live per-fragment pixel offsets — read by hitTest() so clicks
+      // land on the visible drifted pixels, not the original PNG coords.
+      const fragmentOffsets = {
+        'ochi-stang':   { x: 0, y: 0 },
+        'ochi-drept':   { x: 0, y: 0 },
+        'nas':          { x: 0, y: 0 },
+        'gura-stanga':  { x: 0, y: 0 },
+        'gura-dreapta': { x: 0, y: 0 },
+      };
+      // Cache DOM refs so we don't hit getElementById every frame
+      const fragmentEls = {};
+      Object.entries(FRAG_BY_NAME).forEach(([name, cfg]) => {
+        fragmentEls[name] = document.getElementById(cfg.id);
+      });
+      function floatTick(tMs) {
+        const t = tMs * 0.001;
+        for (const name in FLOAT_PARAMS) {
+          const p = FLOAT_PARAMS[name];
+          const fx = Math.sin(t * p.sx + p.phx) * p.ax;
+          const fy = Math.cos(t * p.sy + p.phy) * p.ay;
+          fragmentOffsets[name].x = fx;
+          fragmentOffsets[name].y = fy;
+          const el = fragmentEls[name];
+          if (el) {
+            el.style.setProperty('--fx', fx.toFixed(2) + 'px');
+            el.style.setProperty('--fy', fy.toFixed(2) + 'px');
+          }
+        }
+        requestAnimationFrame(floatTick);
+      }
+      requestAnimationFrame(floatTick);
+
       // Returns the data-frag name under the given client coords, or null.
       // Uses object-fit: cover semantics so it matches the CSS background-size: cover.
+      // Subtracts each fragment's current float offset so the hit-test
+      // follows the visibly drifted pixels, not the original PNG box.
       function hitTest(clientX, clientY) {
         const r = canvas.getBoundingClientRect();
         if (clientX < r.left || clientX > r.right || clientY < r.top || clientY > r.bottom) return null;
@@ -2203,14 +2253,17 @@
         for (const name in offscreens) {
           const off = offscreens[name];
           if (!off) continue;
+          const drift = fragmentOffsets[name] || { x: 0, y: 0 };
           // cover: scale so the PNG fully covers the canvas, crop the overflow
           const scale = Math.max(r.width / off.w, r.height / off.h);
           const drawnW = off.w * scale;
           const drawnH = off.h * scale;
           const dx = (r.width - drawnW) / 2;  // could be negative
           const dy = (r.height - drawnH) / 2;
-          const localX = clientX - r.left - dx;
-          const localY = clientY - r.top - dy;
+          // Undo the visual drift so we sample the un-moved PNG at the
+          // correct logical pixel for where the user is actually pointing
+          const localX = clientX - r.left - dx - drift.x;
+          const localY = clientY - r.top - dy - drift.y;
           const px = Math.floor(localX / scale);
           const py = Math.floor(localY / scale);
           if (px < 0 || py < 0 || px >= off.w || py >= off.h) continue;
