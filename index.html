@@ -1608,12 +1608,34 @@
           if (fadeProgress > 0.2) {
             fragmentsSection.classList.add('revealed');
           }
+          // When fully faded, hide entirely so canvas doesn't bleed through on mobile
+          if (fadeProgress >= 1.0) {
+            stage.style.display = 'none';
+          }
         } else {
+          stage.style.display = '';
           stage.style.opacity = 1;
           stage.style.filter = '';
           fragmentsSection.classList.remove('revealed');
         }
       }
+
+      // ── Mobile failsafe: IntersectionObserver hides stage as soon as
+      //    fragments section enters viewport (catches momentum-scroll gaps) ──
+      new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            // Fragments visible — kill stage completely
+            stage.style.opacity = '0';
+            stage.style.display = 'none';
+            fragmentsSection.classList.add('revealed');
+          } else if (entry.boundingClientRect.top > 0) {
+            // Fragments scrolled below viewport (user went back up) — restore stage
+            stage.style.display = '';
+            stage.style.opacity = '1';
+          }
+        });
+      }, { threshold: 0.01 }).observe(fragmentsSection);
 
       // Pre-load all frames
       for (let i = 0; i < TOTAL_FRAMES; i++) {
