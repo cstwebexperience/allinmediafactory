@@ -531,6 +531,7 @@
     /* ── Mask Fragments ───────────────────────────────── */
     .fragments-section {
       position: relative;
+      z-index: 1; /* sit above sticky #stage on mobile GPU layers */
       min-height: 100vh;
       min-height: 100dvh;
       overflow: hidden;
@@ -1608,9 +1609,10 @@
           if (fadeProgress > 0.2) {
             fragmentsSection.classList.add('revealed');
           }
-          // When fully faded, hide entirely so canvas doesn't bleed through on mobile
+          // When fully faded: hide stage + clear canvas to kill GPU layer artifact
           if (fadeProgress >= 1.0) {
             stage.style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
           }
         } else {
           stage.style.display = '';
@@ -1620,17 +1622,17 @@
         }
       }
 
-      // ── Mobile failsafe: IntersectionObserver hides stage as soon as
-      //    fragments section enters viewport (catches momentum-scroll gaps) ──
+      // ── Mobile failsafe: as soon as fragments section enters viewport,
+      //    kill the stage entirely (catches momentum-scroll event gaps) ──
       new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
           if (entry.isIntersecting) {
-            // Fragments visible — kill stage completely
             stage.style.opacity = '0';
             stage.style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             fragmentsSection.classList.add('revealed');
           } else if (entry.boundingClientRect.top > 0) {
-            // Fragments scrolled below viewport (user went back up) — restore stage
+            // User scrolled back above fragments — restore stage
             stage.style.display = '';
             stage.style.opacity = '1';
           }
