@@ -22,6 +22,11 @@
   <meta name="twitter:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări.">
   <meta name="twitter:image" content="masca-despicata.png">
 
+  <!-- DNS prefetch for external resources -->
+  <link rel="dns-prefetch" href="https://unpkg.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://dl.polyhaven.org">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1106,6 +1111,7 @@
       position: sticky;
       top: 0;
       width: 100vw;
+      max-width: 100%;
       height: 100vh;
       margin-top: -100vh;   /* overlap exactly with #stage */
       pointer-events: none; /* JS toggles to 'all' once revealed */
@@ -1309,6 +1315,7 @@
       position: sticky;
       top: 0;
       width: 100vw;
+      max-width: 100%;
       height: 100vh;
       overflow: hidden;
       background: #000;
@@ -1341,6 +1348,7 @@
       position: sticky;
       top: 0;
       width: 100vw;
+      max-width: 100%;
       height: 100vh;
       overflow: hidden;
       background: #030305;
@@ -1370,6 +1378,7 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
+      max-width: 100%;
     }
     .contact-label {
       position: absolute;
@@ -1826,6 +1835,26 @@
     }
   </style>
 
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "ALL IN MEDIA FACTORY",
+    "description": "Agenție de marketing digital specializată în videoclipuri premium, Meta Ads, web design, SEO și automatizări business.",
+    "url": "https://allinmediafactory.com",
+    "telephone": "+40743391581",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "RO"
+    },
+    "sameAs": [
+      "https://wa.me/40743391581"
+    ],
+    "serviceType": ["Video Production", "Meta Ads", "Web Design", "SEO", "Business Automation"]
+  }
+  </script>
+
   <!-- Lenis Smooth Scroll -->
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
   <!-- GSAP + ScrollTrigger -->
@@ -1833,9 +1862,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <!-- SplitType -->
   <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
-  <!-- YouTube IFrame API — used to nudge the zoom player to the
-       highest available quality once it's ready -->
-  <script src="https://www.youtube.com/iframe_api" async></script>
+  <!-- YouTube IFrame API — lazy-loaded when pane 01 is opened
+       to avoid blocking initial page load with an external script -->
+  <!-- <script src="https://www.youtube.com/iframe_api" async></script> -->
 </head>
 
 <body>
@@ -2266,7 +2295,9 @@
     // Frames are lazy-loaded: first 30 immediately, rest in background.
     window._scrollScrubInit = function () {
       const TOTAL_FRAMES = 576;
-      const EAGER_FRAMES = 30; // load these synchronously before reveal
+      // Load fewer frames eagerly on mobile to reduce initial bandwidth
+      const _scrubMobile = window.matchMedia('(max-width: 900px)').matches;
+      const EAGER_FRAMES = _scrubMobile ? 12 : 30;
       const canvas = document.getElementById('c');
       const ctx = canvas.getContext('2d');
       const stage = document.getElementById('stage');
@@ -2317,8 +2348,9 @@
       // Background-load the rest in chunks via requestIdleCallback (or rAF fallback)
       const idle = window.requestIdleCallback || function (cb) { return setTimeout(cb, 1); };
       let bgIdx = EAGER_FRAMES;
+      const BATCH_SIZE = _scrubMobile ? 4 : 8;
       function loadNextBatch() {
-        const batchEnd = Math.min(bgIdx + 8, TOTAL_FRAMES);
+        const batchEnd = Math.min(bgIdx + BATCH_SIZE, TOTAL_FRAMES);
         for (let i = bgIdx; i < batchEnd; i++) loadFrame(i, false);
         bgIdx = batchEnd;
         if (bgIdx < TOTAL_FRAMES) idle(loadNextBatch);
@@ -2928,6 +2960,13 @@
         // overhead — iOS Safari ignores setPlaybackQualityRange
         // anyway, and the wrapper + destroy cycle leaves stale
         // internal state that breaks subsequent opens.
+        // Lazy-load the YouTube IFrame API on first use (not at page load).
+        if (!IS_MOBILE_ZOOM && !window._ytApiLoaded) {
+          window._ytApiLoaded = true;
+          const s = document.createElement('script');
+          s.src = 'https://www.youtube.com/iframe_api';
+          document.head.appendChild(s);
+        }
         if (!IS_MOBILE_ZOOM) {
           iframe.onload = function () {
             if (!window.YT || !window.YT.Player) return;
@@ -3803,10 +3842,10 @@ window._contactVisible = true;
 <script>
 (function () {
   const canvas = document.createElement('canvas');
-  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;';
   document.body.appendChild(canvas);
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { desynchronized: true });
   let W, H;
 
   // On mobile / touch / narrow viewport we cut the particle count
@@ -3816,7 +3855,7 @@ window._contactVisible = true;
   const IS_TOUCH_OR_NARROW = window.matchMedia(
     '(max-width: 900px), (hover: none) and (pointer: coarse)'
   ).matches;
-  const PARTICLE_COUNT = IS_TOUCH_OR_NARROW ? 32 : 110;
+  const PARTICLE_COUNT = IS_TOUCH_OR_NARROW ? 22 : (window._lowPowerGpu ? 50 : 110);
   const MOUSE_RADIUS   = 130;
   const MOUSE_FORCE    = 0.20;
 
@@ -3999,6 +4038,10 @@ window._contactVisible = true;
     const vpCenter = winH * 0.5;
 
     targets.forEach((el) => {
+      // Skip elements that are hidden by other JS (e.g. scroll-scrub
+      // hides #stage after crossfade — blur engine must not override).
+      if (el.style.visibility === 'hidden') return;
+
       const rect     = el.getBoundingClientRect();
       const elCenter = rect.top + Math.min(rect.height, winH) / 2;
       const dist     = Math.abs(elCenter - vpCenter);
@@ -4020,16 +4063,17 @@ window._contactVisible = true;
 
   // rAF-throttle the scroll handler so touch-scroll on iOS stays
   // smooth even when the scroll event fires dozens of times per
-  // frame. update() itself is cheap (4 getBoundingClientRect +
-  // 4 style writes) but clamping to one call per frame keeps the
-  // main thread unblocked on low-power devices.
+  // frame. On low-power GPUs we throttle to every 2nd frame to
+  // keep the main thread free for the Three.js render loops.
   let rafPending = false;
+  let blurFrameSkip = 0;
+  const BLUR_SKIP = window._lowPowerGpu ? 2 : 1;
   function onScroll() {
     if (rafPending) return;
     rafPending = true;
     requestAnimationFrame(() => {
       rafPending = false;
-      update();
+      if (++blurFrameSkip % BLUR_SKIP === 0) update();
     });
   }
 
