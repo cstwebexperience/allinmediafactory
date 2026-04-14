@@ -156,11 +156,17 @@
       background: #050507;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(1.05);
+      filter: blur(10px);
+      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.55s cubic-bezier(0.16, 1, 0.3, 1);
     }
     #service-overlay.open {
       opacity: 1;
       pointer-events: all;
+      transform: scale(1);
+      filter: blur(0px);
     }
 
     /* ── Blurred ghost fragment in the overlay ────────────
@@ -265,11 +271,13 @@
       z-index: 5;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      transform: translateY(20px);
+      transition: opacity 0.45s ease 0.15s, transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.15s;
     }
     .service-pane.active {
       opacity: 1;
       pointer-events: all;
+      transform: translateY(0);
     }
 
     .pane-content {
