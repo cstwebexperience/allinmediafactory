@@ -587,6 +587,21 @@
       }
       servicii.addEventListener('mousemove', onMove);
       servicii.addEventListener('click', onClick);
+
+      // ── Touch support (mobile) ───────────────────────────
+      let _touchMoved = false;
+      servicii.addEventListener('touchstart', () => { _touchMoved = false; }, { passive: true });
+      servicii.addEventListener('touchmove',  () => { _touchMoved = true;  }, { passive: true });
+      servicii.addEventListener('touchend', e => {
+        if (_touchMoved) return;
+        if (isOpen) return;
+        if (!servicii.classList.contains('revealed')) return;
+        const t = e.changedTouches[0];
+        const name = hitTest(t.clientX, t.clientY);
+        if (!name) return;
+        clearAllAnn();
+        openService(name);
+      });
       servicii.addEventListener('mouseleave', () => {
         if (lastHover) {
           document.getElementById(FRAG_BY_NAME[lastHover].id).classList.remove('hover');
