@@ -9,6 +9,7 @@
 
     html {
       scroll-behavior: smooth;
+      background: #000;
     }
 
     body {
@@ -16,6 +17,8 @@
       background: #000;
       color: #fff;
       overflow-x: hidden;
+      /* Extend into iPhone safe area so no gap shows at bottom */
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     /* ── Three.js Hero ─────────────────────────────────── */
@@ -1263,8 +1266,8 @@
       position: sticky;
       top: 0;
       width: 100vw;
-      height: 100vh;
-      height: 100dvh;
+      height: calc(100vh + env(safe-area-inset-bottom, 0px));
+      height: calc(100dvh + env(safe-area-inset-bottom, 0px));
       overflow: hidden;
       background: #000;
       will-change: filter, transform, opacity;
