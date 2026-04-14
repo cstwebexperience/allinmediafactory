@@ -2786,45 +2786,50 @@
           clearMobileScrollStyles(closingPane);
         }
 
-        // Kill the ghost glow immediately — don't let it linger
-        // through the full 0.85s scale transition.
+        // Kill the ghost glow immediately
         if (ghost) {
-          ghost.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+          ghost.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
           ghost.style.opacity = '0';
         }
 
-        later(() => {
-          overlay.classList.remove('open');
-
-          // Restore body — different unwind for mobile vs desktop.
-          // On mobile: restore scroll BEFORE unfixing body to avoid
-          // a flash of the hero section (the browser would briefly
-          // show scroll position 0 before window.scrollTo fires).
-          if (document.body.dataset.serviceOpenScroll !== undefined) {
-            const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
-            // Set scroll position while body is still fixed (invisible)
-            window.scrollTo(0, savedY);
-            // Unfix body on next frame so the scroll is already in place
-            requestAnimationFrame(() => {
-              document.body.style.position = '';
-              document.body.style.top = '';
-              document.body.style.left = '';
-              document.body.style.right = '';
-              document.body.style.width = '';
-              delete document.body.dataset.serviceOpenScroll;
-            });
-          } else {
+        // On mobile: restore scroll position BEFORE fading the overlay.
+        // The overlay is still at opacity:1 so the user can't see the
+        // scroll jump. Then we fade the overlay and the mask section
+        // is already in place behind it.
+        if (document.body.dataset.serviceOpenScroll !== undefined) {
+          const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
+          // Unfix body + restore scroll while overlay still covers everything
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
+          document.body.style.width = '';
+          delete document.body.dataset.serviceOpenScroll;
+          window.scrollTo(0, savedY);
+          // Now fade the overlay — mask section is already visible behind it
+          requestAnimationFrame(() => {
+            overlay.classList.remove('open');
+            later(() => {
+              hardReset();
+              isOpen = false;
+              if (ghost) ghost.style.transition = '';
+              if (ghost) ghost.style.opacity = '';
+            }, 500);
+          });
+        } else {
+          // Desktop path
+          later(() => {
+            overlay.classList.remove('open');
             document.body.style.overflow = '';
             window._lenis?.start();
-          }
-          later(() => {
-            hardReset();
-            isOpen = false;
-            // Restore ghost transition for next open
-            if (ghost) ghost.style.transition = '';
-            if (ghost) ghost.style.opacity = '';
-          }, 400);
-        }, 100);
+            later(() => {
+              hardReset();
+              isOpen = false;
+              if (ghost) ghost.style.transition = '';
+              if (ghost) ghost.style.opacity = '';
+            }, 500);
+          }, 100);
+        }
       }
 
       // ── Annotation highlight ─────────────────────────────
