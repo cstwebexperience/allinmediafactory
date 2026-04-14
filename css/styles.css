@@ -1509,9 +1509,8 @@
       #stage canvas {
         top: 0 !important;
         left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        height: 100dvh !important;
+        width: 100% !important;
+        height: 100% !important;
         transform: none !important;
         object-fit: cover !important;
       }
