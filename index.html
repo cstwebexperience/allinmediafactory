@@ -2792,30 +2792,43 @@
           ghost.style.opacity = '0';
         }
 
-        // On mobile: restore scroll position BEFORE fading the overlay.
-        // The overlay is still at opacity:1 so the user can't see the
-        // scroll jump. Then we fade the overlay and the mask section
-        // is already in place behind it.
-        if (document.body.dataset.serviceOpenScroll !== undefined) {
-          const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
-          // Unfix body + restore scroll while overlay still covers everything
-          document.body.style.position = '';
-          document.body.style.top = '';
-          document.body.style.left = '';
-          document.body.style.right = '';
-          document.body.style.width = '';
-          delete document.body.dataset.serviceOpenScroll;
-          window.scrollTo(0, savedY);
-          // Now fade the overlay — mask section is already visible behind it
-          requestAnimationFrame(() => {
-            overlay.classList.remove('open');
-            later(() => {
-              hardReset();
-              isOpen = false;
-              if (ghost) ghost.style.transition = '';
-              if (ghost) ghost.style.opacity = '';
-            }, 500);
-          });
+        const isMobileClose = document.body.dataset.serviceOpenScroll !== undefined;
+
+        if (isMobileClose) {
+          // MOBILE CLOSE — critical sequence to avoid hero flash:
+          //
+          // While body is position:fixed, it visually shows the page at
+          // the saved scroll offset (body.top = -savedY). The overlay
+          // (z-index 200, opacity 1) covers everything.
+          //
+          // Strategy: fade the overlay WHILE body stays fixed. The user
+          // sees the mask section through the fading overlay because
+          // body.top = -savedY keeps the page at that visual position.
+          // Only AFTER the overlay is fully transparent do we unfix body
+          // and restore real scroll — this is invisible because the
+          // overlay is already gone and the page is at the same position.
+
+          overlay.classList.remove('open');  // starts 0.5s opacity fade
+
+          // After overlay is fully faded (550ms safety margin)
+          setTimeout(() => {
+            const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
+            // Unfix body
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            delete document.body.dataset.serviceOpenScroll;
+            // Restore real scroll position (invisible — overlay is gone,
+            // page was already visually at this position via body.top)
+            window.scrollTo(0, savedY);
+
+            hardReset();
+            isOpen = false;
+            if (ghost) ghost.style.transition = '';
+            if (ghost) ghost.style.opacity = '';
+          }, 550);
         } else {
           // Desktop path
           later(() => {
