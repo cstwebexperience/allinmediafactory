@@ -2376,8 +2376,11 @@
             if (p >= STAGE_FADE_START) {
               const sp = Math.min(1, (p - STAGE_FADE_START) / (STAGE_FADE_END - STAGE_FADE_START));
               stage.style.opacity = 1 - sp;
+              // Hide fully once faded to prevent ghost-mask on mobile
+              stage.style.visibility = sp >= 1 ? 'hidden' : 'visible';
             } else {
               stage.style.opacity = 1;
+              stage.style.visibility = 'visible';
             }
 
             // 4) Full reveal at 80%+ → annotation draw-on + clicks
