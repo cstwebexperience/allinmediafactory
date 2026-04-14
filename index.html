@@ -22,6 +22,11 @@
   <meta name="twitter:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări.">
   <meta name="twitter:image" content="masca-despicata.png">
 
+  <!-- DNS prefetch for external resources -->
+  <link rel="dns-prefetch" href="https://unpkg.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://dl.polyhaven.org">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,8 +68,6 @@
 
     html {
       scroll-behavior: smooth;
-      overflow-x: hidden;
-      overscroll-behavior-x: none;
     }
 
     body {
@@ -72,7 +75,6 @@
       background: #050507;
       color: #fff;
       overflow-x: hidden;
-      overscroll-behavior-x: none;
     }
 
     /* ── Three.js Hero ─────────────────────────────────── */
@@ -1109,12 +1111,15 @@
       position: sticky;
       top: 0;
       width: 100vw;
+      max-width: 100%;
       height: 100vh;
       margin-top: -100vh;   /* overlap exactly with #stage */
       pointer-events: none; /* JS toggles to 'all' once revealed */
       z-index: 10;
       overflow: hidden;
       will-change: filter, transform, opacity;
+      background: transparent;
+      transition: background 0.3s ease;
     }
 
     /* Stage fade-out driven by JS */
@@ -1196,6 +1201,7 @@
        fragments are the sole visual layer + clicks are enabled. */
     .fragments-section.revealed {
       pointer-events: all;
+      background: #050507; /* blocks ghost-mask from scroll-scrub canvas behind */
     }
     .fragments-section.revealed .mask-fragment {
       pointer-events: all;
@@ -1309,6 +1315,7 @@
       position: sticky;
       top: 0;
       width: 100vw;
+      max-width: 100%;
       height: 100vh;
       overflow: hidden;
       background: #000;
@@ -1341,6 +1348,7 @@
       position: sticky;
       top: 0;
       width: 100vw;
+      max-width: 100%;
       height: 100vh;
       overflow: hidden;
       background: #030305;
@@ -1370,6 +1378,7 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
+      max-width: 100%;
     }
     .contact-label {
       position: absolute;
@@ -1534,7 +1543,8 @@
       /* ── Hero title — make it readable on a 390px wide screen */
       .hero-title-block {
         bottom: 12%;
-        width: 94%;
+        width: 100%;
+        padding: 0 3%;
       }
       .hero-title-block h1 {
         font-size: clamp(26px, 7.2vw, 38px);
@@ -1603,6 +1613,13 @@
       /* ── Servicii eyebrow — keep it visible above the 16:9 box */
       .servicii-eyebrow {
         top: 18% !important;
+      }
+
+      /* ── Service pane big titles — hidden on mobile (not on desktop).
+         Specificity must beat #service-overlay .pane-content > * */
+      #service-overlay .pane-content .pane-h2.panel-title,
+      #service-overlay .pane-content-vp .pane-h2.panel-title {
+        display: none !important;
       }
 
       /* ── Loader counter — a bit smaller on very narrow screens */
@@ -1826,6 +1843,26 @@
     }
   </style>
 
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "ALL IN MEDIA FACTORY",
+    "description": "Agenție de marketing digital specializată în videoclipuri premium, Meta Ads, web design, SEO și automatizări business.",
+    "url": "https://allinmediafactory.com",
+    "telephone": "+40743391581",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "RO"
+    },
+    "sameAs": [
+      "https://wa.me/40743391581"
+    ],
+    "serviceType": ["Video Production", "Meta Ads", "Web Design", "SEO", "Business Automation"]
+  }
+  </script>
+
   <!-- Lenis Smooth Scroll -->
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
   <!-- GSAP + ScrollTrigger -->
@@ -1833,9 +1870,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <!-- SplitType -->
   <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
-  <!-- YouTube IFrame API — used to nudge the zoom player to the
-       highest available quality once it's ready -->
-  <script src="https://www.youtube.com/iframe_api" async></script>
+  <!-- YouTube IFrame API — lazy-loaded when pane 01 is opened
+       to avoid blocking initial page load with an external script -->
+  <!-- <script src="https://www.youtube.com/iframe_api" async></script> -->
 </head>
 
 <body>
@@ -2266,7 +2303,9 @@
     // Frames are lazy-loaded: first 30 immediately, rest in background.
     window._scrollScrubInit = function () {
       const TOTAL_FRAMES = 576;
-      const EAGER_FRAMES = 30; // load these synchronously before reveal
+      // Load fewer frames eagerly on mobile to reduce initial bandwidth
+      const _scrubMobile = window.matchMedia('(max-width: 900px)').matches;
+      const EAGER_FRAMES = _scrubMobile ? 12 : 30;
       const canvas = document.getElementById('c');
       const ctx = canvas.getContext('2d');
       const stage = document.getElementById('stage');
@@ -2317,8 +2356,9 @@
       // Background-load the rest in chunks via requestIdleCallback (or rAF fallback)
       const idle = window.requestIdleCallback || function (cb) { return setTimeout(cb, 1); };
       let bgIdx = EAGER_FRAMES;
+      const BATCH_SIZE = _scrubMobile ? 4 : 8;
       function loadNextBatch() {
-        const batchEnd = Math.min(bgIdx + 8, TOTAL_FRAMES);
+        const batchEnd = Math.min(bgIdx + BATCH_SIZE, TOTAL_FRAMES);
         for (let i = bgIdx; i < batchEnd; i++) loadFrame(i, false);
         bgIdx = batchEnd;
         if (bgIdx < TOTAL_FRAMES) idle(loadNextBatch);
@@ -2368,19 +2408,46 @@
             drawFrame(Math.round(scrubP * (TOTAL_FRAMES - 1)));
 
             // 2) Fragments canvas fades in 70 → 76
+            //    + servicii gets a solid BG so the scroll-scrub canvas
+            //      behind can never ghost through the fragment PNGs.
             if (p >= FRAGMENTS_FADE_IN) {
               const fp = Math.min(1, (p - FRAGMENTS_FADE_IN) / (FRAGMENTS_FADE_OUT - FRAGMENTS_FADE_IN));
               fragsCanvas.style.opacity = fp;
+              servicii.style.background = '#050507';
             } else {
               fragsCanvas.style.opacity = 0;
+              servicii.style.background = 'transparent';
             }
 
             // 3) Stage canvas fades out 76 → 80
+            //    Once fully faded: paint canvas solid black + hide
+            //    the entire stage element. iOS Safari ignores opacity:0
+            //    + visibility:hidden on composited sticky layers, so we
+            //    must physically erase the canvas content to kill the
+            //    ghost mask. Stage display stays 'block' (not 'none')
+            //    because its height props up the scroll container.
             if (p >= STAGE_FADE_START) {
               const sp = Math.min(1, (p - STAGE_FADE_START) / (STAGE_FADE_END - STAGE_FADE_START));
               stage.style.opacity = 1 - sp;
+              if (sp >= 1) {
+                stage.style.visibility = 'hidden';
+                // Nuclear: paint the canvas solid black so even if
+                // Safari composites it, the user sees nothing.
+                ctx.fillStyle = '#050507';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                currentFrame = -1; // force redraw when scrolling back
+              } else {
+                stage.style.visibility = 'visible';
+              }
             } else {
               stage.style.opacity = 1;
+              stage.style.visibility = 'visible';
+              // Redraw current frame in case canvas was painted black
+              // (user scrolled back up from the revealed state)
+              if (currentFrame < 0) {
+                const rIdx = Math.round(Math.min(1, p / SCRUB_END) * (TOTAL_FRAMES - 1));
+                drawFrame(rIdx);
+              }
             }
 
             // 4) Full reveal at 80%+ → annotation draw-on + clicks
@@ -2718,24 +2785,60 @@
           closingPane.classList.remove('active');
           clearMobileScrollStyles(closingPane);
         }
-        later(() => {
+
+        // Kill the ghost glow immediately
+        if (ghost) {
+          ghost.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+          ghost.style.opacity = '0';
+        }
+
+        const isMobileClose = document.body.dataset.serviceOpenScroll !== undefined;
+
+        if (isMobileClose) {
+          // MOBILE CLOSE — instant (no fade).
+          // iOS Safari does NOT visually offset the page when body has
+          // position:fixed + top:-Npx (unlike Chrome). So any opacity
+          // transition on the overlay would reveal the hero at scroll 0.
+          // Solution: hide overlay instantly, restore scroll, done.
+          const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
+
+          // 1. Kill overlay transition so it disappears instantly
+          overlay.style.transition = 'none';
           overlay.classList.remove('open');
-          // Restore body — different unwind for mobile vs desktop
-          if (document.body.dataset.serviceOpenScroll !== undefined) {
-            const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.left = '';
-            document.body.style.right = '';
-            document.body.style.width = '';
-            delete document.body.dataset.serviceOpenScroll;
-            window.scrollTo(0, savedY);
-          } else {
+          overlay.style.opacity = '0';
+
+          // 2. Unfix body + restore scroll in same JS turn
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
+          document.body.style.width = '';
+          delete document.body.dataset.serviceOpenScroll;
+          window.scrollTo(0, savedY);
+
+          // 3. Cleanup on next frame (restore overlay transition for next open)
+          requestAnimationFrame(() => {
+            overlay.style.transition = '';
+            overlay.style.opacity = '';
+            hardReset();
+            isOpen = false;
+            if (ghost) ghost.style.transition = '';
+            if (ghost) ghost.style.opacity = '';
+          });
+        } else {
+          // Desktop path
+          later(() => {
+            overlay.classList.remove('open');
             document.body.style.overflow = '';
             window._lenis?.start();
-          }
-          later(() => { hardReset(); isOpen = false; }, 550);
-        }, 160);
+            later(() => {
+              hardReset();
+              isOpen = false;
+              if (ghost) ghost.style.transition = '';
+              if (ghost) ghost.style.opacity = '';
+            }, 500);
+          }, 100);
+        }
       }
 
       // ── Annotation highlight ─────────────────────────────
@@ -2921,6 +3024,13 @@
         // overhead — iOS Safari ignores setPlaybackQualityRange
         // anyway, and the wrapper + destroy cycle leaves stale
         // internal state that breaks subsequent opens.
+        // Lazy-load the YouTube IFrame API on first use (not at page load).
+        if (!IS_MOBILE_ZOOM && !window._ytApiLoaded) {
+          window._ytApiLoaded = true;
+          const s = document.createElement('script');
+          s.src = 'https://www.youtube.com/iframe_api';
+          document.head.appendChild(s);
+        }
         if (!IS_MOBILE_ZOOM) {
           iframe.onload = function () {
             if (!window.YT || !window.YT.Player) return;
@@ -3198,9 +3308,19 @@ window.addEventListener('mousemove', e => {
 // attach BOTH listeners so scrollP always updates. readScrollP also
 // falls back to window.scrollY when Lenis hasn't been created yet.
 let scrollP = 0;
+// Cache initial viewport height so scrollP doesn't jump when the
+// mobile address bar hides/shows (changing window.innerHeight).
+const _scrollPHeight = window.innerHeight;
 function readScrollP() {
-  const sy = window._lenis ? window._lenis.scroll : window.scrollY;
-  scrollP = Math.min(Math.max(sy / window.innerHeight, 0), 1);
+  // Don't update scrollP while a service pane is open — body is
+  // position:fixed so window.scrollY jumps to 0, which makes
+  // scrollP=0 → hero becomes opacity:1 → visible flash behind overlay.
+  if (document.body.style.position === 'fixed') return;
+  // Always use window.scrollY on mobile — Lenis has smoothTouch:false
+  // so _lenis.scroll doesn't update on touch scroll, causing scrollP
+  // to get stuck and the sphere to stay at its last scrolled position.
+  const sy = (IS_MOBILE || !window._lenis) ? window.scrollY : window._lenis.scroll;
+  scrollP = Math.min(Math.max(sy / _scrollPHeight, 0), 1);
 }
 if (window._lenis) window._lenis.on('scroll', readScrollP);
 window.addEventListener('scroll', readScrollP, { passive: true });
@@ -3248,18 +3368,18 @@ function tick() {
   if (heroEl) {
     const op = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
     heroEl.style.opacity = op;
-    if (op < 0.02) {
-      heroEl.style.visibility = 'hidden';
-      heroEl.style.pointerEvents = 'none';
-    } else {
-      heroEl.style.visibility = '';
-      heroEl.style.pointerEvents = '';
-    }
+    // Never set visibility:hidden on hero — iOS Safari suspends the
+    // WebGL context and the sphere won't re-render on scroll-back.
+    // opacity:0 + pointerEvents:none is enough (hero is behind other
+    // content anyway). The IntersectionObserver pauses GPU work.
+    heroEl.style.pointerEvents = op < 0.02 ? 'none' : '';
   }
   if (titleEl && window._loaderDone) {
     titleEl.style.opacity = 1;
     const titleDrift = easeIn(mapRange(scrollP, 0.82, 0.98));
-    titleEl.style.transform = `translateY(${titleDrift * -14}px)`;
+    // Only set transform when actually drifting — avoids overriding
+    // the loader's initial animation with a redundant translateY(0)
+    titleEl.style.transform = titleDrift > 0.001 ? `translateY(${titleDrift * -14}px)` : '';
   }
 
   // GPU-heavy work pauses when hero is off-screen for battery savings
@@ -3271,16 +3391,19 @@ function tick() {
   smx += (mx - smx) * 0.03;
   smy += (my - smy) * 0.03;
 
-  const pZoom      = easeInOut(mapRange(scrollP, 0.10, 0.40));
-  const pIntensity = easeInOut(mapRange(scrollP, 0.15, 0.45));
-  const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20, 0.50));
-  const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
-
-  // (titleEl state is already set in the always-run block above)
   // Camera base z is 5 on desktop, 8.5 on mobile (sphere reads
   // smaller in the portrait viewport). The scroll-driven pZoom
   // ease still pulls the camera in by 1 unit either way.
   const _mobileHero = window.innerWidth < 768;
+
+  // On mobile, start scroll-driven animations later (0.18 instead
+  // of 0.10) so the address bar hide (~70px) doesn't trigger sphere
+  // zoom/movement. 0.18 * 844px = ~152px of real scroll needed.
+  const _dz = _mobileHero ? 0.08 : 0;
+  const pZoom      = easeInOut(mapRange(scrollP, 0.10 + _dz, 0.40 + _dz));
+  const pIntensity = easeInOut(mapRange(scrollP, 0.15 + _dz, 0.45 + _dz));
+  const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20 + _dz, 0.50 + _dz));
+  const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
   const _camZBase = _mobileHero ? 8.5 : 5;
   camera.position.z = _camZBase - pZoom * 1.0;
   camera.position.y = 0.3 + pRise * 0.5;
@@ -3450,7 +3573,8 @@ scene2.add(new THREE.AmbientLight(0x080410, 0.4));
 // meshes never animate in on phones.
 let cScrollP = 0;
 function updateContactScroll() {
-  const sy = window._lenis ? window._lenis.scroll : window.scrollY;
+  if (document.body.style.position === 'fixed') return;
+  const sy = (C_IS_MOBILE || !window._lenis) ? window.scrollY : window._lenis.scroll;
   const scrollable = contactArea.offsetHeight - window.innerHeight;
   const scrolled   = sy - contactArea.offsetTop;
   cScrollP = Math.min(Math.max(scrolled / scrollable, 0), 1);
@@ -3796,10 +3920,10 @@ window._contactVisible = true;
 <script>
 (function () {
   const canvas = document.createElement('canvas');
-  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;';
   document.body.appendChild(canvas);
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { desynchronized: true });
   let W, H;
 
   // On mobile / touch / narrow viewport we cut the particle count
@@ -3809,7 +3933,7 @@ window._contactVisible = true;
   const IS_TOUCH_OR_NARROW = window.matchMedia(
     '(max-width: 900px), (hover: none) and (pointer: coarse)'
   ).matches;
-  const PARTICLE_COUNT = IS_TOUCH_OR_NARROW ? 32 : 110;
+  const PARTICLE_COUNT = IS_TOUCH_OR_NARROW ? 22 : (window._lowPowerGpu ? 50 : 110);
   const MOUSE_RADIUS   = 130;
   const MOUSE_FORCE    = 0.20;
 
@@ -3992,6 +4116,10 @@ window._contactVisible = true;
     const vpCenter = winH * 0.5;
 
     targets.forEach((el) => {
+      // Skip elements that are hidden by other JS (e.g. scroll-scrub
+      // hides #stage after crossfade — blur engine must not override).
+      if (el.style.visibility === 'hidden') return;
+
       const rect     = el.getBoundingClientRect();
       const elCenter = rect.top + Math.min(rect.height, winH) / 2;
       const dist     = Math.abs(elCenter - vpCenter);
@@ -4013,16 +4141,17 @@ window._contactVisible = true;
 
   // rAF-throttle the scroll handler so touch-scroll on iOS stays
   // smooth even when the scroll event fires dozens of times per
-  // frame. update() itself is cheap (4 getBoundingClientRect +
-  // 4 style writes) but clamping to one call per frame keeps the
-  // main thread unblocked on low-power devices.
+  // frame. On low-power GPUs we throttle to every 2nd frame to
+  // keep the main thread free for the Three.js render loops.
   let rafPending = false;
+  let blurFrameSkip = 0;
+  const BLUR_SKIP = window._lowPowerGpu ? 2 : 1;
   function onScroll() {
     if (rafPending) return;
     rafPending = true;
     requestAnimationFrame(() => {
       rafPending = false;
-      update();
+      if (++blurFrameSkip % BLUR_SKIP === 0) update();
     });
   }
 
