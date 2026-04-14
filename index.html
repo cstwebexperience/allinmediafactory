@@ -3300,6 +3300,10 @@ window.addEventListener('mousemove', e => {
 // falls back to window.scrollY when Lenis hasn't been created yet.
 let scrollP = 0;
 function readScrollP() {
+  // Don't update scrollP while a service pane is open — body is
+  // position:fixed so window.scrollY jumps to 0, which makes
+  // scrollP=0 → hero becomes opacity:1 → visible flash behind overlay.
+  if (document.body.style.position === 'fixed') return;
   // Always use window.scrollY on mobile — Lenis has smoothTouch:false
   // so _lenis.scroll doesn't update on touch scroll, causing scrollP
   // to get stuck and the sphere to stay at its last scrolled position.
@@ -3552,6 +3556,7 @@ scene2.add(new THREE.AmbientLight(0x080410, 0.4));
 // meshes never animate in on phones.
 let cScrollP = 0;
 function updateContactScroll() {
+  if (document.body.style.position === 'fixed') return;
   const sy = (C_IS_MOBILE || !window._lenis) ? window.scrollY : window._lenis.scroll;
   const scrollable = contactArea.offsetHeight - window.innerHeight;
   const scrolled   = sy - contactArea.offsetTop;
