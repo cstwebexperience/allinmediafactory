@@ -16,11 +16,11 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="ALL IN MEDIA FACTORY — Agenție de Marketing & Media">
   <meta property="og:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări — agenția care îți pune brandul în lumina reflectoarelor.">
-  <meta property="og:image" content="masca-despicata.webp">
+  <meta property="og:image" content="masca-despicata.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ALL IN MEDIA FACTORY">
   <meta name="twitter:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări.">
-  <meta name="twitter:image" content="masca-despicata.webp">
+  <meta name="twitter:image" content="masca-despicata.png">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,11 +32,11 @@
        The rest of the 192 frames load lazily from the scroll-scrub
        init routine. -->
   <link rel="preload" as="image" href="frames/frame_0001.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="frag-ochi-stang.webp">
-  <link rel="preload" as="image" href="frag-ochi-drept.webp">
-  <link rel="preload" as="image" href="frag-nas.webp">
-  <link rel="preload" as="image" href="frag-gura-stanga.webp">
-  <link rel="preload" as="image" href="frag-gura-dreapta.webp">
+  <link rel="preload" as="image" href="frag-ochi-stang.png">
+  <link rel="preload" as="image" href="frag-ochi-drept.png">
+  <link rel="preload" as="image" href="frag-nas.png">
+  <link rel="preload" as="image" href="frag-gura-stanga.png">
+  <link rel="preload" as="image" href="frag-gura-dreapta.png">
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@600;700;800;900&family=DM+Sans:wght@400;500&display=swap"
     rel="stylesheet">
@@ -45,8 +45,8 @@
   <script type="importmap">
   {
     "imports": {
-      "three": "./dist/three/three.module.min.js",
-      "three/addons/": "./dist/three/addons/"
+      "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
     }
   }
   </script>
@@ -62,7 +62,7 @@
     }
 
     html {
-      scroll-behavior: auto;
+      scroll-behavior: smooth;
       overflow-x: hidden;
       overscroll-behavior-x: none;
     }
@@ -188,32 +188,32 @@
     #overlay-ghost.ghost-ochi-stang {
       top: -8%; left: -8%; right: auto; bottom: auto;
       transform-origin: 36% 28%;
-      background-image: url('frag-ochi-stang.webp');
+      background-image: url('frag-ochi-stang.png');
     }
     /* Top-right — ochi drept (02) */
     #overlay-ghost.ghost-ochi-drept {
       top: -8%; right: -8%; left: auto; bottom: auto;
       transform-origin: 67% 28%;
-      background-image: url('frag-ochi-drept.webp');
+      background-image: url('frag-ochi-drept.png');
     }
     /* Top-center — nas (03) */
     #overlay-ghost.ghost-nas {
       top: -15%; left: 50%; right: auto; bottom: auto;
       margin-left: -60vw;
       transform-origin: 50% 50%;
-      background-image: url('frag-nas.webp');
+      background-image: url('frag-nas.png');
     }
     /* Bottom-left — gura stânga (04) */
     #overlay-ghost.ghost-gura-stanga {
       bottom: -8%; left: -8%; right: auto; top: auto;
       transform-origin: 38% 76%;
-      background-image: url('frag-gura-stanga.webp');
+      background-image: url('frag-gura-stanga.png');
     }
     /* Bottom-right — gura dreapta (05) */
     #overlay-ghost.ghost-gura-dreapta {
       bottom: -8%; right: -8%; left: auto; top: auto;
       transform-origin: 67% 74%;
-      background-image: url('frag-gura-dreapta.webp');
+      background-image: url('frag-gura-dreapta.png');
     }
 
     /* Close button */
@@ -1164,11 +1164,11 @@
       transition: filter .4s cubic-bezier(.4, 0, .2, 1);
       will-change: filter, transform;
     }
-    .mask-fragment[data-frag="ochi-stang"]   { background-image: url('frag-ochi-stang.webp'); }
-    .mask-fragment[data-frag="ochi-drept"]   { background-image: url('frag-ochi-drept.webp'); }
-    .mask-fragment[data-frag="nas"]          { background-image: url('frag-nas.webp'); }
-    .mask-fragment[data-frag="gura-stanga"]  { background-image: url('frag-gura-stanga.webp'); }
-    .mask-fragment[data-frag="gura-dreapta"] { background-image: url('frag-gura-dreapta.webp'); }
+    .mask-fragment[data-frag="ochi-stang"]   { background-image: url('frag-ochi-stang.png'); }
+    .mask-fragment[data-frag="ochi-drept"]   { background-image: url('frag-ochi-drept.png'); }
+    .mask-fragment[data-frag="nas"]          { background-image: url('frag-nas.png'); }
+    .mask-fragment[data-frag="gura-stanga"]  { background-image: url('frag-gura-stanga.png'); }
+    .mask-fragment[data-frag="gura-dreapta"] { background-image: url('frag-gura-dreapta.png'); }
 
     /* The two mouth pieces sit at the bottom of the mask PNG; the
        broken inner side of the papier-mâché shows as a pale yellow/tan
@@ -1827,12 +1827,12 @@
   </style>
 
   <!-- Lenis Smooth Scroll -->
-  <script src="dist/lenis.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
   <!-- GSAP + ScrollTrigger -->
-  <script src="dist/gsap.min.js"></script>
-  <script src="dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <!-- SplitType -->
-  <script src="dist/split-type.min.js"></script>
+  <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
   <!-- YouTube IFrame API — used to nudge the zoom player to the
        highest available quality once it's ready -->
   <script src="https://www.youtube.com/iframe_api" async></script>
@@ -2022,10 +2022,10 @@
           <span class="results-label">REZULTATELE NOASTRE</span>
           <div class="results-grid">
             <div class="result-card">
-              <img src="assets/rezultat-1.webp" alt="Rezultat campanie video 1" loading="lazy" />
+              <img src="assets/rezultat-1.png" alt="Rezultat campanie video 1" loading="lazy" />
             </div>
             <div class="result-card">
-              <img src="assets/rezultat-2.webp" alt="Rezultat campanie video 2" loading="lazy" />
+              <img src="assets/rezultat-2.png" alt="Rezultat campanie video 2" loading="lazy" />
             </div>
             <div class="result-card">
               <img src="assets/rezultat-3.png" alt="Rezultat campanie video 3" loading="lazy" />
@@ -3408,7 +3408,7 @@ const waStart   = C_PORTRAIT
   ? { x: 0, y: -5.0 }       // fly up from bottom
   : { x: 5.5, y: 0.3 };
 
-loader.load('clipboard-t.webp', (tex) => {
+loader.load('clipboard-t.png', (tex) => {
   tex.colorSpace = THREE.SRGBColorSpace;
   const aspect = tex.image.width / tex.image.height;
   const h = 1.6 * C_MESH_SCALE;
@@ -3420,7 +3420,7 @@ loader.load('clipboard-t.webp', (tex) => {
   scene2.add(clipMesh);
 });
 
-loader.load('whatsapp-t.webp', (tex) => {
+loader.load('whatsapp-t.png', (tex) => {
   tex.colorSpace = THREE.SRGBColorSpace;
   const aspect = tex.image.width / tex.image.height;
   const h = 0.85 * C_MESH_SCALE;
@@ -3946,17 +3946,10 @@ window._contactVisible = true;
       }
     }
     window.addEventListener('scroll', syncMobileVisibility, { passive: true });
-    // IntersectionObserver instead of setInterval for battery savings
-    const scrubObsEl = document.getElementById('scroll-scrub-container')
-                       || document.getElementById('stage');
-    if (scrubObsEl) {
-      new IntersectionObserver(() => syncMobileVisibility(), { threshold: 0.01 })
-        .observe(scrubObsEl);
-    }
-    if (serviciiEl) {
-      new IntersectionObserver(() => syncMobileVisibility(), { threshold: 0.01 })
-        .observe(serviciiEl);
-    }
+    // Poll at 220ms — the scroll-scrub onUpdate that toggles
+    // .revealed can fire slightly off-phase with native scroll
+    // events on mobile, so a low-rate poll keeps the canvas in sync.
+    setInterval(syncMobileVisibility, 220);
     syncMobileVisibility();
   }
 })();
