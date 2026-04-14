@@ -1615,8 +1615,10 @@
         top: 18% !important;
       }
 
-      /* ── Service pane big titles — hidden on mobile (not on desktop) */
-      .pane-h2.panel-title {
+      /* ── Service pane big titles — hidden on mobile (not on desktop).
+         Specificity must beat #service-overlay .pane-content > * */
+      #service-overlay .pane-content .pane-h2.panel-title,
+      #service-overlay .pane-content-vp .pane-h2.panel-title {
         display: none !important;
       }
 
