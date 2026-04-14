@@ -526,34 +526,17 @@
             if (ghost) ghost.style.opacity = '';
           });
         } else {
-          // Desktop path — animated close (blur + shrink + fade)
-          isOpen = false;
-
-          // Animate pane content down + fade
-          if (currentPane) {
-            currentPane.style.transition = 'opacity 0.25s ease, transform 0.3s ease';
-            currentPane.style.opacity = '0';
-            currentPane.style.transform = 'translateY(14px)';
-          }
-
-          // Overlay: swap .open → .closing for reverse animation
+          // Desktop path
           later(() => {
             overlay.classList.remove('open');
-            overlay.classList.add('closing');
             document.body.style.overflow = '';
             window._lenis?.start();
-
-            // Clean up after transition finishes
             later(() => {
-              overlay.classList.remove('closing');
-              if (currentPane) {
-                currentPane.style.cssText = '';
-                currentPane.classList.remove('active');
-              }
               hardReset();
+              isOpen = false;
               if (ghost) ghost.style.transition = '';
               if (ghost) ghost.style.opacity = '';
-            }, 520);
+            }, 500);
           }, 100);
         }
       }
@@ -604,21 +587,6 @@
       }
       servicii.addEventListener('mousemove', onMove);
       servicii.addEventListener('click', onClick);
-
-      // ── Touch support (mobile) ───────────────────────────
-      let _touchMoved = false;
-      servicii.addEventListener('touchstart', () => { _touchMoved = false; }, { passive: true });
-      servicii.addEventListener('touchmove',  () => { _touchMoved = true;  }, { passive: true });
-      servicii.addEventListener('touchend', e => {
-        if (_touchMoved) return;
-        if (isOpen) return;
-        if (!servicii.classList.contains('revealed')) return;
-        const t = e.changedTouches[0];
-        const name = hitTest(t.clientX, t.clientY);
-        if (!name) return;
-        clearAllAnn();
-        openService(name);
-      });
       servicii.addEventListener('mouseleave', () => {
         if (lastHover) {
           document.getElementById(FRAG_BY_NAME[lastHover].id).classList.remove('hover');
