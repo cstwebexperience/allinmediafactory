@@ -2412,14 +2412,34 @@
             }
 
             // 3) Stage canvas fades out 76 → 80
+            //    Once fully faded: paint canvas solid black + hide
+            //    the entire stage element. iOS Safari ignores opacity:0
+            //    + visibility:hidden on composited sticky layers, so we
+            //    must physically erase the canvas content to kill the
+            //    ghost mask. Stage display stays 'block' (not 'none')
+            //    because its height props up the scroll container.
             if (p >= STAGE_FADE_START) {
               const sp = Math.min(1, (p - STAGE_FADE_START) / (STAGE_FADE_END - STAGE_FADE_START));
               stage.style.opacity = 1 - sp;
-              // Hide fully once faded to prevent ghost-mask on mobile
-              stage.style.visibility = sp >= 1 ? 'hidden' : 'visible';
+              if (sp >= 1) {
+                stage.style.visibility = 'hidden';
+                // Nuclear: paint the canvas solid black so even if
+                // Safari composites it, the user sees nothing.
+                ctx.fillStyle = '#050507';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                currentFrame = -1; // force redraw when scrolling back
+              } else {
+                stage.style.visibility = 'visible';
+              }
             } else {
               stage.style.opacity = 1;
               stage.style.visibility = 'visible';
+              // Redraw current frame in case canvas was painted black
+              // (user scrolled back up from the revealed state)
+              if (currentFrame < 0) {
+                const rIdx = Math.round(Math.min(1, p / SCRUB_END) * (TOTAL_FRAMES - 1));
+                drawFrame(rIdx);
+              }
             }
 
             // 4) Full reveal at 80%+ → annotation draw-on + clicks
