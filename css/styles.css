@@ -9,16 +9,13 @@
 
     html {
       scroll-behavior: smooth;
-      background: #000;
     }
 
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: #000;
+      background: #050507;
       color: #fff;
       overflow-x: hidden;
-      /* Extend into iPhone safe area so no gap shows at bottom */
-      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     /* ── Three.js Hero ─────────────────────────────────── */
@@ -1266,8 +1263,8 @@
       position: sticky;
       top: 0;
       width: 100vw;
-      height: calc(100vh + env(safe-area-inset-bottom, 0px));
-      height: calc(100dvh + env(safe-area-inset-bottom, 0px));
+      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       background: #000;
       will-change: filter, transform, opacity;
@@ -1512,8 +1509,9 @@
       #stage canvas {
         top: 0 !important;
         left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
         transform: none !important;
         object-fit: cover !important;
       }
