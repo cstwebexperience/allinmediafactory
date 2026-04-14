@@ -526,17 +526,31 @@
             if (ghost) ghost.style.opacity = '';
           });
         } else {
-          // Desktop path
+          // Desktop path — animated close
+          isOpen = false;
+
+          if (currentPane) {
+            currentPane.style.transition = 'opacity 0.25s ease, transform 0.3s ease';
+            currentPane.style.opacity = '0';
+            currentPane.style.transform = 'translateY(14px)';
+          }
+
           later(() => {
             overlay.classList.remove('open');
+            overlay.classList.add('closing');
             document.body.style.overflow = '';
             window._lenis?.start();
+
             later(() => {
+              overlay.classList.remove('closing');
+              if (currentPane) {
+                currentPane.style.cssText = '';
+                currentPane.classList.remove('active');
+              }
               hardReset();
-              isOpen = false;
               if (ghost) ghost.style.transition = '';
               if (ghost) ghost.style.opacity = '';
-            }, 500);
+            }, 520);
           }, 100);
         }
       }
