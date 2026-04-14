@@ -2803,19 +2803,19 @@
         const isMobileClose = document.body.dataset.serviceOpenScroll !== undefined;
 
         if (isMobileClose) {
-          // MOBILE CLOSE — instant (no fade).
-          // iOS Safari does NOT visually offset the page when body has
-          // position:fixed + top:-Npx (unlike Chrome). So any opacity
-          // transition on the overlay would reveal the hero at scroll 0.
-          // Solution: hide overlay instantly, restore scroll, done.
           const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
+          const heroEl = document.getElementById('hero');
 
-          // 1. Kill overlay transition so it disappears instantly
+          // 1. Force hero invisible BEFORE anything else — prevents
+          //    the 1-frame flash where iOS shows scroll position 0
+          if (heroEl) heroEl.style.opacity = '0';
+
+          // 2. Kill overlay instantly
           overlay.style.transition = 'none';
           overlay.classList.remove('open');
           overlay.style.opacity = '0';
 
-          // 2. Unfix body + restore scroll in same JS turn
+          // 3. Unfix body + restore scroll
           document.body.style.position = '';
           document.body.style.top = '';
           document.body.style.left = '';
@@ -2824,7 +2824,7 @@
           delete document.body.dataset.serviceOpenScroll;
           window.scrollTo(0, savedY);
 
-          // 3. Cleanup on next frame (restore overlay transition for next open)
+          // 4. Cleanup — hero opacity will be restored by tick() via scrollP
           requestAnimationFrame(() => {
             overlay.style.transition = '';
             overlay.style.opacity = '';
