@@ -1264,7 +1264,6 @@
       top: 0;
       width: 100vw;
       height: 100vh;
-      height: 100dvh;
       overflow: hidden;
       background: #000;
       will-change: filter, transform, opacity;
@@ -1511,7 +1510,6 @@
         left: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
-        height: 100dvh !important;
         transform: none !important;
         object-fit: cover !important;
       }
