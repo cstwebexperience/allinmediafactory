@@ -2795,40 +2795,36 @@
         const isMobileClose = document.body.dataset.serviceOpenScroll !== undefined;
 
         if (isMobileClose) {
-          // MOBILE CLOSE — critical sequence to avoid hero flash:
-          //
-          // While body is position:fixed, it visually shows the page at
-          // the saved scroll offset (body.top = -savedY). The overlay
-          // (z-index 200, opacity 1) covers everything.
-          //
-          // Strategy: fade the overlay WHILE body stays fixed. The user
-          // sees the mask section through the fading overlay because
-          // body.top = -savedY keeps the page at that visual position.
-          // Only AFTER the overlay is fully transparent do we unfix body
-          // and restore real scroll — this is invisible because the
-          // overlay is already gone and the page is at the same position.
+          // MOBILE CLOSE — instant (no fade).
+          // iOS Safari does NOT visually offset the page when body has
+          // position:fixed + top:-Npx (unlike Chrome). So any opacity
+          // transition on the overlay would reveal the hero at scroll 0.
+          // Solution: hide overlay instantly, restore scroll, done.
+          const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
 
-          overlay.classList.remove('open');  // starts 0.5s opacity fade
+          // 1. Kill overlay transition so it disappears instantly
+          overlay.style.transition = 'none';
+          overlay.classList.remove('open');
+          overlay.style.opacity = '0';
 
-          // After overlay is fully faded (550ms safety margin)
-          setTimeout(() => {
-            const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
-            // Unfix body
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.left = '';
-            document.body.style.right = '';
-            document.body.style.width = '';
-            delete document.body.dataset.serviceOpenScroll;
-            // Restore real scroll position (invisible — overlay is gone,
-            // page was already visually at this position via body.top)
-            window.scrollTo(0, savedY);
+          // 2. Unfix body + restore scroll in same JS turn
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
+          document.body.style.width = '';
+          delete document.body.dataset.serviceOpenScroll;
+          window.scrollTo(0, savedY);
 
+          // 3. Cleanup on next frame (restore overlay transition for next open)
+          requestAnimationFrame(() => {
+            overlay.style.transition = '';
+            overlay.style.opacity = '';
             hardReset();
             isOpen = false;
             if (ghost) ghost.style.transition = '';
             if (ghost) ghost.style.opacity = '';
-          }, 550);
+          });
         } else {
           // Desktop path
           later(() => {
