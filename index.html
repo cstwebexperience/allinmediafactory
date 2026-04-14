@@ -3395,6 +3395,11 @@ function tick() {
   smx += (mx - smx) * 0.03;
   smy += (my - smy) * 0.03;
 
+  // Camera base z is 5 on desktop, 8.5 on mobile (sphere reads
+  // smaller in the portrait viewport). The scroll-driven pZoom
+  // ease still pulls the camera in by 1 unit either way.
+  const _mobileHero = window.innerWidth < 768;
+
   // On mobile, start scroll-driven animations later (0.18 instead
   // of 0.10) so the address bar hide (~70px) doesn't trigger sphere
   // zoom/movement. 0.18 * 844px = ~152px of real scroll needed.
@@ -3403,12 +3408,6 @@ function tick() {
   const pIntensity = easeInOut(mapRange(scrollP, 0.15 + _dz, 0.45 + _dz));
   const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20 + _dz, 0.50 + _dz));
   const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
-
-  // (titleEl state is already set in the always-run block above)
-  // Camera base z is 5 on desktop, 8.5 on mobile (sphere reads
-  // smaller in the portrait viewport). The scroll-driven pZoom
-  // ease still pulls the camera in by 1 unit either way.
-  const _mobileHero = window.innerWidth < 768;
   const _camZBase = _mobileHero ? 8.5 : 5;
   camera.position.z = _camZBase - pZoom * 1.0;
   camera.position.y = 0.3 + pRise * 0.5;
