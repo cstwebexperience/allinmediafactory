@@ -3299,6 +3299,9 @@ window.addEventListener('mousemove', e => {
 // attach BOTH listeners so scrollP always updates. readScrollP also
 // falls back to window.scrollY when Lenis hasn't been created yet.
 let scrollP = 0;
+// Cache initial viewport height so scrollP doesn't jump when the
+// mobile address bar hides/shows (changing window.innerHeight).
+const _scrollPHeight = window.innerHeight;
 function readScrollP() {
   // Don't update scrollP while a service pane is open — body is
   // position:fixed so window.scrollY jumps to 0, which makes
@@ -3308,7 +3311,7 @@ function readScrollP() {
   // so _lenis.scroll doesn't update on touch scroll, causing scrollP
   // to get stuck and the sphere to stay at its last scrolled position.
   const sy = (IS_MOBILE || !window._lenis) ? window.scrollY : window._lenis.scroll;
-  scrollP = Math.min(Math.max(sy / window.innerHeight, 0), 1);
+  scrollP = Math.min(Math.max(sy / _scrollPHeight, 0), 1);
 }
 if (window._lenis) window._lenis.on('scroll', readScrollP);
 window.addEventListener('scroll', readScrollP, { passive: true });
@@ -3365,7 +3368,9 @@ function tick() {
   if (titleEl && window._loaderDone) {
     titleEl.style.opacity = 1;
     const titleDrift = easeIn(mapRange(scrollP, 0.82, 0.98));
-    titleEl.style.transform = `translateY(${titleDrift * -14}px)`;
+    // Only set transform when actually drifting — avoids overriding
+    // the loader's initial animation with a redundant translateY(0)
+    titleEl.style.transform = titleDrift > 0.001 ? `translateY(${titleDrift * -14}px)` : '';
   }
 
   // GPU-heavy work pauses when hero is off-screen for battery savings
@@ -3377,9 +3382,13 @@ function tick() {
   smx += (mx - smx) * 0.03;
   smy += (my - smy) * 0.03;
 
-  const pZoom      = easeInOut(mapRange(scrollP, 0.10, 0.40));
-  const pIntensity = easeInOut(mapRange(scrollP, 0.15, 0.45));
-  const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20, 0.50));
+  // On mobile, start scroll-driven animations later (0.18 instead
+  // of 0.10) so the address bar hide (~70px) doesn't trigger sphere
+  // zoom/movement. 0.18 * 844px = ~152px of real scroll needed.
+  const _dz = _mobileHero ? 0.08 : 0;
+  const pZoom      = easeInOut(mapRange(scrollP, 0.10 + _dz, 0.40 + _dz));
+  const pIntensity = easeInOut(mapRange(scrollP, 0.15 + _dz, 0.45 + _dz));
+  const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20 + _dz, 0.50 + _dz));
   const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
 
   // (titleEl state is already set in the always-run block above)
