@@ -154,11 +154,23 @@
       background: #050507;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(1.05);
+      filter: blur(10px);
+      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.55s cubic-bezier(0.16, 1, 0.3, 1);
     }
     #service-overlay.open {
       opacity: 1;
       pointer-events: all;
+      transform: scale(1);
+      filter: blur(0px);
+    }
+    #service-overlay.closing {
+      opacity: 0;
+      transform: scale(0.97);
+      filter: blur(6px);
+      pointer-events: none;
     }
 
     /* ── Blurred ghost fragment in the overlay ────────────
@@ -263,11 +275,13 @@
       z-index: 5;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      transform: translateY(20px);
+      transition: opacity 0.45s ease 0.15s, transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.15s;
     }
     .service-pane.active {
       opacity: 1;
       pointer-events: all;
+      transform: translateY(0);
     }
 
     .pane-content {
@@ -2713,14 +2727,21 @@
       function closeService() {
         if (!isOpen) return;
         cancelPending();
-        const closingPane = currentPane;
-        if (closingPane) {
-          closingPane.classList.remove('active');
-          clearMobileScrollStyles(closingPane);
+        isOpen = false;
+
+        // Animează conținutul pane-ului în jos + fade
+        if (currentPane) {
+          currentPane.style.transition = 'opacity 0.25s ease, transform 0.3s ease';
+          currentPane.style.opacity   = '0';
+          currentPane.style.transform = 'translateY(14px)';
         }
+
+        // Overlay: swap .open → .closing pentru animație inversă
         later(() => {
           overlay.classList.remove('open');
-          // Restore body — different unwind for mobile vs desktop
+          overlay.classList.add('closing');
+
+          // Restore body scroll
           if (document.body.dataset.serviceOpenScroll !== undefined) {
             const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
             document.body.style.position = '';
@@ -2734,8 +2755,17 @@
             document.body.style.overflow = '';
             window._lenis?.start();
           }
-          later(() => { hardReset(); isOpen = false; }, 550);
-        }, 160);
+
+          // Curăță tot după ce tranziția s-a terminat
+          later(() => {
+            overlay.classList.remove('closing');
+            if (currentPane) {
+              currentPane.style.cssText = '';
+              currentPane.classList.remove('active');
+            }
+            hardReset();
+          }, 520);
+        }, 100);
       }
 
       // ── Annotation highlight ─────────────────────────────
@@ -2784,6 +2814,21 @@
       }
       servicii.addEventListener('mousemove', onMove);
       servicii.addEventListener('click', onClick);
+
+      // ── Touch support (mobile) ───────────────────────────
+      let _touchMoved = false;
+      servicii.addEventListener('touchstart', () => { _touchMoved = false; }, { passive: true });
+      servicii.addEventListener('touchmove',  () => { _touchMoved = true;  }, { passive: true });
+      servicii.addEventListener('touchend', e => {
+        if (_touchMoved) return;
+        if (isOpen) return;
+        if (!servicii.classList.contains('revealed')) return;
+        const t = e.changedTouches[0];
+        const name = hitTest(t.clientX, t.clientY);
+        if (!name) return;
+        clearAllAnn();
+        openService(name);
+      });
       servicii.addEventListener('mouseleave', () => {
         if (lastHover) {
           document.getElementById(FRAG_BY_NAME[lastHover].id).classList.remove('hover');
