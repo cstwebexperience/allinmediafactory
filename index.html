@@ -1112,6 +1112,8 @@
       z-index: 10;
       overflow: hidden;
       will-change: filter, transform, opacity;
+      background: transparent;
+      transition: background 0.3s ease;
     }
 
     /* Stage fade-out driven by JS */
@@ -1193,6 +1195,7 @@
        fragments are the sole visual layer + clicks are enabled. */
     .fragments-section.revealed {
       pointer-events: all;
+      background: #050507; /* blocks ghost-mask from scroll-scrub canvas behind */
     }
     .fragments-section.revealed .mask-fragment {
       pointer-events: all;
@@ -2365,11 +2368,15 @@
             drawFrame(Math.round(scrubP * (TOTAL_FRAMES - 1)));
 
             // 2) Fragments canvas fades in 70 → 76
+            //    + servicii gets a solid BG so the scroll-scrub canvas
+            //      behind can never ghost through the fragment PNGs.
             if (p >= FRAGMENTS_FADE_IN) {
               const fp = Math.min(1, (p - FRAGMENTS_FADE_IN) / (FRAGMENTS_FADE_OUT - FRAGMENTS_FADE_IN));
               fragsCanvas.style.opacity = fp;
+              servicii.style.background = '#050507';
             } else {
               fragsCanvas.style.opacity = 0;
+              servicii.style.background = 'transparent';
             }
 
             // 3) Stage canvas fades out 76 → 80
