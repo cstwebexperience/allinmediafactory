@@ -2434,6 +2434,7 @@
               stage.style.opacity = 1 - sp;
               if (sp >= 1) {
                 stage.style.visibility = 'hidden';
+                stage.style.pointerEvents = 'none';
                 // Nuclear: paint the canvas solid black so even if
                 // Safari composites it, the user sees nothing.
                 ctx.fillStyle = '#050507';
@@ -2445,6 +2446,7 @@
             } else {
               stage.style.opacity = 1;
               stage.style.visibility = 'visible';
+              stage.style.pointerEvents = '';
               // Redraw current frame in case canvas was painted black
               // (user scrolled back up from the revealed state)
               if (currentFrame < 0) {
