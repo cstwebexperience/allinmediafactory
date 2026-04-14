@@ -137,32 +137,32 @@
     #overlay-ghost.ghost-ochi-stang {
       top: -8%; left: -8%; right: auto; bottom: auto;
       transform-origin: 36% 28%;
-      background-image: url('frag-ochi-stang.png');
+      background-image: url('../frag-ochi-stang.png');
     }
     /* Top-right — ochi drept (02) */
     #overlay-ghost.ghost-ochi-drept {
       top: -8%; right: -8%; left: auto; bottom: auto;
       transform-origin: 67% 28%;
-      background-image: url('frag-ochi-drept.png');
+      background-image: url('../frag-ochi-drept.png');
     }
     /* Top-center — nas (03) */
     #overlay-ghost.ghost-nas {
       top: -15%; left: 50%; right: auto; bottom: auto;
       margin-left: -60vw;
       transform-origin: 50% 50%;
-      background-image: url('frag-nas.png');
+      background-image: url('../frag-nas.png');
     }
     /* Bottom-left — gura stânga (04) */
     #overlay-ghost.ghost-gura-stanga {
       bottom: -8%; left: -8%; right: auto; top: auto;
       transform-origin: 38% 76%;
-      background-image: url('frag-gura-stanga.png');
+      background-image: url('../frag-gura-stanga.png');
     }
     /* Bottom-right — gura dreapta (05) */
     #overlay-ghost.ghost-gura-dreapta {
       bottom: -8%; right: -8%; left: auto; top: auto;
       transform-origin: 67% 74%;
-      background-image: url('frag-gura-dreapta.png');
+      background-image: url('../frag-gura-dreapta.png');
     }
 
     /* Close button */
@@ -1117,11 +1117,11 @@
       transition: filter .4s cubic-bezier(.4, 0, .2, 1);
       will-change: filter, transform;
     }
-    .mask-fragment[data-frag="ochi-stang"]   { background-image: url('frag-ochi-stang.png'); }
-    .mask-fragment[data-frag="ochi-drept"]   { background-image: url('frag-ochi-drept.png'); }
-    .mask-fragment[data-frag="nas"]          { background-image: url('frag-nas.png'); }
-    .mask-fragment[data-frag="gura-stanga"]  { background-image: url('frag-gura-stanga.png'); }
-    .mask-fragment[data-frag="gura-dreapta"] { background-image: url('frag-gura-dreapta.png'); }
+    .mask-fragment[data-frag="ochi-stang"]   { background-image: url('../frag-ochi-stang.png'); }
+    .mask-fragment[data-frag="ochi-drept"]   { background-image: url('../frag-ochi-drept.png'); }
+    .mask-fragment[data-frag="nas"]          { background-image: url('../frag-nas.png'); }
+    .mask-fragment[data-frag="gura-stanga"]  { background-image: url('../frag-gura-stanga.png'); }
+    .mask-fragment[data-frag="gura-dreapta"] { background-image: url('../frag-gura-dreapta.png'); }
 
     /* The two mouth pieces sit at the bottom of the mask PNG; the
        broken inner side of the papier-mâché shows as a pale yellow/tan
