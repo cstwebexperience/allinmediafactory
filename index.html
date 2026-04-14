@@ -2804,15 +2804,13 @@
 
         if (isMobileClose) {
           const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
+          const heroEl = document.getElementById('hero');
 
-          // 1. Create a black curtain that covers EVERYTHING (z-index 99999)
-          //    This hides the hero flash that iOS Safari shows for 1-2 frames
-          //    when body unfixes and scrollTo hasn't completed yet.
-          const curtain = document.createElement('div');
-          curtain.style.cssText = 'position:fixed;inset:0;background:#050507;z-index:99999;';
-          document.body.appendChild(curtain);
+          // 1. Force hero invisible BEFORE anything else — prevents
+          //    the 1-frame flash where iOS shows scroll position 0
+          if (heroEl) heroEl.style.opacity = '0';
 
-          // 2. Kill overlay
+          // 2. Kill overlay instantly
           overlay.style.transition = 'none';
           overlay.classList.remove('open');
           overlay.style.opacity = '0';
@@ -2826,19 +2824,14 @@
           delete document.body.dataset.serviceOpenScroll;
           window.scrollTo(0, savedY);
 
-          // 4. Remove curtain after scroll has settled (2 frames)
+          // 4. Cleanup — hero opacity will be restored by tick() via scrollP
           requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            curtain.style.transition = 'opacity 0.25s ease';
-            curtain.style.opacity = '0';
-            setTimeout(() => curtain.remove(), 300);
             overlay.style.transition = '';
             overlay.style.opacity = '';
             hardReset();
             isOpen = false;
             if (ghost) ghost.style.transition = '';
             if (ghost) ghost.style.opacity = '';
-          });
           });
         } else {
           // Desktop path
