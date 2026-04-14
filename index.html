@@ -68,8 +68,6 @@
 
     html {
       scroll-behavior: smooth;
-      overflow-x: hidden;
-      overscroll-behavior-x: none;
     }
 
     body {
@@ -77,8 +75,6 @@
       background: #050507;
       color: #fff;
       overflow-x: hidden;
-      overscroll-behavior-x: none;
-      -webkit-overflow-scrolling: touch;
     }
 
     /* ── Three.js Hero ─────────────────────────────────── */
@@ -2738,13 +2734,14 @@
           document.body.style.overflow = 'hidden';
           window._lenis?.stop();
         } else {
-          // On mobile, prevent body from scrolling by locking overflow
-          // on both html and body. Does NOT change scroll position
-          // (unlike position:fixed which resets to 0 on iOS Safari).
-          document.body.dataset.serviceOpenScroll = '1';
-          document.documentElement.style.overflow = 'hidden';
-          document.body.style.overflow = 'hidden';
-          document.body.style.touchAction = 'none';
+          // On mobile, prevent body from scrolling in the background
+          // by fixing its position. Restored in closeService.
+          document.body.dataset.serviceOpenScroll = String(window.scrollY || 0);
+          document.body.style.position = 'fixed';
+          document.body.style.top = '-' + (window.scrollY || 0) + 'px';
+          document.body.style.left = '0';
+          document.body.style.right = '0';
+          document.body.style.width = '100%';
         }
 
         requestAnimationFrame(() => {
@@ -2798,22 +2795,28 @@
         const isMobileClose = document.body.dataset.serviceOpenScroll !== undefined;
 
         if (isMobileClose) {
-          // MOBILE CLOSE — instant, no fade, no scroll jump.
-          // We used overflow:hidden (not position:fixed) so the scroll
-          // position never changed. Just remove the lock + overlay.
+          // MOBILE CLOSE — instant (no fade).
+          // iOS Safari does NOT visually offset the page when body has
+          // position:fixed + top:-Npx (unlike Chrome). So any opacity
+          // transition on the overlay would reveal the hero at scroll 0.
+          // Solution: hide overlay instantly, restore scroll, done.
+          const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
 
-          // 1. Kill overlay instantly
+          // 1. Kill overlay transition so it disappears instantly
           overlay.style.transition = 'none';
           overlay.classList.remove('open');
           overlay.style.opacity = '0';
 
-          // 2. Unlock scroll (page is already at the mask position)
-          document.documentElement.style.overflow = '';
-          document.body.style.overflow = '';
-          document.body.style.touchAction = '';
+          // 2. Unfix body + restore scroll in same JS turn
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
+          document.body.style.width = '';
           delete document.body.dataset.serviceOpenScroll;
+          window.scrollTo(0, savedY);
 
-          // 3. Cleanup on next frame
+          // 3. Cleanup on next frame (restore overlay transition for next open)
           requestAnimationFrame(() => {
             overlay.style.transition = '';
             overlay.style.opacity = '';
@@ -3312,7 +3315,7 @@ function readScrollP() {
   // Don't update scrollP while a service pane is open — body is
   // position:fixed so window.scrollY jumps to 0, which makes
   // scrollP=0 → hero becomes opacity:1 → visible flash behind overlay.
-  if (document.body.dataset.serviceOpenScroll !== undefined) return;
+  if (document.body.style.position === 'fixed') return;
   // Always use window.scrollY on mobile — Lenis has smoothTouch:false
   // so _lenis.scroll doesn't update on touch scroll, causing scrollP
   // to get stuck and the sphere to stay at its last scrolled position.
@@ -3570,7 +3573,7 @@ scene2.add(new THREE.AmbientLight(0x080410, 0.4));
 // meshes never animate in on phones.
 let cScrollP = 0;
 function updateContactScroll() {
-  if (document.body.dataset.serviceOpenScroll !== undefined) return;
+  if (document.body.style.position === 'fixed') return;
   const sy = (C_IS_MOBILE || !window._lenis) ? window.scrollY : window._lenis.scroll;
   const scrollable = contactArea.offsetHeight - window.innerHeight;
   const scrolled   = sy - contactArea.offsetTop;
