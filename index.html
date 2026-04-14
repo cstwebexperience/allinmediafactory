@@ -1543,7 +1543,8 @@
       /* ── Hero title — make it readable on a 390px wide screen */
       .hero-title-block {
         bottom: 12%;
-        width: 94%;
+        width: 100%;
+        padding: 0 3%;
       }
       .hero-title-block h1 {
         font-size: clamp(26px, 7.2vw, 38px);
@@ -3319,13 +3320,11 @@ function tick() {
   if (heroEl) {
     const op = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
     heroEl.style.opacity = op;
-    if (op < 0.02) {
-      heroEl.style.visibility = 'hidden';
-      heroEl.style.pointerEvents = 'none';
-    } else {
-      heroEl.style.visibility = '';
-      heroEl.style.pointerEvents = '';
-    }
+    // Never set visibility:hidden on hero — iOS Safari suspends the
+    // WebGL context and the sphere won't re-render on scroll-back.
+    // opacity:0 + pointerEvents:none is enough (hero is behind other
+    // content anyway). The IntersectionObserver pauses GPU work.
+    heroEl.style.pointerEvents = op < 0.02 ? 'none' : '';
   }
   if (titleEl && window._loaderDone) {
     titleEl.style.opacity = 1;
