@@ -201,8 +201,14 @@
           const c = document.createElement('canvas');
           c.width = img.naturalWidth;
           c.height = img.naturalHeight;
-          c.getContext('2d').drawImage(img, 0, 0);
-          offscreens[name] = { ctx: c.getContext('2d'), w: img.naturalWidth, h: img.naturalHeight };
+          const tctx = c.getContext('2d');
+          tctx.drawImage(img, 0, 0);
+          // Cache alpha channel as Uint8Array — avoids expensive
+          // getImageData() calls on every mouse move during hit-test.
+          const idata = tctx.getImageData(0, 0, c.width, c.height).data;
+          const alpha = new Uint8Array(c.width * c.height);
+          for (let i = 0; i < alpha.length; i++) alpha[i] = idata[i * 4 + 3];
+          offscreens[name] = { alpha, w: img.naturalWidth, h: img.naturalHeight };
           if (window._loaderAssetDone) window._loaderAssetDone();
         };
         img.src = 'frag-' + name + '.png';
@@ -278,8 +284,22 @@
       // image aspect) so cover and contain give the same result —
       // Math.min works uniformly. Subtracts each fragment's float
       // offset so clicks land on visibly drifted pixels.
+      // Cache the bounding rect — only updates on scroll/resize, not per mouse move
+      let _cachedRect = null;
+      let _rectFrame = -1;
+      function getCachedRect() {
+        const f = performance.now();
+        if (!_cachedRect || f - _rectFrame > 200) {
+          _cachedRect = canvas.getBoundingClientRect();
+          _rectFrame = f;
+        }
+        return _cachedRect;
+      }
+      window.addEventListener('scroll', () => { _cachedRect = null; }, { passive: true });
+      window.addEventListener('resize', () => { _cachedRect = null; }, { passive: true });
+
       function hitTest(clientX, clientY) {
-        const r = canvas.getBoundingClientRect();
+        const r = getCachedRect();
         if (clientX < r.left || clientX > r.right || clientY < r.top || clientY > r.bottom) return null;
         for (const name in offscreens) {
           const off = offscreens[name];
@@ -288,19 +308,15 @@
           const scale = Math.min(r.width / off.w, r.height / off.h);
           const drawnW = off.w * scale;
           const drawnH = off.h * scale;
-          const dx = (r.width - drawnW) / 2;  // could be negative
+          const dx = (r.width - drawnW) / 2;
           const dy = (r.height - drawnH) / 2;
-          // Undo the visual drift so we sample the un-moved PNG at the
-          // correct logical pixel for where the user is actually pointing
           const localX = clientX - r.left - dx - drift.x;
           const localY = clientY - r.top - dy - drift.y;
           const px = Math.floor(localX / scale);
           const py = Math.floor(localY / scale);
           if (px < 0 || py < 0 || px >= off.w || py >= off.h) continue;
-          try {
-            const data = off.ctx.getImageData(px, py, 1, 1).data;
-            if (data[3] > 50) return name;
-          } catch (e) { /* CORS-tainted, skip */ }
+          // Read from cached alpha array — zero GPU/CPU overhead
+          if (off.alpha[py * off.w + px] > 50) return name;
         }
         return null;
       }
@@ -582,12 +598,14 @@
       // We listen on #servicii (the sticky overlay) so the events fire
       // even after pointer-events:all is enabled by .revealed.
       let lastHover = null;
-      function onMove(e) {
+      let _moveRafPending = false;
+      let _lastMoveX = 0, _lastMoveY = 0;
+      function _processMove() {
+        _moveRafPending = false;
         if (isOpen) return;
         if (!servicii.classList.contains('revealed')) return;
-        const name = hitTest(e.clientX, e.clientY);
+        const name = hitTest(_lastMoveX, _lastMoveY);
         if (name === lastHover) return;
-        // remove old hover
         if (lastHover) {
           const oldId = FRAG_BY_NAME[lastHover].id;
           document.getElementById(oldId).classList.remove('hover');
@@ -601,6 +619,14 @@
           servicii.style.cursor = 'pointer';
         } else {
           servicii.style.cursor = 'default';
+        }
+      }
+      function onMove(e) {
+        _lastMoveX = e.clientX;
+        _lastMoveY = e.clientY;
+        if (!_moveRafPending) {
+          _moveRafPending = true;
+          requestAnimationFrame(_processMove);
         }
       }
       function onClick(e) {

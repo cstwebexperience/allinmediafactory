@@ -1167,11 +1167,9 @@
     .mask-fragment.hover {
       z-index: 20 !important;
       filter:
-        drop-shadow(0 0 2px  rgba(255,255,255,1.00))
-        drop-shadow(0 0 8px  rgba(255,255,255,1.00))
-        drop-shadow(0 0 22px rgba(255,255,255,0.80))
-        drop-shadow(0 0 55px rgba(255,255,255,0.50))
-        drop-shadow(0 0 90px rgba(255,255,255,0.25)) !important;
+        drop-shadow(0 0 4px  rgba(255,255,255,1.00))
+        drop-shadow(0 0 18px rgba(255,255,255,0.75))
+        drop-shadow(0 0 50px rgba(255,255,255,0.30)) !important;
     }
 
     /* Active (clicked) — violet glow */
