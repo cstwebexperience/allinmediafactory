@@ -1572,7 +1572,7 @@
       }
 
       /* ── Loader counter — a bit smaller on very narrow screens */
-      #loader-counter {
+      #loader-percent {
         font-size: 58px !important;
       }
       #loader-bar-track {

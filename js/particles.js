@@ -15,12 +15,14 @@
   ).matches;
   const PARTICLE_COUNT = IS_TOUCH_OR_NARROW ? 22 : (window._lowPowerGpu ? 50 : 110);
   const MOUSE_RADIUS   = 130;
+  const MOUSE_RADIUS_SQ = MOUSE_RADIUS * MOUSE_RADIUS;
   const MOUSE_FORCE    = 0.20;
 
   // Flag consumed by Particle.update() to apply a sphere-exclusion
   // zone on mobile while the hero section is on screen. Updated by
   // syncMobileVisibility() below. Always false on desktop.
   let _inHeroMobile = false;
+  let _sphereCX = 0, _sphereCY = 0, _sphereR = 0, _sphereR2 = 0;
 
   const mouse = { x: -999, y: -999 };
   window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
@@ -29,6 +31,10 @@
   function resize() {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
+    _sphereCX = W * 0.5;
+    _sphereCY = H * 0.46;
+    _sphereR  = Math.min(W, H) * 0.38;
+    _sphereR2 = _sphereR * _sphereR;
   }
   window.addEventListener('resize', resize);
   resize();
@@ -55,8 +61,9 @@
 
     const dx   = this.x - mouse.x;
     const dy   = this.y - mouse.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < MOUSE_RADIUS && dist > 0) {
+    const d2   = dx * dx + dy * dy;
+    if (d2 < MOUSE_RADIUS_SQ && d2 > 1) {
+      const dist = Math.sqrt(d2);
       const f = (1 - dist / MOUSE_RADIUS) * MOUSE_FORCE;
       this.px += (dx / dist) * f;
       this.py += (dy / dist) * f;
@@ -72,22 +79,19 @@
     // snapped to the edge and has its inward velocity flipped
     // outward, so they physically cannot overlap the sphere.
     if (_inHeroMobile) {
-      const scx = W * 0.5;
-      const scy = H * 0.46;
-      const sr  = Math.min(W, H) * 0.38;
-      const sdx = this.x - scx;
-      const sdy = this.y - scy;
-      const sd  = Math.sqrt(sdx * sdx + sdy * sdy);
-      if (sd < sr) {
-        if (sd === 0) {
-          this.x = scx + sr;
-          this.y = scy;
+      const sdx = this.x - _sphereCX;
+      const sdy = this.y - _sphereCY;
+      const sd2 = sdx * sdx + sdy * sdy;
+      if (sd2 < _sphereR2) {
+        const sd = Math.sqrt(sd2);
+        if (sd < 1) {
+          this.x = _sphereCX + _sphereR;
+          this.y = _sphereCY;
         } else {
           const nx = sdx / sd;
           const ny = sdy / sd;
-          this.x = scx + nx * sr;
-          this.y = scy + ny * sr;
-          // If velocity was pointing into the sphere, flip it out
+          this.x = _sphereCX + nx * _sphereR;
+          this.y = _sphereCY + ny * _sphereR;
           if (this.vx * nx + this.vy * ny < 0) {
             this.vx = nx * 0.22;
             this.vy = ny * 0.22;
