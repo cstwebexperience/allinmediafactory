@@ -43,6 +43,7 @@
             sizeCanvas(this);
             ctx.drawImage(this, 0, 0);
             currentFrame = 0;
+            if (window._loaderAssetDone) window._loaderAssetDone();
           }
         };
         img.src = 'frames/frame_' + pad(idx + 1) + '.webp';
@@ -202,6 +203,7 @@
           c.height = img.naturalHeight;
           c.getContext('2d').drawImage(img, 0, 0);
           offscreens[name] = { ctx: c.getContext('2d'), w: img.naturalWidth, h: img.naturalHeight };
+          if (window._loaderAssetDone) window._loaderAssetDone();
         };
         img.src = 'frag-' + name + '.png';
       });

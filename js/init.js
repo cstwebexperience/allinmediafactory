@@ -22,11 +22,19 @@ function detectLowPowerGpu() {
     if (r.includes('swiftshader') || r.includes('llvmpipe') || r.includes('software') || r.includes('basic render')) low = true;
     // Intel integrated graphics — HD Graphics, UHD Graphics, Iris (non-Pro)
     if (r.includes('intel') && (r.includes('hd graphics') || r.includes('uhd graphics') || (r.includes('iris') && !r.includes('iris pro')))) low = true;
-    // Older mobile GPUs that sometimes appear on cheap Chromebooks
+    // Older mobile GPUs
     if (r.includes('mali-')) low = true;
     if (/adreno \(?\d{2,3}\)?$/.test(r)) low = true; // Adreno 3xx/4xx etc.
-    // No debug info available + only 1 logical CPU = also treat as low
+    // AMD/ATI integrated
+    if (r.includes('radeon') && (r.includes('vega') || r.includes('r5') || r.includes('r4') || r.includes('r3'))) low = true;
+    // Apple GPU on older devices (A9/A10)
+    if (r.includes('apple gpu') && (navigator.hardwareConcurrency || 4) <= 2) low = true;
+    // PowerVR (older iPhones, cheap Android)
+    if (r.includes('powervr')) low = true;
+    // No debug info available + only 1-2 logical CPUs = also treat as low
     if (!renderer && (navigator.hardwareConcurrency || 4) <= 2) low = true;
+    // Very low memory device (< 4GB RAM if available)
+    if (navigator.deviceMemory && navigator.deviceMemory < 4) low = true;
     return { low, renderer: renderer || '(unknown)' };
   } catch (e) {
     return { low: false, renderer: '(error)' };
@@ -81,26 +89,38 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
   const fill     = document.getElementById('loader-bar-fill');
   const pctEl    = document.getElementById('loader-percent');
 
-  const DURATION = 3200;   // total time for 0 → 100
-  const startTime = performance.now();
+  // Track real asset loading progress instead of fake timer.
+  // We count: 5 fragment PNGs + first scroll-scrub frame + 2 Three.js textures = 8 assets
+  const TOTAL_ASSETS = 8;
+  let loadedAssets = 0;
   let finished = false;
 
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
+  // Global hook for other scripts to report asset loads
+  window._loaderAssetDone = function () {
+    loadedAssets = Math.min(TOTAL_ASSETS, loadedAssets + 1);
+  };
+
+  const startTime = performance.now();
+
   function tickFrame(now) {
     if (finished) return;
     const elapsed = now - startTime;
-    const t = Math.min(1, elapsed / DURATION);
-    const v = easeOutCubic(t) * 100;
+    // Blend between time-based progress and real asset progress.
+    // Time provides smooth animation, assets prevent finishing early.
+    const timeProg = Math.min(1, elapsed / 4000);
+    const assetProg = loadedAssets / TOTAL_ASSETS;
+    // Can't go past 95% until all assets loaded, prevents premature reveal
+    const v = easeOutCubic(timeProg) * (assetProg >= 1 ? 100 : Math.min(95, assetProg * 100 + timeProg * 30));
     fill.style.width = v + '%';
     pctEl.textContent = Math.floor(v) + '%';
-    if (t < 1) {
-      requestAnimationFrame(tickFrame);
-    } else {
+    if (assetProg >= 1 && timeProg > 0.5) {
       pctEl.textContent = '100%';
       fill.style.width = '100%';
-      // Brief hold at 100 so the user registers the end state, then exit
-      setTimeout(complete, 260);
+      setTimeout(complete, 200);
+    } else {
+      requestAnimationFrame(tickFrame);
     }
   }
   requestAnimationFrame(tickFrame);

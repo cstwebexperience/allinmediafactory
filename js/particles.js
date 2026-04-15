@@ -1,6 +1,6 @@
 (function () {
   const canvas = document.createElement('canvas');
-  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;';
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;will-change:transform;transform:translateZ(0);';
   document.body.appendChild(canvas);
 
   const ctx = canvas.getContext('2d', { desynchronized: true });

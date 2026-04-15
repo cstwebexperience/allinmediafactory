@@ -28,7 +28,7 @@ const canvas   = document.getElementById('hero-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: LOW_POWER ? 'low-power' : 'high-performance' });
 // Pixel ratio: 1.5 on weak GPUs vs 2 on strong ones — sharper than 1.25
 // but still ~2x cheaper than full DPR. Visually almost indistinguishable.
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, LOW_POWER ? 1.5 : 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, LOW_POWER ? 1 : 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.85;
@@ -75,6 +75,7 @@ new RGBELoader().load(
     mat.envMap = env;
     mat.needsUpdate = true;
     hdr.dispose();
+    if (window._loaderAssetDone) window._loaderAssetDone();
   }
 );
 
@@ -269,7 +270,7 @@ function tick() {
   //    already ~4x smaller, so this combo is about 12x cheaper than
   //    the desktop path. The sphere still breathes and reacts to
   //    the cursor, just at a slightly lower cadence no one notices.
-  const skipDeform = LOW_POWER && (frameCounter % 3 !== 0);
+  const skipDeform = LOW_POWER && (frameCounter % 4 !== 0);
   if (!skipDeform) {
     const pos = geo.attributes.position.array;
     const deformMult = 1 + pIntensity * 0.3;

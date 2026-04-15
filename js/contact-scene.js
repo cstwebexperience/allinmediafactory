@@ -11,7 +11,7 @@ const C_LOW_POWER = (C_IS_MOBILE && C_HW < 6) || C_HW <= 4 || !!window._lowPower
 const contactArea  = document.getElementById('contact');
 const cCanvas      = document.getElementById('contact-canvas');
 const renderer2    = new THREE.WebGLRenderer({ canvas: cCanvas, antialias: true, powerPreference: C_LOW_POWER ? 'low-power' : 'high-performance' });
-renderer2.setPixelRatio(Math.min(window.devicePixelRatio, C_LOW_POWER ? 1.5 : 2));
+renderer2.setPixelRatio(Math.min(window.devicePixelRatio, C_LOW_POWER ? 1 : 2));
 renderer2.setSize(window.innerWidth, window.innerHeight);
 
 const scene2  = new THREE.Scene();
@@ -63,6 +63,7 @@ loader.load('clipboard-t.png', (tex) => {
   );
   clipMesh.position.set(clipStart.x, clipStart.y, 0);
   scene2.add(clipMesh);
+  if (window._loaderAssetDone) window._loaderAssetDone();
 });
 
 loader.load('whatsapp-t.png', (tex) => {
@@ -75,6 +76,7 @@ loader.load('whatsapp-t.png', (tex) => {
   );
   waMesh.position.set(waStart.x, waStart.y, 0.2);
   scene2.add(waMesh);
+  if (window._loaderAssetDone) window._loaderAssetDone();
 });
 
 

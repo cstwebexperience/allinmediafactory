@@ -55,7 +55,7 @@
   // keep the main thread free for the Three.js render loops.
   let rafPending = false;
   let blurFrameSkip = 0;
-  const BLUR_SKIP = window._lowPowerGpu ? 2 : 1;
+  const BLUR_SKIP = window._lowPowerGpu ? 3 : 1;
   function onScroll() {
     if (rafPending) return;
     rafPending = true;
