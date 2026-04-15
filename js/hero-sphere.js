@@ -172,7 +172,9 @@ function readScrollP() {
   // Always use window.scrollY on mobile — Lenis has smoothTouch:false
   // so _lenis.scroll doesn't update on touch scroll, causing scrollP
   // to get stuck and the sphere to stay at its last scrolled position.
-  const sy = (IS_MOBILE || !window._lenis) ? window.scrollY : window._lenis.scroll;
+  // Use window.scrollY when Lenis smoothWheel is off (mobile touch OR
+  // low-power desktop) — _lenis.scroll doesn't update without smoothing.
+  const sy = (IS_MOBILE || LOW_POWER || !window._lenis) ? window.scrollY : window._lenis.scroll;
   scrollP = Math.min(Math.max(sy / _scrollPHeight, 0), 1);
   if (window.ScrollTrigger) window.ScrollTrigger.update();
 }
