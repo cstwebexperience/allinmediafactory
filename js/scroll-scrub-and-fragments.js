@@ -157,6 +157,14 @@
               servicii.classList.remove('revealed');
             }
           },
+          onLeaveBack: () => {
+            fragsCanvas.style.opacity = 0;
+            stage.style.opacity = 1;
+            stage.style.visibility = 'visible';
+            servicii.classList.remove('revealed');
+            servicii.style.background = 'transparent';
+            drawFrame(0);
+          },
         });
       }
     };
@@ -432,6 +440,7 @@
         // reach it directly.
         if (!_isMobilePane()) {
           document.body.style.overflow = 'hidden';
+          document.documentElement.style.overflow = 'hidden';
           window._lenis?.stop();
         } else {
           // On mobile, prevent body from scrolling in the background
@@ -539,6 +548,7 @@
             overlay.classList.remove('open');
             overlay.classList.add('closing');
             document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
             window._lenis?.start();
 
             later(() => {

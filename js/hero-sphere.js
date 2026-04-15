@@ -173,6 +173,7 @@ function readScrollP() {
   // to get stuck and the sphere to stay at its last scrolled position.
   const sy = (IS_MOBILE || !window._lenis) ? window.scrollY : window._lenis.scroll;
   scrollP = Math.min(Math.max(sy / _scrollPHeight, 0), 1);
+  if (window.ScrollTrigger) window.ScrollTrigger.update();
 }
 if (window._lenis) window._lenis.on('scroll', readScrollP);
 window.addEventListener('scroll', readScrollP, { passive: true });
