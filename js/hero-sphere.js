@@ -270,33 +270,32 @@ function tick() {
   //    already ~4x smaller, so this combo is about 12x cheaper than
   //    the desktop path. The sphere still breathes and reacts to
   //    the cursor, just at a slightly lower cadence no one notices.
-  const skipDeform = LOW_POWER && (frameCounter % 4 !== 0);
-  if (!skipDeform) {
+  // Deform runs EVERY frame (even LOW_POWER) for smooth interactivity.
+  // LOW_POWER uses simplified noise (1 snoise instead of 2) + already
+  // has 4x fewer vertices (SPHERE_DETAIL 4 vs 6), so cost is ~8x less.
+  {
     const pos = geo.attributes.position.array;
     const normals = geo.attributes.normal.array;
     const deformMult = 1 + pIntensity * 0.3;
     const speed = 0.25;
-    // Hoist constants out of per-vertex loop
     const breath = Math.sin(t*0.5)*0.02 + Math.sin(t*1.1)*0.01;
     const tSpeed = t * speed;
-    const tSpeedHalf = tSpeed * 0.5;
     const tSpeed08 = tSpeed * 0.8;
     const mouseAbs = (Math.abs(smx)+Math.abs(smy)) * 0.08;
     const smx08 = smx * 0.8, smy08 = smy * 0.8;
-    // Single combined loop — deform + normals in one pass
     for (let i = 0; i < pos.length; i += 3) {
       const bx=basePos[i], by=basePos[i+1], bz=basePos[i+2];
       const len=Math.sqrt(bx*bx+by*by+bz*bz);
       const invLen = 1 / len;
       const nx=bx*invLen, ny=by*invLen, nz=bz*invLen;
       const n1 = snoise(nx*1.2+tSpeed, ny*1.2+tSpeed08, nz*1.2)*0.08*deformMult;
-      const n2 = snoise(nx*2.5+tSpeedHalf, ny*2.5-tSpeed*0.4, nz*2.5)*0.03*deformMult;
+      // Second noise layer only on capable GPUs (doubles snoise cost)
+      const n2 = LOW_POWER ? 0 : snoise(nx*2.5+tSpeed*0.5, ny*2.5-tSpeed*0.4, nz*2.5)*0.03*deformMult;
       const mdx=nx-smx08, mdy=ny-smy08;
       const mouseBulge = Math.max(0,1-Math.sqrt(mdx*mdx+mdy*mdy)*1.2)*mouseAbs;
       const scale = 1 + breath + n1 + n2 + (nx*smx+ny*smy)*0.1 + mouseBulge;
       const px=nx*len*scale, py=ny*len*scale, pz=nz*len*scale;
       pos[i]=px; pos[i+1]=py; pos[i+2]=pz;
-      // Normals in same loop — avoids second pass + second sqrt
       const nl = 1 / Math.sqrt(px*px+py*py+pz*pz);
       normals[i]=px*nl; normals[i+1]=py*nl; normals[i+2]=pz*nl;
     }
