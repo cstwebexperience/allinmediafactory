@@ -49,7 +49,7 @@
     .hero-title-block {
       position: absolute;
       z-index: 2;
-      bottom: 22%;
+      bottom: 10%;
       width: 100%;
       text-align: center;
       pointer-events: none;
