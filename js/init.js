@@ -179,10 +179,12 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
 window._heroVisible = true;
 window._contactVisible = true;
 (function () {
-  const heroEl = document.getElementById('hero');
-  if (heroEl) {
+  // Observe scroll-container (not .hero) because .hero is position:fixed
+  // inside a will-change parent — iOS Safari IO doesn't reliably track it.
+  const heroContainer = document.getElementById('hero-scroll-container');
+  if (heroContainer) {
     new IntersectionObserver(([e]) => { window._heroVisible = e.isIntersecting; }, { threshold: 0 })
-      .observe(heroEl);
+      .observe(heroContainer);
   }
   const contactStageEl = document.getElementById('contact-stage');
   if (contactStageEl) {
