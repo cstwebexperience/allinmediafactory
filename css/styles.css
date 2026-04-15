@@ -400,12 +400,13 @@
       background: rgba(180, 130, 255, 0.85);
     }
 
-    /* Videoclipuri Premium pane: wider, no-scroll, compact dark vibe */
+    /* Videoclipuri Premium pane: wider, scrollable on small screens */
     .pane-content-vp {
       max-width: 1180px !important;
       width: 94vw !important;
-      max-height: 100vh;
-      overflow: hidden;
+      max-height: 90vh;
+      overflow-y: auto;
+      overflow-x: hidden;
       padding: clamp(1rem, 2.5vh, 2rem) 1.5rem clamp(1rem, 2.5vh, 2rem);
       gap: clamp(0.6rem, 1.5vh, 1.2rem);
     }
