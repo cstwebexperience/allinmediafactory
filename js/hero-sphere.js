@@ -244,8 +244,8 @@ function tick() {
   frameCounter++;
   const t = clock.getElapsedTime();
 
-  smx += (mx - smx) * 0.03;
-  smy += (my - smy) * 0.03;
+  smx += (mx - smx) * (LOW_POWER ? 0.12 : 0.03);
+  smy += (my - smy) * (LOW_POWER ? 0.12 : 0.03);
 
   // Camera base z is 5 on desktop, 8.5 on mobile (sphere reads
   // smaller in the portrait viewport). The scroll-driven pZoom
