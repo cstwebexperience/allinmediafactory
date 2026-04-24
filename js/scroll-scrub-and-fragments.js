@@ -168,44 +168,57 @@
           },
         });
 
-        // Auto-play: when container top pins to viewport, take over scroll.
-        // window.scrollTo fires the native scroll event so ScrollTrigger
-        // updates frames normally — no manual ScrollTrigger.update() needed.
+        // Auto-play: GSAP drives lenis.scrollTo(y, {immediate}) on each tick
+        // so Lenis fires its own 'scroll' event → ScrollTrigger updates frames.
+        // wheel/touch blocked via capture+stopPropagation so Lenis never gets
+        // user delta during the ride.
         const _ac = document.getElementById('scroll-scrub-container');
         let _ap = false;
-        const _bs = e => e.preventDefault();
 
         function _play() {
-          window._lenis?.stop();
+          const _bs = e => { e.preventDefault(); e.stopPropagation(); };
           window.addEventListener('wheel',     _bs, { passive: false, capture: true });
           window.addEventListener('touchmove', _bs, { passive: false, capture: true });
 
-          const s = window.scrollY;
-          const e = _ac.offsetTop + _ac.offsetHeight - window.innerHeight;
+          // Kill any residual Lenis inertia at takeover point
+          const startY = window._lenis ? window._lenis.scroll : window.scrollY;
+          if (window._lenis) window._lenis.scrollTo(startY, { immediate: true });
+
+          const endY = _ac.offsetTop + _ac.offsetHeight - window.innerHeight;
           const o = { t: 0 };
+
+          function _release() {
+            window.removeEventListener('wheel',     _bs, { capture: true });
+            window.removeEventListener('touchmove', _bs, { capture: true });
+          }
 
           gsap.to(o, {
             t: 1, duration: 4, ease: 'none',
-            onUpdate() { window.scrollTo(0, s + (e - s) * o.t); },
+            onUpdate() {
+              const y = startY + (endY - startY) * o.t;
+              if (window._lenis) window._lenis.scrollTo(y, { immediate: true });
+              else { window.scrollTo(0, y); ScrollTrigger.update(); }
+            },
             onComplete() {
-              window.scrollTo(0, e);
-              window.removeEventListener('wheel',     _bs, { capture: true });
-              window.removeEventListener('touchmove', _bs, { capture: true });
-              window._lenis?.scrollTo(e, { immediate: true });
-              window._lenis?.start();
+              if (window._lenis) window._lenis.scrollTo(endY, { immediate: true });
+              else window.scrollTo(0, endY);
+              _release();
             },
           });
         }
 
+        // Trigger via Lenis events (not native scroll — ST is driven by Lenis)
         const _aw = () => {
-          if (_ap) { window.removeEventListener('scroll', _aw); return; }
+          if (_ap) return;
           if (_ac.getBoundingClientRect().top <= 1) {
             _ap = true;
-            window.removeEventListener('scroll', _aw);
+            if (window._lenis) window._lenis.off('scroll', _aw);
+            else window.removeEventListener('scroll', _aw);
             _play();
           }
         };
-        window.addEventListener('scroll', _aw, { passive: true });
+        if (window._lenis) window._lenis.on('scroll', _aw);
+        else window.addEventListener('scroll', _aw, { passive: true });
       }
     };
 
