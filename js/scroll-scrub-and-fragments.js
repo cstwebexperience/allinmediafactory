@@ -168,57 +168,6 @@
           },
         });
 
-        // Auto-play: GSAP drives lenis.scrollTo(y, {immediate}) on each tick
-        // so Lenis fires its own 'scroll' event → ScrollTrigger updates frames.
-        // wheel/touch blocked via capture+stopPropagation so Lenis never gets
-        // user delta during the ride.
-        const _ac = document.getElementById('scroll-scrub-container');
-        let _ap = false;
-
-        function _play() {
-          const _bs = e => { e.preventDefault(); e.stopPropagation(); };
-          window.addEventListener('wheel',     _bs, { passive: false, capture: true });
-          window.addEventListener('touchmove', _bs, { passive: false, capture: true });
-
-          // Kill any residual Lenis inertia at takeover point
-          const startY = window._lenis ? window._lenis.scroll : window.scrollY;
-          if (window._lenis) window._lenis.scrollTo(startY, { immediate: true });
-
-          const endY = _ac.offsetTop + _ac.offsetHeight - window.innerHeight;
-          const o = { t: 0 };
-
-          function _release() {
-            window.removeEventListener('wheel',     _bs, { capture: true });
-            window.removeEventListener('touchmove', _bs, { capture: true });
-          }
-
-          gsap.to(o, {
-            t: 1, duration: 4, ease: 'none',
-            onUpdate() {
-              const y = startY + (endY - startY) * o.t;
-              if (window._lenis) window._lenis.scrollTo(y, { immediate: true });
-              else { window.scrollTo(0, y); ScrollTrigger.update(); }
-            },
-            onComplete() {
-              if (window._lenis) window._lenis.scrollTo(endY, { immediate: true });
-              else window.scrollTo(0, endY);
-              _release();
-            },
-          });
-        }
-
-        // Trigger via Lenis events (not native scroll — ST is driven by Lenis)
-        const _aw = () => {
-          if (_ap) return;
-          if (_ac.getBoundingClientRect().top <= 1) {
-            _ap = true;
-            if (window._lenis) window._lenis.off('scroll', _aw);
-            else window.removeEventListener('scroll', _aw);
-            _play();
-          }
-        };
-        if (window._lenis) window._lenis.on('scroll', _aw);
-        else window.addEventListener('scroll', _aw, { passive: true });
       }
     };
 
