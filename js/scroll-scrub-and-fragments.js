@@ -654,6 +654,23 @@
         if (e.key === 'Escape' && isOpen) closeService();
       });
 
+      // Wheel scroll inside overlay — Lenis is stopped while overlay is open
+      // and intercepts wheel events even when stopped (calls preventDefault).
+      // This listener runs first (overlay < window in bubble order) and
+      // manually scrolls the active pane content.
+      overlay.addEventListener('wheel', e => {
+        if (!isOpen || !currentPane) return;
+        const content = currentPane.querySelector('.pane-content-vp') ||
+                        currentPane.querySelector('.pane-content');
+        if (!content || content.scrollHeight <= content.clientHeight + 1) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const delta = e.deltaMode === 1 ? e.deltaY * 40
+                    : e.deltaMode === 2 ? e.deltaY * 200
+                    : e.deltaY;
+        content.scrollTop += delta;
+      }, { passive: false });
+
       // Generic drag-to-scroll wiring (works on any element with the
        // `data-drag-scroll` attribute or matching id list)
       function wireDragScroll(el) {
