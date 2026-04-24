@@ -3,47 +3,16 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#050507">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ALL IN MEDIA FACTORY — Agenție de Marketing & Media</title>
   <meta name="description"
     content="ALL IN MEDIA FACTORY — Agenție de top specializată în marketing digital, strategie media, branding și producție vizuală de impact.">
 
-  <!-- Favicon (inline SVG, no extra request) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23050507'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='DM Sans,sans-serif' font-size='28' font-weight='800' fill='%23a78bfa'%3EA%3C/text%3E%3C/svg%3E">
-
-  <!-- Open Graph / Twitter -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="ALL IN MEDIA FACTORY — Agenție de Marketing & Media">
-  <meta property="og:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări — agenția care îți pune brandul în lumina reflectoarelor.">
-  <meta property="og:image" content="masca-despicata.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ALL IN MEDIA FACTORY">
-  <meta name="twitter:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări.">
-  <meta name="twitter:image" content="masca-despicata.png">
-
-  <!-- DNS prefetch for external resources -->
-  <link rel="dns-prefetch" href="https://unpkg.com">
-  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-  <link rel="dns-prefetch" href="https://dl.polyhaven.org">
-
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <!-- Critical asset preloads — tell the browser to fetch the first
-       scroll-scrub frame + the 5 mask PNGs in parallel with the main
-       HTML/CSS/JS so they're ready the moment the scene initialises.
-       The rest of the 192 frames load lazily from the scroll-scrub
-       init routine. -->
-  <link rel="preload" as="image" href="frames/frame_0001.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="frag-ochi-stang.png">
-  <link rel="preload" as="image" href="frag-ochi-drept.png">
-  <link rel="preload" as="image" href="frag-nas.png">
-  <link rel="preload" as="image" href="frag-gura-stanga.png">
-  <link rel="preload" as="image" href="frag-gura-dreapta.png">
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@600;700;800;900&family=DM+Sans:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
     rel="stylesheet">
 
   <!-- Three.js import map -->
@@ -56,27 +25,1214 @@
   }
   </script>
 
-    <link rel="stylesheet" href="css/styles.css">
-
-  <!-- Schema.org structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "name": "ALL IN MEDIA FACTORY",
-    "description": "Agenție de marketing digital specializată în videoclipuri premium, Meta Ads, web design, SEO și automatizări business.",
-    "url": "https://allinmediafactory.com",
-    "telephone": "+40743391581",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "RO"
-    },
-    "sameAs": [
-      "https://wa.me/40743391581"
-    ],
-    "serviceType": ["Video Production", "Meta Ads", "Web Design", "SEO", "Business Automation"]
-  }
+  <!-- Tailwind CSS v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
   </script>
+
+  <style>
+    /* ── Base & Scroll ────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #050507;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ── Three.js Hero ─────────────────────────────────── */
+    .scroll-container {
+      height: 110vh;
+      position: relative;
+      will-change: filter, transform, opacity;
+    }
+
+    .hero {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #030305;
+      z-index: 1;
+      will-change: filter, transform, opacity;
+    }
+
+    #hero-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* Title block — bottom center */
+    .hero-title-block {
+      position: absolute;
+      z-index: 2;
+      bottom: 10%;
+      width: 100%;
+      text-align: center;
+      pointer-events: none;
+      user-select: none;
+      opacity: 0; /* loader reveal will set this to 1 */
+    }
+    .hero-title-block h1 {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: clamp(24px, 3.5vw, 50px);
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .hero-title-block .sub {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .scroll-hint span {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.15);
+    }
+    .scroll-hint i {
+      display: block;
+      width: 1px; height: 40px;
+      background: linear-gradient(rgba(255,255,255,0.15), transparent);
+    }
+
+    /* ── Service Overlay ────────────────────────────────── */
+    #service-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: #050507;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #service-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Blurred ghost fragment anchored to its screen corner */
+    #overlay-ghost {
+      position: absolute;
+      width: 120vw;
+      aspect-ratio: 16 / 9;
+      background-image: url('masca-despicata.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      filter: blur(10px) brightness(0.48);
+      opacity: 0;
+      transform: scale(0.12);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #service-overlay.open #overlay-ghost {
+      opacity: 0.82;
+      transform: scale(1);
+    }
+
+    #overlay-ghost.ghost-left-eye {
+      top: -5%; left: -5%; right: auto; bottom: auto;
+      transform-origin: 36% 28%;
+      clip-path: polygon(49.4% 24.6%, 48.6% 15.2%, 47.6% 7.4%, 45.1% 1.5%,
+        41.1% 0.3%, 37.6% 0.5%, 32.0% 3.3%,
+        26.7% 7.6%, 24.6% 14.4%, 23.8% 22.2%, 23.8% 29.5%,
+        24.3% 36.7%, 25.8% 45.3%, 27.3% 50.8%, 30.1% 53.4%,
+        33.6% 51.2%, 37.3% 50.2%, 41.1% 46.3%, 44.6% 40.7%,
+        46.7% 34.3%, 47.7% 28.7%);
+    }
+    #overlay-ghost.ghost-right-eye {
+      top: -5%; right: -5%; left: auto; bottom: auto;
+      transform-origin: 67% 25%;
+      clip-path: polygon(65.0% 0.9%, 62.2% 4.0%, 59.9% 9.6%,
+        58.4% 14.0%, 57.1% 20.0%, 56.2% 26.5%,
+        57.2% 32.7%, 58.7% 38.3%, 60.3% 43.1%,
+        63.1% 48.2%, 66.4% 50.8%, 69.6% 51.4%,
+        73.0% 50.6%, 74.1% 48.0%, 76.3% 40.5%,
+        76.6% 33.7%, 77.4% 26.7%, 78.9% 23.4%,
+        79.0% 16.0%, 77.0% 8.0%, 73.0% 3.0%, 69.0% 1.0%);
+    }
+    #overlay-ghost.ghost-nose {
+      top: -15%; left: -10%; right: auto; bottom: auto;
+      transform-origin: 52% 50%;
+      clip-path: polygon(51.4% 30.5%, 50.0% 32.3%, 47.4% 37.5%, 44.0% 45.1%,
+        42.0% 51.4%, 43.8% 56.2%, 45.4% 63.2%, 48.0% 70.5%,
+        51.9% 69.3%, 56.8% 68.5%, 61.3% 63.4%, 61.1% 56.8%,
+        60.2% 51.4%, 59.8% 48.4%, 58.7% 44.7%, 56.8% 40.7%,
+        55.9% 36.7%, 53.7% 31.5%);
+    }
+    #overlay-ghost.ghost-left-mouth {
+      bottom: -5%; left: -5%; right: auto; top: auto;
+      transform-origin: 38% 77%;
+      clip-path: polygon(24.9% 60.8%, 25.6% 57.2%, 28.8% 57.8%, 31.3% 56.6%,
+        34.2% 55.8%, 36.7% 57.4%, 38.9% 59.0%, 40.7% 61.8%,
+        42.7% 63.4%, 48.4% 75.7%, 49.7% 80.7%, 50.4% 87.1%,
+        50.8% 95.2%, 44.1% 97.2%, 39.8% 95.8%, 35.8% 91.6%,
+        32.9% 85.9%, 28.7% 82.9%, 26.4% 78.3%, 26.3% 71.3%,
+        25.1% 66.4%);
+    }
+    #overlay-ghost.ghost-right-mouth {
+      bottom: -5%; right: -5%; left: auto; top: auto;
+      transform-origin: 67% 76%;
+      clip-path: polygon(64.0% 62.6%, 61.6% 67.6%, 60.1% 70.9%, 58.6% 74.5%,
+        56.9% 80.3%, 55.9% 85.3%, 54.9% 90.8%, 55.1% 96.0%,
+        57.6% 97.8%, 61.6% 98.4%, 65.4% 94.8%, 69.6% 88.5%,
+        72.9% 80.9%, 75.8% 74.5%, 77.3% 69.5%, 78.2% 65.0%,
+        79.1% 59.2%, 79.3% 52.2%, 75.6% 49.8%, 74.0% 53.6%,
+        71.4% 54.6%, 68.1% 52.6%, 66.4% 54.2%, 65.1% 58.6%);
+    }
+
+    /* Close button */
+    #overlay-close {
+      position: fixed;
+      top: 2rem;
+      right: 2.5rem;
+      z-index: 210;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.35);
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      padding: 10px 0;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: color 0.2s ease,
+                  opacity 0.4s ease 0.35s,
+                  transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s;
+    }
+    #service-overlay.open #overlay-close {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #overlay-close:hover { color: rgba(255,255,255,0.9); }
+    #overlay-close .close-x {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    /* Service panes */
+    .service-pane {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .service-pane.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .pane-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 620px;
+      width: 80vw;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Shift content away from ghost corner so they don't overlap */
+    #pane-left-eye   .pane-content { margin-left: 30vw; margin-top: 20vh; }
+    #pane-right-eye  .pane-content { margin-right: 30vw; margin-top: 20vh; }
+    #pane-nose       .pane-content { margin-top: 28vh; }
+    #pane-left-mouth .pane-content { margin-left: 30vw; margin-bottom: 20vh; }
+    #pane-right-mouth .pane-content { margin-right: 30vw; margin-bottom: 20vh; }
+
+    /* Stagger base */
+    .content-stagger {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0.32s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.46s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.58s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.70s; }
+    #service-overlay.open .service-pane.active .content-stagger:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.80s; }
+
+    /* Typography inside panes */
+    .pane-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .pane-h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(38px, 6.5vw, 88px);
+      line-height: 0.90;
+      color: #fff;
+      text-align: center;
+      letter-spacing: -0.025em;
+      margin-bottom: 18px;
+    }
+    .pane-sub {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.2vw, 16px);
+      color: rgba(255,255,255,0.42);
+      text-align: center;
+      max-width: 460px;
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+
+    /* iPhone Carousel */
+    .iphone-carousel {
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 0 28px;
+      margin-bottom: 28px;
+      cursor: grab;
+      user-select: none;
+    }
+    .iphone-carousel::-webkit-scrollbar { display: none; }
+    .iphone-carousel.dragging { cursor: grabbing; }
+    .iphone-track {
+      display: flex;
+      gap: 24px;
+      width: max-content;
+      padding: 0 calc(50% - 282px);
+      align-items: center;
+    }
+    .iphone-mockup {
+      transform: rotate(var(--rot, 0deg));
+      filter: drop-shadow(0 36px 72px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(139,92,246,0.07));
+      flex-shrink: 0;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.35s ease;
+    }
+    .iphone-mockup:hover {
+      transform: rotate(var(--rot, 0deg)) translateY(-10px) scale(1.03);
+      filter: drop-shadow(0 50px 90px rgba(0,0,0,0.9)) drop-shadow(0 0 60px rgba(139,92,246,0.14));
+    }
+    .iphone-frame {
+      width: 155px;
+      aspect-ratio: 9 / 19.5;
+      background: linear-gradient(145deg, #2d2d33 0%, #1c1c20 100%);
+      border-radius: 42px;
+      padding: 14px 9px 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035),
+                  inset 2px 0 8px rgba(255,255,255,0.025);
+      position: relative;
+    }
+    /* Dynamic Island */
+    .iphone-frame::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 74px;
+      height: 22px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 3;
+    }
+    .iphone-screen {
+      width: 100%;
+      height: 100%;
+      background: #0a0a0f;
+      border-radius: 33px;
+      overflow: hidden;
+      position: relative;
+    }
+    .yt-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #111128 0%, #0a0a18 50%, #060610 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .yt-play-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .yt-play-icon::after {
+      content: '';
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 6px 0 6px 10px;
+      border-color: transparent transparent transparent rgba(255,255,255,0.5);
+      margin-left: 2px;
+    }
+    .yt-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 8.5px;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    /* Screenshot grid */
+    .screenshot-grid { width: 100%; }
+    .grid-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .grid-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .screenshot-card {
+      width: 180px;
+      height: 102px;
+      background: rgba(255,255,255,0.035);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.065);
+      position: relative;
+      overflow: hidden;
+    }
+    .screenshot-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.65) 100%);
+    }
+    .views-badge {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      z-index: 2;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 2px 9px;
+      border-radius: 20px;
+    }
+
+    /* Placeholder cards (other services) */
+    .placeholder-cards {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .placeholder-card {
+      width: 220px;
+      height: 130px;
+      background: rgba(255,255,255,0.025);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.055);
+    }
+
+    /* ── Nav link hover underline ─────────────────────── */
+    .nav-link {
+      position: relative;
+      transition: color .3s ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -4px;
+      width: 0; height: 1.5px;
+      background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+      transition: width .35s cubic-bezier(.4,0,.2,1);
+    }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link:hover { color: #c4b5fd; }
+
+    /* ── Mask Fragments ───────────────────────────────── */
+    .fragments-section {
+      position: relative;
+      z-index: 1; /* sit above sticky #stage on mobile GPU layers */
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+      background: #050505;
+      will-change: filter, transform, opacity;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* Start hidden – JS will reveal */
+      opacity: 0;
+      transform: scale(.92);
+      transition: opacity .8s cubic-bezier(.16, 1, .3, 1),
+        transform 1s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .fragments-section.revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Stage fade-out driven by JS */
+    #stage {
+      transition: opacity .3s ease, filter .3s ease;
+    }
+
+    .fragments-canvas {
+      position: relative;
+      width: min(90vw, 900px);
+      aspect-ratio: 16 / 9;
+    }
+
+    .mask-fragment {
+      position: absolute;
+      inset: 0;
+      background-image: url('masca-despicata.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      transition: filter .5s cubic-bezier(.4, 0, .2, 1),
+                  transform .65s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity .5s ease;
+      will-change: transform, filter, opacity;
+    }
+
+    /* Fragment flies toward its corner when clicked */
+    .mask-fragment.flying {
+      animation: none !important;
+      z-index: 50 !important;
+      pointer-events: none;
+      cursor: default;
+    }
+    #frag-left-eye.flying   { transform: translate(-60vw, -58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-right-eye.flying  { transform: translate( 60vw, -58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-nose.flying       { transform: translate(   0,  -62vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-left-mouth.flying { transform: translate(-60vw,  58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-right-mouth.flying{ transform: translate( 60vw,  58vh) scale(3.5) !important; opacity: 0 !important; }
+
+    /* White edge glow on hover */
+    .mask-fragment:hover {
+      z-index: 20 !important;
+      filter:
+        drop-shadow(0 0 2px  rgba(255,255,255,1.00))
+        drop-shadow(0 0 8px  rgba(255,255,255,1.00))
+        drop-shadow(0 0 22px rgba(255,255,255,0.80))
+        drop-shadow(0 0 55px rgba(255,255,255,0.50))
+        drop-shadow(0 0 90px rgba(255,255,255,0.25)) !important;
+    }
+
+    /* When a fragment is active (clicked) — violet glow */
+    .mask-fragment.active {
+      filter: drop-shadow(0 0 22px rgba(139, 92, 246, .7)) drop-shadow(0 0 50px rgba(139, 92, 246, .3)) !important;
+      z-index: 10;
+    }
+
+    /* Annotation lines (biology/HUD style) */
+    .ann-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      overflow: visible;
+    }
+    .ann-group {
+      opacity: 0.32;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ann-group.lit {
+      opacity: 1;
+    }
+    /* Animate in when section is revealed */
+    .fragments-section.revealed .ann-group {
+      animation: annFadeIn 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .fragments-section.revealed #ann-left-eye   { animation-delay: 0.1s; }
+    .fragments-section.revealed #ann-right-eye  { animation-delay: 0.25s; }
+    .fragments-section.revealed #ann-nose       { animation-delay: 0.4s; }
+    .fragments-section.revealed #ann-left-mouth { animation-delay: 0.55s; }
+    .fragments-section.revealed #ann-right-mouth{ animation-delay: 0.7s; }
+    @keyframes annFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 0.32; }
+    }
+    .fragments-section.revealed .ann-group.lit {
+      animation: none;
+      opacity: 1;
+    }
+
+    /* When any fragment is active, blur the rest */
+    .fragments-canvas.has-active .mask-fragment:not(.active) {
+      filter: blur(5px) brightness(.45);
+    }
+
+    .fragments-canvas.has-active .mask-fragment:not(.active):hover {
+      filter: blur(3px) brightness(.55) drop-shadow(0 0 12px rgba(139, 92, 246, .3));
+    }
+
+    /* Clip paths – calibrated manually on the image */
+    #frag-left-eye {
+      clip-path: polygon(49.4% 24.6%, 48.6% 15.2%, 47.6% 7.4%, 45.1% 1.5%,
+          41.1% 0.3%, 37.6% 0.5%, 32.0% 3.3%,
+          26.7% 7.6%, 24.6% 14.4%, 23.8% 22.2%, 23.8% 29.5%,
+          24.3% 36.7%, 25.8% 45.3%, 27.3% 50.8%, 30.1% 53.4%,
+          33.6% 51.2%, 37.3% 50.2%, 41.1% 46.3%, 44.6% 40.7%,
+          46.7% 34.3%, 47.7% 28.7%);
+      transform-origin: 36% 28%;
+    }
+
+    #frag-right-eye {
+      clip-path: polygon(65.0% 0.9%, 62.2% 4.0%, 59.9% 9.6%,
+          58.4% 14.0%, 57.1% 20.0%, 56.2% 26.5%,
+          57.2% 32.7%, 58.7% 38.3%, 60.3% 43.1%,
+          63.1% 48.2%, 66.4% 50.8%, 69.6% 51.4%,
+          73.0% 50.6%, 74.1% 48.0%, 76.3% 40.5%,
+          76.6% 33.7%, 77.4% 26.7%, 78.9% 23.4%,
+          79.0% 16.0%, 77.0% 8.0%, 73.0% 3.0%, 69.0% 1.0%);
+      transform-origin: 67% 28%;
+    }
+
+    #frag-nose {
+      clip-path: polygon(51.4% 30.5%, 50.0% 32.3%, 47.4% 37.5%, 44.0% 45.1%,
+          42.0% 51.4%, 43.8% 56.2%, 45.4% 63.2%, 48.0% 70.5%,
+          51.9% 69.3%, 56.8% 68.5%, 61.3% 63.4%, 61.1% 56.8%,
+          60.2% 51.4%, 59.8% 48.4%, 58.7% 44.7%, 56.8% 40.7%,
+          55.9% 36.7%, 53.7% 31.5%);
+      transform-origin: 52% 50%;
+    }
+
+    #frag-left-mouth {
+      clip-path: polygon(24.9% 60.8%, 25.6% 57.2%, 28.8% 57.8%, 31.3% 56.6%,
+          34.2% 55.8%, 36.7% 57.4%, 38.9% 59.0%, 40.7% 61.8%,
+          42.7% 63.4%, 48.4% 75.7%, 49.7% 80.7%, 50.4% 87.1%,
+          50.8% 95.2%, 44.1% 97.2%, 39.8% 95.8%, 35.8% 91.6%,
+          32.9% 85.9%, 28.7% 82.9%, 26.4% 78.3%, 26.3% 71.3%,
+          25.1% 66.4%);
+      transform-origin: 38% 76%;
+    }
+
+    #frag-right-mouth {
+      clip-path: polygon(64.0% 62.6%, 61.6% 67.6%, 60.1% 70.9%, 58.6% 74.5%,
+          56.9% 80.3%, 55.9% 85.3%, 54.9% 90.8%, 55.1% 96.0%,
+          57.6% 97.8%, 61.6% 98.4%, 65.4% 94.8%, 69.6% 88.5%,
+          72.9% 80.9%, 75.8% 74.5%, 77.3% 69.5%, 78.2% 65.0%,
+          79.1% 59.2%, 79.3% 52.2%, 75.6% 49.8%, 74.0% 53.6%,
+          71.4% 54.6%, 68.1% 52.6%, 66.4% 54.2%, 65.1% 58.6%);
+      transform-origin: 67% 74%;
+    }
+
+    /* Breathing animations – subtle, organic, independent per fragment.
+       Uses micro-drift (±1-2px), gentle scale, and soft opacity pulse.
+       Long durations (8-12s) for a calm, living feel. */
+    @keyframes breathe1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(-4px, -5px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(2px, -8px) scale(1.025);
+      }
+
+      75% {
+        transform: translate(-3px, -3px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(5px, -4px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(3px, -7px) scale(1.03);
+      }
+
+      75% {
+        transform: translate(4px, -2px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe3 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      30% {
+        transform: translate(2px, -6px) scale(1.025);
+      }
+
+      60% {
+        transform: translate(-2px, -4px) scale(1.015);
+      }
+
+      85% {
+        transform: translate(1px, -7px) scale(1.02);
+      }
+    }
+
+    @keyframes breathe4 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(-4px, 4px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(-6px, 2px) scale(1.025);
+      }
+
+      75% {
+        transform: translate(-2px, 5px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe5 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(4px, 3px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(6px, 1px) scale(1.03);
+      }
+
+      75% {
+        transform: translate(3px, 5px) scale(1.01);
+      }
+    }
+
+    /* No floating by default — start only after reveal completes (~1s transition) */
+    #frag-left-eye, #frag-right-eye, #frag-nose, #frag-left-mouth, #frag-right-mouth {
+      animation: none;
+    }
+
+    .fragments-section.revealed #frag-left-eye {
+      animation: breathe1 7s ease-in-out infinite 1.1s;
+    }
+    .fragments-section.revealed #frag-right-eye {
+      animation: breathe2 8s ease-in-out infinite 1.9s;
+    }
+    .fragments-section.revealed #frag-nose {
+      animation: breathe3 6.5s ease-in-out infinite 1.5s;
+    }
+    .fragments-section.revealed #frag-left-mouth {
+      animation: breathe4 8.5s ease-in-out infinite 2.6s;
+    }
+    .fragments-section.revealed #frag-right-mouth {
+      animation: breathe5 9s ease-in-out infinite 2.1s;
+    }
+
+    /* Service info panel */
+    .service-panel {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .4s ease, transform .4s ease;
+      z-index: 20;
+    }
+
+    .service-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .service-panel-inner {
+      background: rgba(10, 10, 10, .85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(139, 92, 246, .25);
+      border-radius: 16px;
+      padding: 20px 28px;
+      min-width: 220px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .5), 0 0 30px rgba(139, 92, 246, .1);
+    }
+
+
+    /* ── Scroll-Scrub Stage ────────────────────────────── */
+    #scroll-scrub-container {
+      position: relative;
+    }
+
+    #stage {
+      position: sticky;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #000;
+      will-change: filter, transform, opacity;
+    }
+
+    #stage canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── Entrance animations ──────────────────────────── */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-up {
+      animation: fadeSlideUp .9s cubic-bezier(.16, 1, .3, 1) forwards;
+      opacity: 0;
+    }
+
+    .delay-100 {
+      animation-delay: .1s;
+    }
+
+    .delay-200 {
+      animation-delay: .2s;
+    }
+
+    .delay-300 {
+      animation-delay: .3s;
+    }
+
+    .delay-400 {
+      animation-delay: .4s;
+    }
+
+    .delay-500 {
+      animation-delay: .5s;
+    }
+
+    .delay-600 {
+      animation-delay: .6s;
+    }
+
+    /* ── Mobile menu ──────────────────────────────────── */
+    .mobile-menu {
+      transform: translateY(-100%);
+      transition: transform .4s cubic-bezier(.4, 0, .2, 1), opacity .3s ease;
+      opacity: 0;
+    }
+
+    .mobile-menu.open {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ── Nav (absolute inside fixed hero) ──────────────── */
+    #hero-nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px clamp(24px, 5vw, 80px);
+      transition: background 0.3s ease, backdrop-filter 0.3s ease;
+    }
+
+    /* ── Contact Animation Section ──────────────────────── */
+    .contact-scroll-area {
+      height: 350vh;
+      position: relative;
+    }
+    #contact-stage {
+      position: sticky;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #030305;
+      will-change: filter, transform, opacity;
+    }
+    #contact-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    .contact-label {
+      position: absolute;
+      z-index: 5;
+      pointer-events: none;
+      user-select: none;
+      text-align: center;
+      transform: translateX(-50%);
+    }
+    #contact-clipLabel span {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(180,140,255,0.85); text-shadow: 0 0 12px rgba(120,60,220,0.5);
+    }
+    #contact-waLabel span {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(37,211,102,0.8); text-shadow: 0 0 10px rgba(37,211,102,0.4);
+    }
+    /* Contact form overlay */
+    .contact-form-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(3,3,5,0.92);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.5s;
+      backdrop-filter: blur(8px);
+    }
+    .contact-form-overlay.active { opacity: 1; pointer-events: all; }
+    .contact-form-box {
+      background: linear-gradient(145deg, rgba(18,14,30,0.95), rgba(8,6,16,0.98));
+      border: 1px solid rgba(160,140,220,0.12); border-radius: 20px;
+      padding: 44px 38px; max-width: 440px; width: 90%;
+      position: relative; overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .contact-form-box::before {
+      content: ''; position: absolute; inset: 0; border-radius: 20px;
+      background: linear-gradient(105deg, transparent 40%, rgba(200,180,255,0.04) 45%,
+        rgba(200,180,255,0.08) 50%, rgba(200,180,255,0.04) 55%, transparent 60%);
+      background-size: 300% 100%;
+      animation: cfshimmer 6s ease-in-out infinite; pointer-events: none;
+    }
+    @keyframes cfshimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .contact-form-box h2 {
+      font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: 24px;
+      letter-spacing: 0.25em; text-transform: uppercase; text-align: center;
+      margin-bottom: 28px;
+      background: linear-gradient(135deg, #b0b0c0, #fff, #9090a8, #fff, #b0b0c0);
+      background-size: 250% 100%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; animation: cftxt 5s ease infinite;
+    }
+    @keyframes cftxt { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+    .cf-close {
+      position: absolute; top: 16px; right: 20px; background: none; border: none;
+      color: rgba(255,255,255,0.3); font-size: 24px; cursor: pointer;
+      transition: color 0.3s; line-height: 1;
+    }
+    .cf-close:hover { color: rgba(255,255,255,0.7); }
+    .contact-form-box input,
+    .contact-form-box select,
+    .contact-form-box textarea {
+      display: block; width: 100%; background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(160,140,220,0.1);
+      border-bottom-color: rgba(160,140,220,0.2);
+      border-radius: 10px; padding: 13px 16px; color: #e8e4f0;
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      outline: none; margin-bottom: 14px;
+      transition: border-color 0.4s, box-shadow 0.4s;
+    }
+    .contact-form-box input::placeholder,
+    .contact-form-box textarea::placeholder { color: rgba(255,255,255,0.18); }
+    .contact-form-box input:focus,
+    .contact-form-box select:focus,
+    .contact-form-box textarea:focus {
+      border-color: rgba(160,140,220,0.35);
+      box-shadow: 0 0 20px rgba(120,80,200,0.08);
+    }
+    .contact-form-box select {
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.3)' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 16px center;
+    }
+    .contact-form-box select option { background: #0f0c1c; color: #fff; }
+    .contact-form-box textarea { resize: vertical; min-height: 70px; }
+    .cf-submit {
+      display: block; width: 100%; padding: 15px; border: none; border-radius: 10px;
+      font-family: 'DM Sans'; font-size: 13px; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; color: #fff;
+      background: linear-gradient(135deg, #4a1a8a, #7040c0, #4a1a8a);
+      background-size: 200% 100%; margin-top: 6px;
+      transition: transform 0.2s, box-shadow 0.3s, background-position 0.5s;
+    }
+    .cf-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(100,50,180,0.25); background-position: 100% 0; }
+    .cf-success { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.7); font-size: 15px; letter-spacing: 0.1em; }
+    .cf-success .cf-check { font-size: 52px; display: block; margin-bottom: 20px; color: rgba(37,211,102,0.7); }
+
+    /* ── Loading Screen ──────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0; z-index: 10000;
+      background: #030305;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0;
+      clip-path: circle(100% at 50% 50%);
+    }
+    #loader-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 2.5vw, 22px);
+      font-weight: 300;
+      letter-spacing: 0.6em;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.95), rgba(180,140,255,0.9), rgba(255,255,255,0.95), rgba(255,255,255,0.35));
+      background-size: 300% 100%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: loaderShimmer 2.8s ease-in-out infinite;
+    }
+    @keyframes loaderShimmer {
+      0%   { background-position: 100% 50%; }
+      100% { background-position: -100% 50%; }
+    }
+    #loader-bar-track {
+      width: clamp(180px, 28vw, 360px);
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    #loader-bar-fill {
+      position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+      background: linear-gradient(90deg, transparent, rgba(140,90,255,0.7), rgba(180,130,255,1));
+    }
+    #loader-percent {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; letter-spacing: 0.35em;
+      color: rgba(255,255,255,0.2);
+      margin-top: 14px;
+    }
+
+    /* ── Custom Cursor (hover-capable devices only) ────── */
+    @media (hover: hover) and (pointer: fine) {
+      * { cursor: none !important; }
+      #cursor-dot {
+        position: fixed; z-index: 9998;
+        top: 0; left: 0;
+        width: 6px; height: 6px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        transition: width 0.2s, height 0.2s, background 0.2s;
+        will-change: transform;
+      }
+      #cursor-ring {
+        position: fixed; z-index: 9997;
+        top: 0; left: 0;
+        width: 28px; height: 28px;
+        border: 1px solid rgba(255,255,255,0.35);
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: difference;
+        will-change: transform;
+        transition: width 0.25s cubic-bezier(0.16,1,0.3,1),
+                    height 0.25s cubic-bezier(0.16,1,0.3,1),
+                    border-color 0.25s;
+      }
+      body.cur-hover #cursor-dot {
+        width: 4px; height: 4px;
+        background: rgba(255,255,255,0.5);
+      }
+      body.cur-hover #cursor-ring {
+        width: 52px; height: 52px;
+        border-color: rgba(255,255,255,0.7);
+      }
+    }
+    /* Hide cursor elements on touch devices */
+    @media (hover: none) {
+      #cursor-dot, #cursor-ring { display: none !important; }
+    }
+
+    /* ── Section transition overlays ────────────────────── */
+    .section-fade-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 120px; pointer-events: none; z-index: 4;
+      background: linear-gradient(to bottom, #030305 0%, transparent 100%);
+    }
+    .section-fade-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 120px; pointer-events: none; z-index: 4;
+      background: linear-gradient(to top, #030305 0%, transparent 100%);
+    }
+
+    /* ── GSAP text reveal helpers ────────────────────────── */
+    .char { display: inline-block; overflow: hidden; }
+    .split-hidden .word, .split-hidden .char { opacity: 0; transform: translateY(60%); }
+
+    /* ── Form input animated focus ring ─────────────────── */
+    .contact-form-box input:focus,
+    .contact-form-box select:focus,
+    .contact-form-box textarea:focus {
+      border-color: rgba(140,100,240,0.5);
+      box-shadow: 0 0 0 3px rgba(120,70,220,0.08),
+                  0 0 28px rgba(120,70,220,0.15),
+                  inset 0 0 12px rgba(120,70,220,0.04);
+    }
+
+    /* ── Film Grain Overlay ──────────────────────────────── */
+    #film-grain {
+      position: fixed; inset: -50%; z-index: 9989;
+      width: 200%; height: 200%;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grainDrift 0.8s steps(2) infinite;
+    }
+    @keyframes grainDrift {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(-5%, -5%); }
+    }
+
+    /* ── Chromatic Aberration Scroll Overlay ──────────────── */
+    #ca-r, #ca-b {
+      position: fixed; inset: 0; z-index: 9988;
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    #ca-r {
+      background: linear-gradient(0deg,
+        rgba(255,30,30,0.2) 0%, rgba(255,30,30,0.03) 20%,
+        transparent 40%, transparent 60%,
+        rgba(255,30,30,0.03) 80%, rgba(255,30,30,0.2) 100%);
+      mix-blend-mode: screen;
+    }
+    #ca-b {
+      background: linear-gradient(0deg,
+        rgba(40,30,255,0.2) 0%, rgba(40,30,255,0.03) 20%,
+        transparent 40%, transparent 60%,
+        rgba(40,30,255,0.03) 80%, rgba(40,30,255,0.2) 100%);
+      mix-blend-mode: screen;
+    }
+
+    /* ── Section Displacement Transition ─────────────────── */
+    .section-displace {
+      position: absolute; left: 0; right: 0;
+      height: 200px; z-index: 5; pointer-events: none;
+      background: linear-gradient(to bottom,
+        transparent 0%, rgba(5,5,7,0.3) 30%,
+        rgba(5,5,7,0.8) 60%, #050507 100%);
+      filter: blur(1px);
+    }
+
+    /* ── prefers-reduced-motion ─────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      #cursor-dot, #cursor-ring { display: none !important; }
+      .section-fade-top, .section-fade-bottom { display: none; }
+      #film-grain, #ca-r, #ca-b { display: none !important; }
+      #loader { display: none !important; }
+      .hero-title-block { opacity: 1 !important; }
+    }
+  </style>
 
   <!-- Lenis Smooth Scroll -->
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
@@ -85,9 +1241,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <!-- SplitType -->
   <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
-  <!-- YouTube IFrame API — lazy-loaded when pane 01 is opened
-       to avoid blocking initial page load with an external script -->
-  <!-- <script src="https://www.youtube.com/iframe_api" async></script> -->
 </head>
 
 <body>
@@ -101,11 +1254,22 @@
     <div id="loader-percent">0%</div>
   </div>
 
+  <!-- Custom Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Film Grain Overlay -->
+  <div id="film-grain" aria-hidden="true"></div>
+  <!-- Chromatic Aberration Scroll Overlays -->
+  <div id="ca-r" aria-hidden="true"></div>
+  <div id="ca-b" aria-hidden="true"></div>
+
   <!-- HERO SECTION: Three.js metallic sphere -->
   <div class="scroll-container" id="hero-scroll-container">
     <section class="hero" id="hero">
       <canvas id="hero-canvas"></canvas>
 
+      <!-- Navigation -->
       <!-- Title -->
       <div class="hero-title-block" id="hero-title-block">
         <h1>All In Media</h1>
@@ -118,36 +1282,41 @@
 
 
 
-  <!-- SCROLL SCRUB SECTION (now also hosts #servicii so the mask
-       fragments can sticky-overlay the last frame seamlessly) -->
-  <div id="scroll-scrub-container" style="height: 600vh;">
+  <!-- SCROLL SCRUB SECTION -->
+  <div id="scroll-scrub-container" style="height: 500vh;">
+    <!-- SCROLL SCRUB ACTIVE ZONE – aici se va renderiza animația controlată prin scroll -->
     <div id="stage">
       <canvas id="c"></canvas>
     </div>
+  </div>
 
-    <!-- MASK FRAGMENTS — sticky overlay on top of #stage's last frame -->
-    <section id="servicii" class="fragments-section">
 
-      <!-- Eyebrow -->
-      <p class="servicii-eyebrow">SERVICII</p>
+  <!-- MASK FRAGMENTS INTERACTIVE SECTION -->
+  <section id="servicii" class="fragments-section">
 
-      <div class="fragments-canvas" id="fragments-canvas">
+    <!-- Eyebrow -->
+    <p
+      class="absolute top-12 left-1/2 -translate-x-1/2 text-xs font-medium tracking-[.35em] uppercase text-brand-400/50 z-20">
+      Alege un serviciu
+    </p>
 
-        <!-- 5 Mask Fragments — each backed by its own transparent PNG -->
-        <div class="mask-fragment" id="frag-left-eye" data-frag="ochi-stang" data-service="Videoclipuri Premium"
-          data-desc="Producție video cinematică, de la concept la livrare." data-panel-pos="left-top"></div>
+    <div class="fragments-canvas" id="fragments-canvas">
 
-        <div class="mask-fragment" id="frag-right-eye" data-frag="ochi-drept" data-service="Meta ADS"
-          data-desc="Campanii Facebook & Instagram optimizate pentru ROI maxim." data-panel-pos="right-top"></div>
+      <!-- 5 Mask Fragments -->
+      <div class="mask-fragment" id="frag-left-eye" data-service="Videoclipuri Premium"
+        data-desc="Producție video cinematică, de la concept la livrare." data-panel-pos="left-top"></div>
 
-        <div class="mask-fragment" id="frag-nose" data-frag="nas" data-service="Web Design + Site-uri"
-          data-desc="Website-uri premium, rapide și optimizate pentru conversie." data-panel-pos="center"></div>
+      <div class="mask-fragment" id="frag-right-eye" data-service="Meta ADS"
+        data-desc="Campanii Facebook & Instagram optimizate pentru ROI maxim." data-panel-pos="right-top"></div>
 
-        <div class="mask-fragment" id="frag-left-mouth" data-frag="gura-stanga" data-service="SEO + Google"
-          data-desc="Optimizare organică și campanii Google Ads cu impact." data-panel-pos="left-bottom"></div>
+      <div class="mask-fragment" id="frag-nose" data-service="Web Design + Site-uri"
+        data-desc="Website-uri premium, rapide și optimizate pentru conversie." data-panel-pos="center"></div>
 
-        <div class="mask-fragment" id="frag-right-mouth" data-frag="gura-dreapta" data-service="Automatizări Business"
-          data-desc="Fluxuri automate care economisesc timp și cresc profitul." data-panel-pos="right-bottom"></div>
+      <div class="mask-fragment" id="frag-left-mouth" data-service="SEO + Google"
+        data-desc="Optimizare organică și campanii Google Ads cu impact." data-panel-pos="left-bottom"></div>
+
+      <div class="mask-fragment" id="frag-right-mouth" data-service="Automatizări Business"
+        data-desc="Fluxuri automate care economisesc timp și cresc profitul." data-panel-pos="right-bottom"></div>
 
       <!-- Annotation lines — viewBox 0 0 100 56.25 (16:9) -->
       <svg class="ann-svg" viewBox="0 0 100 56.25" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -201,9 +1370,10 @@
         </g>
       </svg>
 
-      </div>
-    </section>
-  </div><!-- /#scroll-scrub-container -->
+    </div>
+    <!-- Section fade-out at bottom of fragments → contact -->
+    <div class="section-fade-bottom" style="height:180px; z-index:6;"></div>
+  </section>
 
 
   <!-- ═══════════════════════════════════════════════════
@@ -211,8 +1381,7 @@
        ═══════════════════════════════════════════════════ -->
   <div id="service-overlay" aria-modal="true" role="dialog" aria-label="Detalii serviciu">
 
-    <!-- Blurred ghost fragment anchored to its on-screen corner.
-         The corner + image is set via JS by adding .ghost-<name>. -->
+    <!-- Blurred ghost fragment (position class set by JS) -->
     <div id="overlay-ghost"></div>
 
     <!-- Close -->
@@ -223,218 +1392,92 @@
 
     <!-- ── 01 Videoclipuri Premium ── -->
     <div class="service-pane" id="pane-left-eye">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">01 — VIDEOCLIPURI PREMIUM</span>
-        <h2 class="content-stagger pane-h2 panel-title">Editare care opreşte<br>thumb-ul.</h2>
-        <h3 class="content-stagger panel-subtitle">Conţinut. Pur.</h3>
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">01 — Videoclipuri Premium</p>
 
-        <!-- 3 Shorts thumbnails in iPhone mockups. We use static <img>
-             previews instead of <iframe> embeds because YouTube's
-             cross-origin iframe swallows click events unevenly across
-             its surface, which made the middle phone unclickable.
-             The real autoplay iframe lives inside #phone-zoom-overlay,
-             which is opened by clicking any thumbnail. -->
+        <!-- iPhone mockup carousel -->
         <div class="content-stagger iphone-carousel" id="iphone-carousel">
           <div class="iphone-track">
-            <div class="iphone-mockup" data-yt-id="6QoeHnucqUs">
+            <div class="iphone-mockup" style="--rot:-5deg">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/6QoeHnucqUs/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #1</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="iphone-mockup" data-yt-id="hW5BLJl37Qs">
+            <div class="iphone-mockup" style="--rot:0deg">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/hW5BLJl37Qs/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #2</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="iphone-mockup" data-yt-id="9EshKr4zksI">
+            <div class="iphone-mockup" style="--rot:5deg">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/9EshKr4zksI/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #3</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Real result screenshots -->
-        <div class="content-stagger results-section">
-          <span class="results-label">REZULTATELE NOASTRE</span>
-          <div class="results-grid">
-            <div class="result-card">
-              <img src="assets/rezultat-1.png" alt="Rezultat campanie video 1" loading="lazy" />
+        <!-- Screenshot grid -->
+        <div class="content-stagger screenshot-grid">
+          <p class="grid-eyebrow">Rezultatele noastre</p>
+          <div class="grid-row">
+            <div class="screenshot-card">
+              <div class="views-badge">2.4M views</div>
             </div>
-            <div class="result-card">
-              <img src="assets/rezultat-2.png" alt="Rezultat campanie video 2" loading="lazy" />
+            <div class="screenshot-card">
+              <div class="views-badge">1.8M views</div>
             </div>
-            <div class="result-card">
-              <img src="assets/rezultat-3.png" alt="Rezultat campanie video 3" loading="lazy" />
+            <div class="screenshot-card">
+              <div class="views-badge">3.1M views</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── 02 Performance Ads ── -->
+    <!-- ── 02 Meta ADS ── -->
     <div class="service-pane" id="pane-right-eye">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">02 — PERFORMANCE ADS</span>
-        <h2 class="content-stagger pane-h2 panel-title">Ieși pe profit<br>din prima lună.</h2>
-        <h3 class="content-stagger panel-subtitle">Profit. Brutal.</h3>
-
-        <!-- Two stat cards side by side -->
-        <div class="content-stagger stats-row">
-          <div class="stat-block">
-            <span class="stat-number"><span class="stat-digit">3</span><span class="stat-sep">-</span><span class="stat-digit">5</span></span>
-            <span class="stat-unit">lei / lead</span>
-            <p class="stat-desc">cost per lead — campanii Meta &amp; Google</p>
-          </div>
-          <div class="stat-block stat-block--highlight">
-            <span class="stat-number">0.05</span>
-            <span class="stat-unit">lei / interacțiune</span>
-            <p class="stat-desc">marcat „High Performing" de Meta Ads</p>
-          </div>
-        </div>
-
-        <!-- Meta Ads screenshot — inverted dark mode + GIVEAWAY row highlight -->
-        <div class="content-stagger meta-screenshot-wrapper">
-          <span class="screenshot-label">META ADS — DATE REALE · FEB–MAR 2026</span>
-          <div class="meta-screenshot-scroll" id="metaScroll">
-            <div class="meta-inner">
-              <img src="assets/meta-ads-results.jpg" alt="Meta Ads rezultate reale" draggable="false" />
-              <div class="row-highlight" style="top: 110px; height: 35px;"></div>
-            </div>
-          </div>
-          <p class="screenshot-hint">← trage pentru a vedea tot →</p>
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">02 — Meta ADS</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
         </div>
       </div>
     </div>
 
     <!-- ── 03 Web Design ── -->
     <div class="service-pane" id="pane-nose">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">03 — WEB DESIGN + SITE-URI</span>
-        <h2 class="content-stagger pane-h2 panel-title">Site-uri care<br>vând.</h2>
-        <h3 class="content-stagger panel-subtitle">Design. Hipnotic.</h3>
-
-        <!-- 2 site previews — clicking either opens the live site in a new tab -->
-        <div class="content-stagger sites-grid">
-          <a href="https://realestate1233.vercel.app/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Frealestate1233.vercel.app%2F?w=900&amp;h=600"
-                alt="RealEstate — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">realestate1233.vercel.app</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-          <a href="https://www.nordisk-grup.ro/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.nordisk-grup.ro%2F?w=900&amp;h=600"
-                alt="Nordisk Grup — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">nordisk-grup.ro</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-          <a href="https://leadhunt.tech/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fleadhunt.tech%2F?w=900&amp;h=600"
-                alt="LeadHunt — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">leadhunt.tech</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-        </div>
-
-        <!-- Portfolio CTA: small label + 2 buttons to full agency portfolios -->
-        <div class="content-stagger portfolio-cta">
-          <span class="portfolio-cta-label">Verifică portofoliu</span>
-          <div class="portfolio-cta-buttons">
-            <a href="https://www.agentieseo.net/web-design/" target="_blank" rel="noopener noreferrer" class="portfolio-btn">
-              agentieseo.net
-              <span class="portfolio-btn-arrow">→</span>
-            </a>
-            <a href="https://cstportfolio.xyz/portfolio" target="_blank" rel="noopener noreferrer" class="portfolio-btn">
-              cstportfolio.xyz
-              <span class="portfolio-btn-arrow">→</span>
-            </a>
-          </div>
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">03 — Web Design + Site-uri</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
         </div>
       </div>
     </div>
 
-    <!-- ── 04 SEO & Vizibilitate ── -->
+    <!-- ── 04 SEO + Google ── -->
     <div class="service-pane" id="pane-left-mouth">
       <div class="pane-content">
-        <span class="content-stagger pane-eyebrow panel-label">04 — SEO &amp; VIZIBILITATE</span>
-        <h2 class="content-stagger pane-h2 panel-title">Apari acolo unde<br>contează.</h2>
-        <!-- Single site card for agentieseo.net (same style as pane 03) -->
-        <div class="content-stagger single-site">
-          <a href="https://www.agentieseo.net/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.agentieseo.net%2F?w=900&amp;h=600"
-                alt="AgentieSEO — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">agentieseo.net</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-        </div>
-        <h3 class="content-stagger panel-subtitle">Trafic. Real.</h3>
-        <p class="content-stagger panel-description">Avem acces la advertoriale în <strong>Forbes</strong>, <strong>ProTV</strong>, <strong>Antena 3</strong>, <strong>Antena Stars</strong> și zeci de alte publicații premium. Un singur articol în locul potrivit face mai mult decât 6 luni de postări.</p>
-        <!-- Infinite horizontal marquee of Romanian news sites where
-             we can place client advertoriale. Items duplicated twice
-             for seamless loop (CSS translateX 0 → -50%). -->
-        <div class="content-stagger media-marquee">
-          <div class="media-marquee-track">
-            <span class="media-marquee-item">protv.ro</span>
-            <span class="media-marquee-item">stirileprotv.ro</span>
-            <span class="media-marquee-item">a1.ro</span>
-            <span class="media-marquee-item">observatornews.ro</span>
-            <span class="media-marquee-item">antena3.ro</span>
-            <span class="media-marquee-item">kanald.ro</span>
-            <span class="media-marquee-item">digi24.ro</span>
-            <span class="media-marquee-item">prosport.ro</span>
-            <span class="media-marquee-item">sport.ro</span>
-            <span class="media-marquee-item">adevarul.ro</span>
-            <span class="media-marquee-item">libertatea.ro</span>
-            <span class="media-marquee-item">gandul.ro</span>
-            <!-- Duplicate for seamless loop -->
-            <span class="media-marquee-item" aria-hidden="true">protv.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">stirileprotv.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">a1.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">observatornews.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">antena3.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">kanald.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">digi24.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">prosport.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">sport.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">adevarul.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">libertatea.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">gandul.ro</span>
-          </div>
+        <p class="content-stagger pane-eyebrow">04 — SEO + Google</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
         </div>
       </div>
     </div>
@@ -442,11 +1485,11 @@
     <!-- ── 05 Automatizări Business ── -->
     <div class="service-pane" id="pane-right-mouth">
       <div class="pane-content">
-        <span class="content-stagger pane-eyebrow panel-label">05 — AUTOMATIZĂRI BUSINESS</span>
-        <h2 class="content-stagger pane-h2 panel-title">Sisteme care<br>lucrează pentru tine.</h2>
-        <h3 class="content-stagger panel-subtitle">Procese. Smart.</h3>
-        <p class="content-stagger panel-description">Conectăm <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>, <strong>CRM</strong> și <strong>Google Sheets</strong> într-un singur sistem care lucrează 24/7. Un lead venit la 3 dimineața primește răspuns în <strong>30 de secunde</strong> — fără să miști un deget.</p>
-        <p class="content-stagger panel-description">Plus <strong>agent vocal AI</strong> care sună leadurile, răspunde la apeluri, califică clienții și transferă doar întâlnirile serioase în calendarul tău. Conversație naturală, voce umană, 24/7 — ca și cum ai avea un call center fără să plătești unul.</p>
+        <p class="content-stagger pane-eyebrow">05 — Automatizări Business</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
+        </div>
       </div>
     </div>
 
@@ -455,30 +1498,12 @@
   <!-- CONTACT ANIMATION SECTION -->
   <div id="contact" class="contact-scroll-area">
     <div id="contact-stage">
+      <!-- Section fade-in at top of contact → from fragments -->
+      <div class="section-fade-top" style="height:180px; z-index:6;"></div>
       <canvas id="contact-canvas"></canvas>
       <div class="contact-label" id="contact-clipLabel"><span>Click pentru a ne contacta</span></div>
       <div class="contact-label" id="contact-waLabel"><span>WhatsApp</span></div>
     </div>
-  </div>
-
-  <!-- Phone zoom overlay — opened by clicking any iPhone mockup in pane 01 -->
-  <div id="phone-zoom-overlay" aria-hidden="true">
-    <button class="zoom-close" id="phoneZoomClose" aria-label="Închide">&times;</button>
-    <div class="zoom-phone">
-      <div class="iphone-frame zoom-iphone-frame">
-        <div class="iphone-screen">
-          <iframe id="zoom-iframe" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Image lightbox — opened by clicking any result screenshot -->
-  <div id="image-lightbox" aria-hidden="true">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Închide">&times;</button>
-    <img id="lightbox-img" src="" alt="" />
   </div>
 
   <!-- Contact form overlay -->
@@ -505,23 +1530,1164 @@
     </div>
   </div>
 
+  <!-- Loop sentinel -->
+  <div id="loop-sentinel" style="height:1px;"></div>
 
 
-  <!-- SCRIPTS -->
-  <script src="js/scroll-scrub-and-fragments.js"></script>
+  <!-- ═══════════════════════════════════════════════════
+       SCRIPTS
+       ═══════════════════════════════════════════════════ -->
+  <script>
 
 
-<script type="module" src="js/hero-sphere.js"></script>
+    // ── Scroll-Scrub Frame Animation ─────────────────────
+    (function () {
+      const TOTAL_FRAMES = 576;
+      const canvas = document.getElementById('c');
+      const ctx = canvas.getContext('2d');
+      const container = document.getElementById('scroll-scrub-container');
+      const images = new Array(TOTAL_FRAMES);
+      let currentFrame = -1;
+
+      function pad(i) { return String(i).padStart(4, '0'); }
+
+      function drawFrame(index) {
+        index = Math.max(0, Math.min(TOTAL_FRAMES - 1, index));
+        if (index === currentFrame) return;
+        const img = images[index];
+        if (!img || !img.complete) return;
+        if (canvas.width !== img.naturalWidth) {
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+        }
+        ctx.drawImage(img, 0, 0);
+        currentFrame = index;
+      }
+
+      // References for crossfade
+      const stage = document.getElementById('stage');
+      const fragmentsSection = document.getElementById('servicii');
+      const FADE_START = 0.80;  // Start fading stage at 80%
+      const FADE_END = 0.95;    // Stage fully gone at 95%
+
+      function onScroll() {
+        const containerRect = container.getBoundingClientRect();
+        const containerTop = window.scrollY + containerRect.top;
+        const containerHeight = container.offsetHeight - window.innerHeight;
+        const scrolled = window.scrollY - containerTop;
+        const progress = Math.max(0, Math.min(1, scrolled / containerHeight));
+        drawFrame(Math.round(progress * (TOTAL_FRAMES - 1)));
+
+        // ── Crossfade: stage out → fragments in (with blur displacement) ──
+        if (progress >= FADE_START) {
+          const fadeProgress = Math.min(1, (progress - FADE_START) / (FADE_END - FADE_START));
+          // Smooth easing for the fade
+          const easedFade = fadeProgress < 0.5
+            ? 2 * fadeProgress * fadeProgress
+            : 1 - Math.pow(-2 * fadeProgress + 2, 2) / 2;
+          stage.style.opacity = 1 - easedFade;
+          // Add blur during transition peak for displacement feel
+          const blurAmt = Math.sin(fadeProgress * Math.PI) * 3;
+          stage.style.filter = blurAmt > 0.1 ? `blur(${blurAmt}px)` : '';
+
+          if (fadeProgress > 0.2) {
+            fragmentsSection.classList.add('revealed');
+          }
+          // When fully faded: hide stage + clear canvas to kill GPU layer artifact
+          if (fadeProgress >= 1.0) {
+            stage.style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        } else {
+          stage.style.display = '';
+          stage.style.opacity = 1;
+          stage.style.filter = '';
+          fragmentsSection.classList.remove('revealed');
+        }
+      }
+
+      // ── Mobile failsafe: as soon as fragments section enters viewport,
+      //    kill the stage entirely (catches momentum-scroll event gaps) ──
+      new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            stage.style.opacity = '0';
+            stage.style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fragmentsSection.classList.add('revealed');
+          } else if (entry.boundingClientRect.top > 0) {
+            // User scrolled back above fragments — restore stage
+            stage.style.display = '';
+            stage.style.opacity = '1';
+          }
+        });
+      }, { threshold: 0.01 }).observe(fragmentsSection);
+
+      // Pre-load all frames
+      for (let i = 0; i < TOTAL_FRAMES; i++) {
+        const img = new Image();
+        img.onload = (function (idx) {
+          return function () {
+            if (idx === 0) {
+              canvas.width = this.naturalWidth;
+              canvas.height = this.naturalHeight;
+              ctx.drawImage(this, 0, 0);
+              currentFrame = 0;
+              window.dispatchEvent(new Event('loaderAssetReady'));
+            }
+          };
+        })(i);
+        img.src = 'frames/frame_' + pad(i + 1) + '.webp';
+        images[i] = img;
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.scrollTo(0, 0);
+    })();
 
 
-<script type="module" src="js/contact-scene.js"></script>
+    // ── Mask Fragments → Full-screen Overlay ─────────────
+    (function () {
+      const overlay  = document.getElementById('service-overlay');
+      const ghost    = document.getElementById('overlay-ghost');
+      const closeBtn = document.getElementById('overlay-close');
+      const fragments = document.querySelectorAll('.mask-fragment');
+
+      const FRAGMENT_MAP = {
+        'frag-left-eye':    { ghost: 'ghost-left-eye',   pane: 'pane-left-eye',    ann: 'ann-left-eye' },
+        'frag-right-eye':   { ghost: 'ghost-right-eye',  pane: 'pane-right-eye',   ann: 'ann-right-eye' },
+        'frag-nose':        { ghost: 'ghost-nose',        pane: 'pane-nose',        ann: 'ann-nose' },
+        'frag-left-mouth':  { ghost: 'ghost-left-mouth',  pane: 'pane-left-mouth',  ann: 'ann-left-mouth' },
+        'frag-right-mouth': { ghost: 'ghost-right-mouth', pane: 'pane-right-mouth', ann: 'ann-right-mouth' },
+      };
+
+      const canvas = document.getElementById('fragments-canvas');
+      let currentPane = null;
+      let currentFragEl = null;
+      let isOpen = false;
+      let closeTimer = null;
+
+      function openService(fragId) {
+        const cfg = FRAGMENT_MAP[fragId];
+        if (!cfg) return;
+
+        if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+
+        // Reset previous flying fragment immediately
+        if (currentFragEl) {
+          currentFragEl.classList.remove('flying', 'active');
+        }
+        ghost.className = '';
+        if (currentPane) currentPane.classList.remove('active');
+        if (canvas) canvas.classList.remove('has-active');
+
+        // Fly the clicked fragment toward its corner
+        currentFragEl = document.getElementById(fragId);
+        if (currentFragEl) {
+          currentFragEl.classList.add('flying', 'active');
+          if (canvas) canvas.classList.add('has-active');
+        }
+
+        // Apply ghost position class
+        ghost.classList.add(cfg.ghost);
+
+        // Lock scroll
+        document.body.style.overflow = 'hidden';
+        window._lenis?.stop();
+
+        // Open overlay simultaneously with fragment flying out
+        requestAnimationFrame(() => {
+          overlay.classList.add('open');
+          isOpen = true;
+          currentPane = document.getElementById(cfg.pane);
+          // Stagger content in after ghost appears
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            if (currentPane) {
+              currentPane.classList.add('active');
+              // SplitType char reveal on pane h2
+              const h2 = currentPane.querySelector('.pane-h2');
+              if (h2 && window.SplitType) {
+                if (h2._st) { h2._st.revert(); delete h2._st; }
+                const st = new SplitType(h2, { types: 'chars' });
+                h2._st = st;
+                gsap.from(st.chars, {
+                  y: 45, opacity: 0, rotateX: -40,
+                  duration: 0.7, stagger: 0.022,
+                  ease: 'power3.out', delay: 0.38,
+                  transformPerspective: 600,
+                });
+              }
+              // Eyebrow SplitType
+              const ey = currentPane.querySelector('.pane-eyebrow');
+              if (ey && window.SplitType && !ey._st) {
+                const stE = new SplitType(ey, { types: 'chars' });
+                ey._st = stE;
+              }
+            }
+          }));
+        });
+      }
+
+      function closeService() {
+        if (!isOpen) return;
+        // Fade pane content out
+        if (currentPane) currentPane.classList.remove('active');
+
+        closeTimer = setTimeout(() => {
+          overlay.classList.remove('open');
+          document.body.style.overflow = '';
+          window._lenis?.start();
+
+          // Return fragment back to mask
+          if (currentFragEl) {
+            currentFragEl.classList.remove('flying', 'active');
+            if (canvas) canvas.classList.remove('has-active');
+            currentFragEl = null;
+          }
+
+          closeTimer = setTimeout(() => {
+            ghost.className = '';
+            currentPane = null;
+            isOpen = false;
+          }, 550);
+        }, 160);
+      }
+
+      // ── Annotation highlight on fragment hover ───────────
+      function litAnn(fragId, on) {
+        const cfg = FRAGMENT_MAP[fragId];
+        if (!cfg || !cfg.ann) return;
+        const el = document.getElementById(cfg.ann);
+        if (el) el.classList.toggle('lit', on);
+      }
+
+      // Fragment clicks → open overlay
+      fragments.forEach(frag => {
+        frag.addEventListener('click', e => {
+          e.stopPropagation();
+          litAnn(frag.id, false);
+          openService(frag.id);
+        });
+        frag.addEventListener('mouseenter', () => {
+          if (!isOpen) litAnn(frag.id, true);
+        });
+        frag.addEventListener('mouseleave', () => {
+          litAnn(frag.id, false);
+        });
+      });
+
+      // Close button
+      closeBtn.addEventListener('click', closeService);
+
+      // ESC key
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && isOpen) closeService();
+      });
+
+      // Drag-to-scroll on iPhone carousel
+      const carousel = document.getElementById('iphone-carousel');
+      if (carousel) {
+        let isDown = false, startX = 0, scrollLeft = 0;
+        carousel.addEventListener('mousedown', e => {
+          isDown = true;
+          carousel.classList.add('dragging');
+          startX = e.pageX - carousel.offsetLeft;
+          scrollLeft = carousel.scrollLeft;
+        });
+        carousel.addEventListener('mouseleave', () => { isDown = false; carousel.classList.remove('dragging'); });
+        carousel.addEventListener('mouseup', () => { isDown = false; carousel.classList.remove('dragging'); });
+        carousel.addEventListener('mousemove', e => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - carousel.offsetLeft;
+          carousel.scrollLeft = scrollLeft - (x - startX) * 1.4;
+        });
+      }
+    })();
 
 
-<script src="js/init.js"></script>
 
-<script src="js/particles.js"></script>
+  </script>
 
-<script src="js/scroll-blur.js"></script>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const canvas   = document.getElementById('hero-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.85;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x030305);
+
+const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
+// On mobile the sphere fills too much of the portrait viewport — pull back.
+(function () {
+  const mobile = window.innerWidth < 768;
+  camera.position.set(0, 0.3, mobile ? 8.5 : 5);
+})();
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+let envMap = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+scene.environment = envMap;
+
+const mat = new THREE.MeshPhysicalMaterial({
+  color: new THREE.Color(0x0a0a12),
+  metalness: 1.0,
+  roughness: 0.015,
+  envMap,
+  envMapIntensity: 1.4,
+  clearcoat: 0.3,
+  clearcoatRoughness: 0.15,
+  reflectivity: 0.7,
+});
+
+new RGBELoader().load(
+  'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
+  function(hdr) {
+    hdr.mapping = THREE.EquirectangularReflectionMapping;
+    const env = pmrem.fromEquirectangular(hdr).texture;
+    scene.environment = env;
+    mat.envMap = env;
+    mat.needsUpdate = true;
+    hdr.dispose();
+  }
+);
+
+const geo = new THREE.IcosahedronGeometry(0.9, 6);
+const basePos = geo.attributes.position.array.slice();
+const sphere = new THREE.Mesh(geo, mat);
+sphere.position.y = 0.4;
+scene.add(sphere);
+
+const lights = [
+  new THREE.PointLight(0x8050d0, 10, 15),
+  new THREE.PointLight(0x6030b0, 6,  15),
+  new THREE.PointLight(0xa070f0, 5,  12),
+  new THREE.PointLight(0x5020a0, 4,  15),
+];
+lights[0].position.set( 3,  2,  2);
+lights[1].position.set(-3, -1,  3);
+lights[2].position.set( 0, -3, -1);
+lights[3].position.set(-2,  3, -2);
+lights.forEach(l => scene.add(l));
+scene.add(new THREE.AmbientLight(0x0a0515, 0.3));
+
+// ── Post-Processing: Bloom + Chromatic Aberration ──
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.4, 0.55, 0.82
+);
+composer.addPass(bloomPass);
+
+const ChromaticAberrationShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    amount: { value: 0.0025 },
+  },
+  vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float amount;
+    varying vec2 vUv;
+    void main() {
+      vec2 dir = vUv - vec2(0.5);
+      float dist = length(dir);
+      vec2 offset = dir * dist * amount;
+      float r = texture2D(tDiffuse, vUv + offset).r;
+      float g = texture2D(tDiffuse, vUv).g;
+      float b = texture2D(tDiffuse, vUv - offset).b;
+      gl_FragColor = vec4(r, g, b, 1.0);
+    }
+  `,
+};
+const caPass = new ShaderPass(ChromaticAberrationShader);
+composer.addPass(caPass);
+composer.addPass(new OutputPass());
+
+let mx = 0, my = 0, smx = 0, smy = 0;
+window.addEventListener('mousemove', e => {
+  mx = (e.clientX / window.innerWidth)  * 2 - 1;
+  my = -(e.clientY / window.innerHeight) * 2 + 1;
+});
+
+let scrollP = 0;
+const scrollHeight = window.innerHeight;
+window.addEventListener('scroll', () => {
+  scrollP = Math.min(Math.max(window.scrollY / scrollHeight, 0), 1);
+}, { passive: true });
+
+function snoise(x, y, z) {
+  return (
+    Math.sin(x*1.7 + y*2.1 + z*0.9) * Math.cos(y*1.3 + z*2.7 + x*0.6) +
+    Math.sin(x*3.1 + z*1.9) * Math.cos(y*2.9 + x*1.1) * 0.5
+  ) * 0.55;
+}
+
+const titleEl     = document.getElementById('hero-title-block');
+const heroEl      = document.getElementById('hero');
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+  bloomPass.resolution.set(window.innerWidth, window.innerHeight);
+});
+
+function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; }
+function easeIn(t)    { return t*t*t; }
+function clamp01(t)   { return Math.max(0, Math.min(1, t)); }
+function mapRange(v,s,e){ return clamp01((v-s)/(e-s)); }
+
+const clock = new THREE.Clock();
+
+function tick() {
+  requestAnimationFrame(tick);
+  if (window._heroVisible === false) return;
+  const t = clock.getElapsedTime();
+
+  smx += (mx - smx) * 0.03;
+  smy += (my - smy) * 0.03;
+
+  const pZoom      = easeInOut(mapRange(scrollP, 0.10, 0.40));
+  const pIntensity = easeInOut(mapRange(scrollP, 0.15, 0.45));
+  const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20, 0.50));
+  const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
+
+  if (titleEl && window._loaderDone) {
+    titleEl.style.opacity   = 1 - easeInOut(mapRange(scrollP, 0.03, 0.20));
+    titleEl.style.transform = `translateY(${scrollP * -40}px)`;
+  }
+  const _mobileHero = window.innerWidth < 768;
+  const _camZBase = _mobileHero ? 8.5 : 5;
+  camera.position.z = _camZBase - pZoom * 1.0;
+  camera.position.y = 0.3 + pRise * 0.5;
+  sphere.position.y = 0.4 + pRise * 6;
+
+  const pos = geo.attributes.position.array;
+  const deformMult = 1 + pIntensity * 0.3;
+  const speed = 0.25;
+  for (let i = 0; i < pos.length; i += 3) {
+    const bx=basePos[i], by=basePos[i+1], bz=basePos[i+2];
+    const len=Math.sqrt(bx*bx+by*by+bz*bz);
+    const nx=bx/len, ny=by/len, nz=bz/len;
+    const breath = Math.sin(t*0.5)*0.02 + Math.sin(t*1.1)*0.01;
+    const n1 = snoise(nx*1.2+t*speed, ny*1.2+t*speed*0.8, nz*1.2)*0.08*deformMult;
+    const n2 = snoise(nx*2.5+t*speed*0.5, ny*2.5-t*speed*0.4, nz*2.5)*0.03*deformMult;
+    const mouseDot  = nx*smx + ny*smy;
+    const mdx=nx-smx*0.8, mdy=ny-smy*0.8;
+    const mouseBulge = Math.max(0,1-Math.sqrt(mdx*mdx+mdy*mdy)*1.2)*0.08*(Math.abs(smx)+Math.abs(smy));
+    const scale = 1 + breath + n1 + n2 + mouseDot*0.1 + mouseBulge;
+    pos[i]=nx*len*scale; pos[i+1]=ny*len*scale; pos[i+2]=nz*len*scale;
+  }
+  const normals = geo.attributes.normal.array;
+  for (let i=0;i<pos.length;i+=3) {
+    const l=Math.sqrt(pos[i]*pos[i]+pos[i+1]*pos[i+1]+pos[i+2]*pos[i+2]);
+    normals[i]=pos[i]/l; normals[i+1]=pos[i+1]/l; normals[i+2]=pos[i+2]/l;
+  }
+  geo.attributes.position.needsUpdate = true;
+  geo.attributes.normal.needsUpdate   = true;
+
+  const rotSpeed = 0.05 + pRotSpeed * 0.15;
+  sphere.rotation.y = t*rotSpeed + smx*0.3;
+  sphere.rotation.x = smy*0.15 + t*0.015;
+
+  const vMult = 1 + pIntensity * 2;
+  lights[0].intensity = 10*vMult; lights[1].intensity = 6*vMult;
+  lights[2].intensity = 5*vMult;  lights[3].intensity = 4*vMult;
+  mat.envMapIntensity = 1.8 + pIntensity*1.5;
+  lights[0].position.x = 3 + Math.sin(t*0.3)*0.5;
+  lights[0].position.y = 2 + Math.cos(t*0.4)*0.4;
+  lights[1].position.x = -3 + Math.sin(t*0.25)*0.4;
+
+  if (heroEl) {
+    const op = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
+    heroEl.style.opacity = op;
+    heroEl.style.pointerEvents = op < 0.02 ? 'none' : '';
+  }
+
+  // Dynamic post-processing: bloom intensifies with scroll, CA with velocity
+  bloomPass.strength = 0.4 + pIntensity * 0.7;
+  const vel = Math.abs(window._scrollVelocity || 0);
+  caPass.uniforms.amount.value = 0.002 + vel * 0.0012 + pIntensity * 0.003;
+
+  composer.render();
+}
+tick();
+</script>
+
+
+<script type="module">
+/* ── Contact Section — Three.js animation ── */
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const contactArea  = document.getElementById('contact');
+const contactStage = document.getElementById('contact-stage');
+const cCanvas      = document.getElementById('contact-canvas');
+const renderer2    = new THREE.WebGLRenderer({ canvas: cCanvas, antialias: true });
+renderer2.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer2.setSize(window.innerWidth, window.innerHeight);
+
+const scene2  = new THREE.Scene();
+scene2.background = new THREE.Color(0x030305);
+
+const camera2 = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+camera2.position.set(0, 0, 4);
+
+const pmrem2 = new THREE.PMREMGenerator(renderer2);
+scene2.environment = pmrem2.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const chromeMat = new THREE.MeshPhysicalMaterial({
+  color: 0x0a0a12, metalness: 1, roughness: 0.02,
+  clearcoat: 0.3, reflectivity: 0.7,
+});
+
+// ── Load textures ──
+const loader = new THREE.TextureLoader();
+let clipMesh = null, waMesh = null;
+
+const clipFinal = { x: -0.45, y: 0 };
+const waFinal   = { x: 1.5,  y: -0.1 };
+const clipStart = { x: -5.5, y: 0.5 };
+const waStart   = { x: 5.5,  y: 0.3 };
+
+loader.load('clipboard-t.png', (tex) => {
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const aspect = tex.image.width / tex.image.height;
+  const h = 1.6;
+  clipMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(h * aspect, h),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
+  );
+  clipMesh.position.set(clipStart.x, clipStart.y, 0);
+  scene2.add(clipMesh);
+});
+
+loader.load('whatsapp-t.png', (tex) => {
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const aspect = tex.image.width / tex.image.height;
+  const h = 0.85;
+  waMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(h * aspect, h),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
+  );
+  waMesh.position.set(waStart.x, waStart.y, 0.2);
+  scene2.add(waMesh);
+});
+
+// ── Chrome particles ──
+function snoise2(x,y,z) {
+  return (Math.sin(x*1.7+y*2.1+z*0.9)*Math.cos(y*1.3+z*2.7+x*0.6)+
+    Math.sin(x*3.1+z*1.9)*Math.cos(y*2.9+x*1.1)*0.5)*0.55;
+}
+const particles2 = [];
+for (let i = 0; i < 10; i++) {
+  const r = 0.012 + Math.random()*0.03;
+  const p = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 3), chromeMat);
+  p.position.set((Math.random()-0.5)*7, (Math.random()-0.5)*4, -0.5 - Math.random()*2);
+  const bp = p.geometry.attributes.position.array.slice();
+  p.userData = { bp, spd: 0.04+Math.random()*0.1, off: Math.random()*Math.PI*2,
+    bx: p.position.x, by: p.position.y, dx: 0.3+Math.random()*0.6, dy: 0.15+Math.random()*0.25 };
+  scene2.add(p);
+  particles2.push(p);
+}
+
+// ── Lights ──
+const clipGlow = new THREE.PointLight(0x8050d0, 4, 8);
+clipGlow.position.set(-0.5, 0, 1.5);
+scene2.add(clipGlow);
+const waGlow = new THREE.PointLight(0x25d366, 3, 6);
+waGlow.position.set(1.5, 0, 1.5);
+scene2.add(waGlow);
+scene2.add(new THREE.PointLight(0x6030b0, 3, 15));
+scene2.add(new THREE.AmbientLight(0x080410, 0.4));
+
+// ── Scroll ──
+let cScrollP = 0;
+function updateContactScroll() {
+  const scrollable = contactArea.offsetHeight - window.innerHeight;
+  const scrolled   = window.scrollY - contactArea.offsetTop;
+  cScrollP = Math.min(Math.max(scrolled / scrollable, 0), 1);
+}
+window.addEventListener('scroll', updateContactScroll, { passive: true });
+
+// ── Helpers ──
+function easeOutCubic(t) { return 1 - Math.pow(1-t, 3); }
+function clamp01c(t) { return Math.max(0, Math.min(1, t)); }
+function mapRange2(v, s, e) { return clamp01c((v-s)/(e-s)); }
+function lerp(a, b, t) { return a + (b-a)*t; }
+
+// ── Mouse ──
+let cmx=0, cmy=0, csmx=0, csmy=0;
+window.addEventListener('mousemove', e => {
+  cmx = (e.clientX/window.innerWidth)*2-1;
+  cmy = -(e.clientY/window.innerHeight)*2+1;
+});
+
+// ── Raycaster ──
+const raycaster2 = new THREE.Raycaster();
+const pointer2   = new THREE.Vector2();
+let cfOpen = false, hClip = false, hWa = false, hClipS = 0, hWaS = 0;
+
+const formOverlay = document.getElementById('contactFormOverlay');
+const cfCloseBtn  = document.getElementById('cfCloseBtn');
+const cfForm      = document.getElementById('cfForm');
+
+function openCF() { cfOpen=true; formOverlay.classList.add('active'); window._lenis?.stop(); }
+function closeCF() { cfOpen=false; formOverlay.classList.remove('active'); window._lenis?.start(); }
+cfCloseBtn.addEventListener('click', closeCF);
+formOverlay.addEventListener('click', e => { if (e.target===formOverlay) closeCF(); });
+cfForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = cfForm.querySelector('.cf-submit');
+  btn.textContent = 'Se trimite...'; btn.disabled = true;
+  try {
+    await fetch('https://formsubmit.co/ajax/leaveyoucontact@gmail.com',
+      { method:'POST', body: new FormData(cfForm) });
+    cfForm.style.display = 'none';
+    const s = document.createElement('div'); s.className = 'cf-success';
+    s.innerHTML = '<span class="cf-check">&#10003;</span>Multumim! Te contactam in curand.';
+    cfForm.parentElement.appendChild(s);
+    setTimeout(closeCF, 3500);
+  } catch(err) { btn.textContent='Eroare'; btn.disabled=false; }
+});
+
+cCanvas.addEventListener('click', e => {
+  if (cfOpen) return;
+  pointer2.x = (e.clientX/window.innerWidth)*2-1;
+  pointer2.y = -(e.clientY/window.innerHeight)*2+1;
+  raycaster2.setFromCamera(pointer2, camera2);
+  if (waMesh && raycaster2.intersectObject(waMesh).length > 0) {
+    window.open('https://wa.me/40743391581', '_blank'); return;
+  }
+  if (clipMesh && raycaster2.intersectObject(clipMesh).length > 0) openCF();
+});
+cCanvas.addEventListener('mousemove', e => {
+  pointer2.x = (e.clientX/window.innerWidth)*2-1;
+  pointer2.y = -(e.clientY/window.innerHeight)*2+1;
+  raycaster2.setFromCamera(pointer2, camera2);
+  hClip = !!(clipMesh && raycaster2.intersectObject(clipMesh).length > 0);
+  hWa   = !!(waMesh   && raycaster2.intersectObject(waMesh).length > 0);
+  cCanvas.style.cursor = (hClip || hWa) ? 'pointer' : 'default';
+});
+
+window.addEventListener('resize', () => {
+  camera2.aspect = window.innerWidth / window.innerHeight;
+  camera2.updateProjectionMatrix();
+  renderer2.setSize(window.innerWidth, window.innerHeight);
+});
+
+const clock2 = new THREE.Clock();
+const clipLabelEl = document.getElementById('contact-clipLabel');
+const waLabelEl   = document.getElementById('contact-waLabel');
+
+function tick2() {
+  requestAnimationFrame(tick2);
+  if (window._contactVisible === false) return;
+  const t = clock2.getElapsedTime();
+
+  csmx += (cmx-csmx)*0.04;
+  csmy += (cmy-csmy)*0.04;
+  hClipS += ((hClip?1:0) - hClipS)*0.08;
+  hWaS   += ((hWa?1:0)   - hWaS)*0.08;
+
+  const clipP = easeOutCubic(mapRange2(cScrollP, 0.0, 0.7));
+  const waP   = easeOutCubic(mapRange2(cScrollP, 0.1, 0.75));
+
+  if (clipMesh) {
+    clipMesh.position.x = lerp(clipStart.x, clipFinal.x, clipP);
+    clipMesh.position.y = lerp(clipStart.y, clipFinal.y, clipP) + Math.sin(t*0.4)*0.06*clipP;
+    clipMesh.rotation.y = csmx*0.3 + Math.sin(t*0.2)*0.05 + (1-clipP)*1.2;
+    clipMesh.rotation.x = -csmy*0.18 + Math.sin(t*0.15)*0.03;
+    clipMesh.rotation.z = csmx*0.06 + Math.sin(t*0.18)*0.02;
+    clipMesh.scale.setScalar(1 + Math.sin(t*0.8)*0.008*clipP + hClipS*0.05);
+    clipGlow.intensity = (3 + Math.sin(t*1.5)*1.5 + hClipS*5) * clipP;
+    clipGlow.position.x = clipMesh.position.x;
+
+    // Label position
+    const v1 = clipMesh.position.clone(); v1.y -= 1.05; v1.project(camera2);
+    clipLabelEl.style.left = ((v1.x*0.5+0.5)*window.innerWidth) + 'px';
+    clipLabelEl.style.top  = ((-v1.y*0.5+0.5)*window.innerHeight) + 'px';
+    clipLabelEl.style.opacity = mapRange2(clipP, 0.85, 1) * (0.5 + hClipS*0.5);
+  }
+
+  if (waMesh) {
+    waMesh.position.x = lerp(waStart.x, waFinal.x, waP);
+    waMesh.position.y = lerp(waStart.y, waFinal.y, waP) + Math.sin(t*0.5)*0.05*waP;
+    waMesh.rotation.y = csmx*0.2 + Math.sin(t*0.25)*0.12 + (1-waP)*-1.2;
+    waMesh.rotation.x = -csmy*0.12 + Math.sin(t*0.3)*0.06;
+    waMesh.rotation.z = Math.sin(t*0.35)*0.03;
+    waMesh.scale.setScalar(1 + Math.sin(t*0.9)*0.01*waP + hWaS*0.06);
+    waGlow.intensity = (2 + Math.sin(t*1.8)*1 + hWaS*4) * waP;
+    waGlow.position.x = waMesh.position.x;
+
+    const v2 = waMesh.position.clone(); v2.y -= 0.6; v2.project(camera2);
+    waLabelEl.style.left = ((v2.x*0.5+0.5)*window.innerWidth) + 'px';
+    waLabelEl.style.top  = ((-v2.y*0.5+0.5)*window.innerHeight) + 'px';
+    waLabelEl.style.opacity = mapRange2(waP, 0.85, 1) * (0.5 + hWaS*0.5);
+  }
+
+  // Particles
+  particles2.forEach(p => {
+    const d = p.userData;
+    p.position.x = d.bx + Math.sin(t*d.spd+d.off)*d.dx;
+    p.position.y = d.by + Math.cos(t*d.spd*0.7+d.off)*d.dy;
+    p.rotation.y = t*d.spd; p.rotation.x = t*d.spd*0.3;
+    const pp = p.geometry.attributes.position.array, bp = d.bp;
+    for (let i=0;i<pp.length;i+=3) {
+      const bx=bp[i],by=bp[i+1],bz=bp[i+2], l=Math.sqrt(bx*bx+by*by+bz*bz)||1;
+      const s=1+Math.sin(t*0.8+d.off)*0.04+snoise2((bx/l)*2+t*0.2+d.off,(by/l)*2,(bz/l)*2)*0.07;
+      pp[i]=bx*s; pp[i+1]=by*s; pp[i+2]=bz*s;
+    }
+    p.geometry.attributes.position.needsUpdate = true;
+  });
+
+  renderer2.render(scene2, camera2);
+}
+tick2();
+</script>
+
+
+<script>
+/* ═══════════════════════════════════════════════════
+   INIT: Lenis · GSAP · Cursor · Loader · SplitType
+   ═══════════════════════════════════════════════════ */
+
+// ── 0. MOBILE VIEWPORT HEIGHT FIX ──────────────────
+// Keep --vh variable available for any future use; primary fix is 100dvh in CSS.
+(function () {
+  function applyVh() {
+    document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+  }
+  applyVh();
+  window.addEventListener('resize', applyVh, { passive: true });
+})();
+
+// ── 1. LENIS SMOOTH SCROLL ──────────────────────────
+const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lenis = new Lenis({
+  duration: 1.6,
+  smoothWheel: !prefersReduced,
+  orientation: 'vertical',
+  gestureOrientation: 'vertical',
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+});
+window._lenis = lenis;
+
+gsap.registerPlugin(ScrollTrigger);
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+gsap.ticker.lagSmoothing(0);
+
+
+// ── 2. LOADING SCREEN ───────────────────────────────
+(function () {
+  const loader   = document.getElementById('loader');
+  const fill     = document.getElementById('loader-bar-fill');
+  const pctEl    = document.getElementById('loader-percent');
+  let progress   = 0;
+  let finished   = false;
+
+  // Ease progress up to 88% organically
+  const tick = setInterval(() => {
+    if (finished) return;
+    const step = Math.max(0.4, (88 - progress) * 0.03 + Math.random() * 1.8);
+    progress = Math.min(progress + step, 88);
+    fill.style.width = progress + '%';
+    pctEl.textContent = Math.floor(progress) + '%';
+  }, 70);
+
+  function complete() {
+    if (finished) return;
+    finished = true;
+    clearInterval(tick);
+    // Sprint 88 → 100
+    gsap.to({ p: progress }, {
+      p: 100, duration: 0.6, ease: 'power2.out',
+      onUpdate: function () {
+        const v = Math.floor(this.targets()[0].p);
+        fill.style.width = v + '%';
+        pctEl.textContent = v + '%';
+      },
+      onComplete: () => {
+        // Dramatic mask-expand reveal
+        gsap.to(loader, {
+          clipPath: 'circle(0% at 50% 50%)',
+          duration: 1.0, delay: 0.2,
+          ease: 'power3.inOut',
+          onComplete: () => {
+            loader.style.display = 'none';
+            revealPage();
+          }
+        });
+      }
+    });
+  }
+
+  window.addEventListener('loaderAssetReady', complete, { once: true });
+  // Fallback — hide after 4s no matter what
+  setTimeout(complete, 4000);
+
+  function revealPage() {
+    window._loaderDone = true;
+    const titleBlock = document.getElementById('hero-title-block');
+    const h1  = document.querySelector('.hero-title-block h1');
+    const sub = document.querySelector('.hero-title-block .sub');
+
+    // Ensure title block is visible for GSAP to animate
+    if (titleBlock) titleBlock.style.opacity = '1';
+
+    if (h1 && window.SplitType) {
+      const split = new SplitType(h1, { types: 'chars' });
+      gsap.from(split.chars, {
+        y: 50, opacity: 0, rotateX: -40,
+        duration: 0.75, stagger: 0.03,
+        ease: 'power3.out', delay: 0.08,
+        transformPerspective: 500,
+        onComplete: () => {
+          // Revert split so Three.js opacity control works cleanly
+          split.revert();
+        }
+      });
+    }
+    if (sub) {
+      gsap.from(sub, { opacity: 0, y: 14, duration: 0.9, ease: 'power2.out', delay: 0.55 });
+    }
+  }
+})();
+
+
+// ── 3. CUSTOM CURSOR (skip on touch) ────────────────
+(function () {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+
+  let mx = 0, my = 0;
+  let rx = 0, ry = 0;
+
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  // Dot follows instantly, ring lerps
+  gsap.ticker.add(() => {
+    dot.style.transform  = `translate(calc(${mx}px - 50%), calc(${my}px - 50%))`;
+    rx += (mx - rx) * 0.10;
+    ry += (my - ry) * 0.10;
+    ring.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
+  });
+
+  // Hover state on interactive elements
+  const hoverSel = 'a, button, [role="button"], .mask-fragment, .cf-submit, #contact-canvas, .ann-group';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(hoverSel)) document.body.classList.add('cur-hover');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(hoverSel)) document.body.classList.remove('cur-hover');
+  });
+
+  // Hide cursor when mouse leaves window
+  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = ''; ring.style.opacity = ''; });
+})();
+
+
+// ── 4. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
+(function () {
+  // ── Eyebrow text in fragments section — char reveal
+  const eyebrow = document.querySelector('#servicii > p');
+  if (eyebrow && window.SplitType) {
+    const split = new SplitType(eyebrow, { types: 'chars' });
+    gsap.from(split.chars, {
+      scrollTrigger: { trigger: eyebrow, start: 'top 88%', once: true },
+      y: 22, opacity: 0, duration: 0.55,
+      stagger: 0.028, ease: 'power3.out',
+    });
+  }
+
+  // ── Fragments canvas — subtle parallax on scroll through section
+  gsap.to('.fragments-canvas', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 1.8,
+    },
+    y: -55, ease: 'none',
+  });
+
+  // ── Annotation SVG — opposite parallax (slower)
+  gsap.to('.ann-svg', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 2.5,
+    },
+    y: -25, ease: 'none',
+  });
+
+  // Fragments section reveal is handled by CSS .revealed class
+  // GSAP just ensures ScrollTrigger refresh for parallax accuracy
+  ScrollTrigger.refresh();
+
+  // ── Contact section entrance — cinematic rise with blur
+  gsap.from('#contact-stage', {
+    scrollTrigger: { trigger: '#contact', start: 'top 85%', once: true },
+    opacity: 0, y: 60, scale: 0.97,
+    filter: 'blur(6px)',
+    duration: 1.3, ease: 'power3.out',
+  });
+
+  // ── Contact labels slide in on scroll
+  ['contact-clipLabel', 'contact-waLabel'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      gsap.from(el, {
+        scrollTrigger: { trigger: '#contact', start: 'top 70%', once: true },
+        opacity: 0, y: 20, duration: 0.8,
+        delay: 0.3 + i * 0.18, ease: 'power3.out',
+      });
+    }
+  });
+
+  // ── Fragments section — scroll-driven scale down + blur as user leaves
+  gsap.to('#servicii', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'bottom 60%',
+      end: 'bottom top',
+      scrub: 1.5,
+    },
+    scale: 0.96, filter: 'blur(3px) brightness(0.7)',
+    ease: 'none',
+  });
+})();
+
+
+// ── 5. MICRO-INTERACTIONS ────────────────────────────
+(function () {
+  // Fragment 3D tilt on mouse move
+  document.querySelectorAll('.mask-fragment').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      gsap.to(el, {
+        rotateY: x * 12, rotateX: -y * 9,
+        duration: 0.35, ease: 'power2.out',
+        transformPerspective: 900, transformOrigin: 'center center',
+      });
+    });
+    el.addEventListener('mouseleave', () => {
+      gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.7, ease: 'power3.out' });
+    });
+  });
+
+  // Submit button GSAP hover glow
+  document.querySelectorAll('.cf-submit').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      gsap.to(btn, {
+        scale: 1.025,
+        boxShadow: '0 0 30px rgba(110,60,200,0.45), 0 0 60px rgba(110,60,200,0.2)',
+        duration: 0.35, ease: 'power2.out',
+      });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, {
+        scale: 1, boxShadow: '0 0 0px rgba(110,60,200,0)',
+        duration: 0.4, ease: 'power3.out',
+      });
+    });
+  });
+
+  // Link underline reveal — clip-path left→right
+  // Applied to any .pane-sub links if they exist
+  document.querySelectorAll('a:not([class])').forEach(a => {
+    a.style.position = 'relative';
+    a.style.textDecoration = 'none';
+    const line = document.createElement('span');
+    line.style.cssText = `
+      position:absolute; bottom:-1px; left:0; width:100%; height:1px;
+      background:currentColor; transform:scaleX(0); transform-origin:left;
+      transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    `;
+    a.appendChild(line);
+    a.addEventListener('mouseenter', () => { line.style.transform = 'scaleX(1)'; });
+    a.addEventListener('mouseleave', () => {
+      line.style.transformOrigin = 'right';
+      line.style.transform = 'scaleX(0)';
+      setTimeout(() => { line.style.transformOrigin = 'left'; }, 350);
+    });
+  });
+
+  // Form input focus glow — animated via GSAP
+  document.querySelectorAll('.contact-form-box input, .contact-form-box select, .contact-form-box textarea').forEach(inp => {
+    inp.addEventListener('focus', () => {
+      gsap.to(inp, {
+        boxShadow: '0 0 0 3px rgba(120,70,220,0.12), 0 0 32px rgba(120,70,220,0.2), inset 0 0 14px rgba(120,70,220,0.05)',
+        borderColor: 'rgba(140,100,240,0.55)',
+        duration: 0.4, ease: 'power2.out',
+      });
+    });
+    inp.addEventListener('blur', () => {
+      gsap.to(inp, {
+        boxShadow: '0 0 0 0px transparent, 0 0 0px transparent, inset 0 0 0px transparent',
+        borderColor: 'rgba(160,140,220,0.1)',
+        duration: 0.35, ease: 'power2.out',
+      });
+    });
+  });
+
+  // Overlay close button hover
+  const overlayClose = document.getElementById('overlay-close');
+  if (overlayClose) {
+    overlayClose.addEventListener('mouseenter', () => {
+      gsap.to(overlayClose, { scale: 1.1, rotation: 90, duration: 0.3, ease: 'power2.out' });
+    });
+    overlayClose.addEventListener('mouseleave', () => {
+      gsap.to(overlayClose, { scale: 1, rotation: 0, duration: 0.4, ease: 'power3.out' });
+    });
+  }
+})();
+
+
+// ── 6. SCROLL VELOCITY EFFECTS + RENDERER PAUSING ─────
+(function () {
+  // ── Track scroll velocity via Lenis ──
+  window._scrollVelocity = 0;
+  let velocityDecay = 0;
+  lenis.on('scroll', ({ velocity }) => {
+    window._scrollVelocity = velocity;
+    velocityDecay = Math.abs(velocity);
+  });
+
+  // ── Chromatic Aberration overlay driven by velocity ──
+  const caR = document.getElementById('ca-r');
+  const caB = document.getElementById('ca-b');
+  if (caR && caB && !prefersReduced) {
+    gsap.ticker.add(() => {
+      velocityDecay *= 0.88; // smooth decay
+      const amt = Math.min(velocityDecay * 0.4, 5);
+      if (amt > 0.2) {
+        const op = Math.min(amt * 0.07, 0.35);
+        caR.style.opacity = op;
+        caB.style.opacity = op;
+        caR.style.transform = `translateX(${-amt}px)`;
+        caB.style.transform = `translateX(${amt}px)`;
+      } else {
+        caR.style.opacity = 0;
+        caB.style.opacity = 0;
+      }
+    });
+  }
+
+  // ── IntersectionObservers — pause off-screen Three.js ──
+  window._heroVisible = true;
+  window._contactVisible = true;
+
+  const heroEl = document.getElementById('hero');
+  if (heroEl) {
+    new IntersectionObserver(([e]) => { window._heroVisible = e.isIntersecting; }, { threshold: 0 })
+      .observe(heroEl);
+  }
+  const contactStageEl = document.getElementById('contact-stage');
+  if (contactStageEl) {
+    new IntersectionObserver(([e]) => { window._contactVisible = e.isIntersecting; }, { threshold: 0 })
+      .observe(contactStageEl);
+  }
+})();
+
+
+// ── 7. INFINITE LOOP — use Lenis for clean jump ──────
+(function () {
+  let looping = false;
+  const sentinel = document.getElementById('loop-sentinel');
+  if (!sentinel) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !looping) {
+        looping = true;
+        if (window._lenis) {
+          window._lenis.scrollTo(0, { immediate: true });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        setTimeout(() => { looping = false; }, 600);
+      }
+    });
+  }, { threshold: 0.5 });
+  obs.observe(sentinel);
+})();
+
+</script>
+
+<!-- SCROLL BLUR ENGINE — sections blur/scale as they leave the viewport centre -->
+<script>
+(function () {
+  const targets = [
+    document.getElementById('hero-scroll-container'),
+    document.getElementById('stage'),
+    document.getElementById('servicii'),
+    document.getElementById('contact-stage'),
+  ].filter(Boolean);
+
+  const MAX_BLUR  = 10;
+  const MAX_SCALE = 0.03;
+  const DEAD      = 0.42;
+  const FADE      = 0.42;
+
+  function easeIn(t) { return t * t; }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  function update() {
+    const winH     = window.innerHeight;
+    const vpCenter = winH * 0.5;
+    targets.forEach(function(el) {
+      const rect     = el.getBoundingClientRect();
+      const elCenter = rect.top + Math.min(rect.height, winH) / 2;
+      const dist     = Math.abs(elCenter - vpCenter);
+      const progress = clamp((dist - winH * DEAD) / (winH * FADE), 0, 1);
+      const above    = elCenter < vpCenter;
+      const blurAmt  = above ? MAX_BLUR : MAX_BLUR * 1.8;
+      const blur     = easeIn(progress) * blurAmt;
+      const scale    = above
+        ? 1 - easeIn(progress) * MAX_SCALE
+        : 1 + easeIn(progress) * MAX_SCALE;
+      const op = 1 - easeIn(progress) * 0.35;
+      el.style.filter    = blur > 0.2 ? 'blur(' + blur.toFixed(1) + 'px)' : '';
+      el.style.transform = Math.abs(scale - 1) > 0.001 ? 'scale(' + scale.toFixed(4) + ')' : '';
+      el.style.opacity   = op < 0.999 ? op.toFixed(3) : '';
+    });
+  }
+
+  let rafPending = false;
+  function onScroll() {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(function() { rafPending = false; update(); });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
+})();
+</script>
 
 </body>
 
