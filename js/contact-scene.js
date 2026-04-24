@@ -90,22 +90,30 @@ scene2.add(waGlow);
 scene2.add(new THREE.PointLight(0x6030b0, 3, 15));
 scene2.add(new THREE.AmbientLight(0x080410, 0.4));
 
-// ── Scroll (Lenis on desktop + native on mobile) ──
-// Both listeners are attached because Lenis doesn't fire its scroll
-// event on native touch scroll (smoothTouch:false). Without the
-// native listener cScrollP freezes and the clipboard + WhatsApp
-// meshes never animate in on phones.
+// ── Auto-animate when contact section enters viewport ──
+// cScrollP drives mesh positions (0 = off-screen, 1 = final position).
+// Instead of scroll-scrubbing, we animate it automatically on entry
+// so the section appears immediately without extra scroll.
 let cScrollP = 0;
-function updateContactScroll() {
-  if (document.body.style.position === 'fixed') return;
-  const sy = (C_IS_MOBILE || !window._lenis) ? window.scrollY : window._lenis.scroll;
-  const scrollable = contactArea.offsetHeight - window.innerHeight;
-  const scrolled   = sy - contactArea.offsetTop;
-  cScrollP = Math.min(Math.max(scrolled / scrollable, 0), 1);
+let _cDone = false;
+let _cStart = null;
+const C_ANIM_MS = 1600;
+
+function _stepContact(ts) {
+  if (!_cStart) _cStart = ts;
+  const raw = Math.min((ts - _cStart) / C_ANIM_MS, 1);
+  cScrollP = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+  if (raw < 1) requestAnimationFrame(_stepContact);
 }
-if (window._lenis) window._lenis.on('scroll', updateContactScroll);
-window.addEventListener('scroll', updateContactScroll, { passive: true });
-updateContactScroll();
+
+const _cObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !_cDone) {
+    _cDone = true;
+    _cObserver.disconnect();
+    requestAnimationFrame(_stepContact);
+  }
+}, { threshold: 0.05 });
+_cObserver.observe(contactArea);
 
 // ── Helpers ──
 function easeOutCubic(t) { return 1 - Math.pow(1-t, 3); }

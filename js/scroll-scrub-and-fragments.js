@@ -695,17 +695,6 @@
       _demoObserver.observe(servicii, { attributes: true, attributeFilter: ['class'] });
     })();
 
-    // ── Servicii CTA — contact button opens contact form ──
-    (function () {
-      const btn = document.getElementById('serviciiContactBtn');
-      if (!btn) return;
-      btn.addEventListener('click', () => {
-        const form = document.getElementById('contactFormOverlay');
-        if (form) { form.classList.add('active'); window._lenis?.stop(); }
-      });
-    })();
-
-
     // ── Phone zoom + image lightbox (pane 01) ────────────
     (function () {
       // Phone zoom — clicking any iPhone mockup pops a giant version

@@ -1274,85 +1274,6 @@
       transition-delay: 0s !important;
     }
 
-    /* ── CTA buttons inside #servicii (WA + Contact) ───── */
-    .servicii-cta {
-      position: absolute;
-      bottom: 7vh;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      z-index: 50;
-      opacity: 0;
-      pointer-events: none;
-      white-space: nowrap;
-      transition: opacity 0.8s ease 0.6s;
-    }
-    .fragments-section.revealed .servicii-cta {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .servicii-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 11px 22px;
-      border-radius: 999px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.3s ease,
-                  background 0.3s ease,
-                  box-shadow 0.3s ease,
-                  color 0.3s ease;
-    }
-    .servicii-btn-icon {
-      width: 15px;
-      height: 15px;
-      flex-shrink: 0;
-    }
-    .servicii-btn-wa {
-      background: rgba(180, 130, 255, 0.12);
-      border: 1px solid rgba(180, 130, 255, 0.4);
-      color: rgba(255, 255, 255, 0.88);
-    }
-    .servicii-btn-wa:hover {
-      transform: translateY(-3px);
-      background: rgba(180, 130, 255, 0.2);
-      border-color: rgba(200, 160, 255, 0.7);
-      color: #fff;
-      box-shadow: 0 10px 32px rgba(0,0,0,0.5), 0 0 28px rgba(180,130,255,0.28);
-    }
-    .servicii-btn-contact {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.6);
-    }
-    .servicii-btn-contact:hover {
-      transform: translateY(-3px);
-      background: rgba(255, 255, 255, 0.09);
-      border-color: rgba(255, 255, 255, 0.35);
-      color: #fff;
-      box-shadow: 0 10px 32px rgba(0,0,0,0.4);
-    }
-
-    @media (max-width: 640px) {
-      .servicii-cta {
-        flex-direction: column;
-        gap: 0.75rem;
-        bottom: 5vh;
-      }
-      .servicii-btn {
-        width: 220px;
-        justify-content: center;
-      }
-    }
 
     /* When one fragment is active, dim the rest */
     .fragments-canvas.has-active .mask-fragment:not(.active) {
@@ -1396,7 +1317,7 @@
 
     /* ── Contact Animation Section ──────────────────────── */
     .contact-scroll-area {
-      height: 350vh;
+      height: 100vh;
       position: relative;
     }
     #contact-stage {
@@ -1656,7 +1577,7 @@
          beyond 150vh is just dead scroll past the footer. Was 220vh,
          then users would keep scrolling into black void after the
          WA button landed. */
-      .contact-scroll-area { height: 150vh; }
+      .contact-scroll-area { height: 100vh; }
       #contact-clipLabel span,
       #contact-waLabel span {
         font-size: 13px !important;
