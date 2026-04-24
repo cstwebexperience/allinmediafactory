@@ -167,6 +167,45 @@
             drawFrame(0);
           },
         });
+
+        // Auto-play: when container top pins to viewport, take over scroll.
+        // window.scrollTo fires the native scroll event so ScrollTrigger
+        // updates frames normally — no manual ScrollTrigger.update() needed.
+        const _ac = document.getElementById('scroll-scrub-container');
+        let _ap = false;
+        const _bs = e => e.preventDefault();
+
+        function _play() {
+          window._lenis?.stop();
+          window.addEventListener('wheel',     _bs, { passive: false, capture: true });
+          window.addEventListener('touchmove', _bs, { passive: false, capture: true });
+
+          const s = window.scrollY;
+          const e = _ac.offsetTop + _ac.offsetHeight - window.innerHeight;
+          const o = { t: 0 };
+
+          gsap.to(o, {
+            t: 1, duration: 4, ease: 'none',
+            onUpdate() { window.scrollTo(0, s + (e - s) * o.t); },
+            onComplete() {
+              window.scrollTo(0, e);
+              window.removeEventListener('wheel',     _bs, { capture: true });
+              window.removeEventListener('touchmove', _bs, { capture: true });
+              window._lenis?.scrollTo(e, { immediate: true });
+              window._lenis?.start();
+            },
+          });
+        }
+
+        const _aw = () => {
+          if (_ap) { window.removeEventListener('scroll', _aw); return; }
+          if (_ac.getBoundingClientRect().top <= 1) {
+            _ap = true;
+            window.removeEventListener('scroll', _aw);
+            _play();
+          }
+        };
+        window.addEventListener('scroll', _aw, { passive: true });
       }
     };
 
