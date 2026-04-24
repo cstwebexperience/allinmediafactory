@@ -167,6 +167,55 @@
             drawFrame(0);
           },
         });
+
+        // ── Auto-takeover: animates scroll at fixed speed when user
+        // reaches the scrub section — eliminates jank on slow machines.
+        // Lenis drives scrollTop (so ScrollTrigger picks it up natively);
+        // wheel/touch blocked during the 4 s ride.
+        const _container = document.getElementById('scroll-scrub-container');
+        let _takeoverDone = false;
+        const _blockInput = e => e.preventDefault();
+
+        function _releaseTakeover() {
+          window.removeEventListener('wheel',     _blockInput, { capture: true });
+          window.removeEventListener('touchmove', _blockInput, { capture: true });
+        }
+
+        function _startTakeover() {
+          window.addEventListener('wheel',     _blockInput, { passive: false, capture: true });
+          window.addEventListener('touchmove', _blockInput, { passive: false, capture: true });
+
+          const endY = _container.offsetTop + _container.offsetHeight - window.innerHeight;
+
+          if (window._lenis) {
+            window._lenis.scrollTo(endY, {
+              duration: 4,
+              easing: t => t,
+              onComplete: _releaseTakeover,
+            });
+          } else {
+            const obj = { y: window.scrollY };
+            gsap.to(obj, {
+              y: endY, duration: 4, ease: 'none',
+              onUpdate() {
+                document.documentElement.scrollTop = obj.y;
+                document.body.scrollTop = obj.y;
+                ScrollTrigger.update();
+              },
+              onComplete: _releaseTakeover,
+            });
+          }
+        }
+
+        const _watchScroll = () => {
+          if (_takeoverDone) { window.removeEventListener('scroll', _watchScroll); return; }
+          if (_container.getBoundingClientRect().top <= 1) {
+            _takeoverDone = true;
+            window.removeEventListener('scroll', _watchScroll);
+            _startTakeover();
+          }
+        };
+        window.addEventListener('scroll', _watchScroll, { passive: true });
       }
     };
 
