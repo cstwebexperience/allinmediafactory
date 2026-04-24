@@ -2470,28 +2470,23 @@
       const serviciiEl = document.getElementById('servicii');
       let floatBlendStart = -1;
       let floatBlend = 0;
-      let _floatLastT = 0;
       function floatTick(tMs) {
         const revealed = serviciiEl && serviciiEl.classList.contains('revealed');
         if (revealed && floatBlendStart < 0) floatBlendStart = tMs;
         if (!revealed) { floatBlendStart = -1; floatBlend = 0; }
         else floatBlend = Math.min(1, (tMs - floatBlendStart) / 700);
 
-        // Skip trig + DOM writes when section not visible, throttle to ~36fps when active
-        if (floatBlend > 0 && tMs - _floatLastT >= 28) {
-          _floatLastT = tMs;
-          const t = tMs * 0.001;
-          for (const name in FLOAT_PARAMS) {
-            const p = FLOAT_PARAMS[name];
-            const fx = Math.sin(t * p.sx + p.phx) * p.ax * floatBlend;
-            const fy = Math.cos(t * p.sy + p.phy) * p.ay * floatBlend;
-            fragmentOffsets[name].x = fx;
-            fragmentOffsets[name].y = fy;
-            const el = fragmentEls[name];
-            if (el) {
-              el.style.setProperty('--fx', fx.toFixed(2) + 'px');
-              el.style.setProperty('--fy', fy.toFixed(2) + 'px');
-            }
+        const t = tMs * 0.001;
+        for (const name in FLOAT_PARAMS) {
+          const p = FLOAT_PARAMS[name];
+          const fx = Math.sin(t * p.sx + p.phx) * p.ax * floatBlend;
+          const fy = Math.cos(t * p.sy + p.phy) * p.ay * floatBlend;
+          fragmentOffsets[name].x = fx;
+          fragmentOffsets[name].y = fy;
+          const el = fragmentEls[name];
+          if (el) {
+            el.style.setProperty('--fx', fx.toFixed(2) + 'px');
+            el.style.setProperty('--fy', fy.toFixed(2) + 'px');
           }
         }
         requestAnimationFrame(floatTick);
