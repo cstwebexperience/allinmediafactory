@@ -1317,7 +1317,7 @@
 
     /* ── Contact Animation Section ──────────────────────── */
     .contact-scroll-area {
-      height: 100vh;
+      height: 150vh;
       position: relative;
     }
     #contact-stage {
@@ -1577,7 +1577,7 @@
          beyond 150vh is just dead scroll past the footer. Was 220vh,
          then users would keep scrolling into black void after the
          WA button landed. */
-      .contact-scroll-area { height: 100vh; }
+      .contact-scroll-area { height: 130vh; }
       #contact-clipLabel span,
       #contact-waLabel span {
         font-size: 13px !important;
