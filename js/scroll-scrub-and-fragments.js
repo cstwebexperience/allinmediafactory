@@ -675,6 +675,23 @@
       }
       wireDragScroll(document.getElementById('iphone-carousel'));
       wireDragScroll(document.getElementById('metaScroll'));
+
+      // Auto-demo: MutationObserver because openService lives in this IIFE,
+      // not accessible from _scrollScrubInit where 'revealed' is toggled.
+      const DEMO_KEY = 'aimf_demo_seen';
+      let demoTriggered = false;
+      const _demoObserver = new MutationObserver(() => {
+        if (!servicii.classList.contains('revealed')) return;
+        if (sessionStorage.getItem(DEMO_KEY) || demoTriggered) return;
+        demoTriggered = true;
+        setTimeout(() => {
+          if (isOpen) return;
+          openService('ochi-stang');
+          sessionStorage.setItem(DEMO_KEY, '1');
+          setTimeout(() => { if (isOpen) closeService(); }, 3200);
+        }, 1500);
+      });
+      _demoObserver.observe(servicii, { attributes: true, attributeFilter: ['class'] });
     })();
 
 
