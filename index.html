@@ -3,42 +3,16 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#050507">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ALL IN MEDIA FACTORY — Agenție de Marketing & Media</title>
   <meta name="description"
     content="ALL IN MEDIA FACTORY — Agenție de top specializată în marketing digital, strategie media, branding și producție vizuală de impact.">
 
-  <!-- Favicon (inline SVG, no extra request) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23050507'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='DM Sans,sans-serif' font-size='28' font-weight='800' fill='%23a78bfa'%3EA%3C/text%3E%3C/svg%3E">
-
-  <!-- Open Graph / Twitter -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="ALL IN MEDIA FACTORY — Agenție de Marketing & Media">
-  <meta property="og:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări — agenția care îți pune brandul în lumina reflectoarelor.">
-  <meta property="og:image" content="masca-despicata.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ALL IN MEDIA FACTORY">
-  <meta name="twitter:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări.">
-  <meta name="twitter:image" content="masca-despicata.png">
-
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <!-- Critical asset preloads — tell the browser to fetch the first
-       scroll-scrub frame + the 5 mask PNGs in parallel with the main
-       HTML/CSS/JS so they're ready the moment the scene initialises.
-       The rest of the 192 frames load lazily from the scroll-scrub
-       init routine. -->
-  <link rel="preload" as="image" href="frames/frame_0001.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="frag-ochi-stang.png">
-  <link rel="preload" as="image" href="frag-ochi-drept.png">
-  <link rel="preload" as="image" href="frag-nas.png">
-  <link rel="preload" as="image" href="frag-gura-stanga.png">
-  <link rel="preload" as="image" href="frag-gura-dreapta.png">
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@600;700;800;900&family=DM+Sans:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
     rel="stylesheet">
 
   <!-- Three.js import map -->
@@ -49,6 +23,34 @@
       "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
     }
   }
+  </script>
+
+  <!-- Tailwind CSS v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
   </script>
 
   <style>
@@ -76,12 +78,6 @@
     .scroll-container {
       height: 110vh;
       position: relative;
-      /* Filter on this parent creates a containing block for the
-         position:fixed .hero child, so when the scroll-blur engine
-         applies blur() to the container, the Three.js hero inside
-         actually receives it (fixed descendants normally escape
-         their non-transformed/filtered ancestors). */
-      will-change: filter, transform, opacity;
     }
 
     .hero {
@@ -90,7 +86,6 @@
       width: 100vw; height: 100vh;
       background: #030305;
       z-index: 1;
-      will-change: filter, transform, opacity;
     }
 
     #hero-canvas {
@@ -126,21 +121,32 @@
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.3);
-      /* Start hidden; the .sub-reveal class added by the loader triggers
-         a CSS keyframe animation with 'forwards' fill mode. CSS keyframes
-         with forwards persist their end state at the computed-style level,
-         so even if the user scrolls fast and the parent hero briefly hides
-         via visibility:hidden, the sub can't get stuck at opacity:0 the
-         way a GSAP .from tween could. */
-      opacity: 0;
-      transform: translateY(14px);
     }
-    .hero-title-block .sub.sub-reveal {
-      animation: heroSubReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
     }
-    @keyframes heroSubReveal {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0);    }
+    .scroll-hint span {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.15);
+    }
+    .scroll-hint i {
+      display: block;
+      width: 1px; height: 40px;
+      background: linear-gradient(rgba(255,255,255,0.15), transparent);
     }
 
     /* ── Service Overlay ────────────────────────────────── */
@@ -158,59 +164,74 @@
       pointer-events: all;
     }
 
-    /* ── Blurred ghost fragment in the overlay ────────────
-       Each fragment, when clicked, has a blurred giant version of
-       itself anchored to its corresponding on-screen corner so the
-       user always knows WHICH part of the mask the panel belongs to.
-       Position class set by JS as .ghost-<data-frag>. */
+    /* Blurred ghost fragment anchored to its screen corner */
     #overlay-ghost {
       position: absolute;
       width: 120vw;
       aspect-ratio: 16 / 9;
-      background-size: cover;
-      background-position: center;
+      background-image: url('masca-despicata.png');
+      background-size: 100% 100%;
       background-repeat: no-repeat;
-      filter: blur(12px) brightness(0.55);
+      filter: blur(10px) brightness(0.48);
       opacity: 0;
-      transform: scale(0.18);
-      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform: scale(0.12);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
                   transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: none;
     }
     #service-overlay.open #overlay-ghost {
-      opacity: 0.85;
+      opacity: 0.82;
       transform: scale(1);
     }
-    /* Top-left — ochi stâng (01) */
-    #overlay-ghost.ghost-ochi-stang {
-      top: -8%; left: -8%; right: auto; bottom: auto;
+
+    #overlay-ghost.ghost-left-eye {
+      top: -5%; left: -5%; right: auto; bottom: auto;
       transform-origin: 36% 28%;
-      background-image: url('frag-ochi-stang.png');
+      clip-path: polygon(49.4% 24.6%, 48.6% 15.2%, 47.6% 7.4%, 45.1% 1.5%,
+        41.1% 0.3%, 37.6% 0.5%, 32.0% 3.3%,
+        26.7% 7.6%, 24.6% 14.4%, 23.8% 22.2%, 23.8% 29.5%,
+        24.3% 36.7%, 25.8% 45.3%, 27.3% 50.8%, 30.1% 53.4%,
+        33.6% 51.2%, 37.3% 50.2%, 41.1% 46.3%, 44.6% 40.7%,
+        46.7% 34.3%, 47.7% 28.7%);
     }
-    /* Top-right — ochi drept (02) */
-    #overlay-ghost.ghost-ochi-drept {
-      top: -8%; right: -8%; left: auto; bottom: auto;
-      transform-origin: 67% 28%;
-      background-image: url('frag-ochi-drept.png');
+    #overlay-ghost.ghost-right-eye {
+      top: -5%; right: -5%; left: auto; bottom: auto;
+      transform-origin: 67% 25%;
+      clip-path: polygon(65.0% 0.9%, 62.2% 4.0%, 59.9% 9.6%,
+        58.4% 14.0%, 57.1% 20.0%, 56.2% 26.5%,
+        57.2% 32.7%, 58.7% 38.3%, 60.3% 43.1%,
+        63.1% 48.2%, 66.4% 50.8%, 69.6% 51.4%,
+        73.0% 50.6%, 74.1% 48.0%, 76.3% 40.5%,
+        76.6% 33.7%, 77.4% 26.7%, 78.9% 23.4%,
+        79.0% 16.0%, 77.0% 8.0%, 73.0% 3.0%, 69.0% 1.0%);
     }
-    /* Top-center — nas (03) */
-    #overlay-ghost.ghost-nas {
-      top: -15%; left: 50%; right: auto; bottom: auto;
-      margin-left: -60vw;
-      transform-origin: 50% 50%;
-      background-image: url('frag-nas.png');
+    #overlay-ghost.ghost-nose {
+      top: -15%; left: -10%; right: auto; bottom: auto;
+      transform-origin: 52% 50%;
+      clip-path: polygon(51.4% 30.5%, 50.0% 32.3%, 47.4% 37.5%, 44.0% 45.1%,
+        42.0% 51.4%, 43.8% 56.2%, 45.4% 63.2%, 48.0% 70.5%,
+        51.9% 69.3%, 56.8% 68.5%, 61.3% 63.4%, 61.1% 56.8%,
+        60.2% 51.4%, 59.8% 48.4%, 58.7% 44.7%, 56.8% 40.7%,
+        55.9% 36.7%, 53.7% 31.5%);
     }
-    /* Bottom-left — gura stânga (04) */
-    #overlay-ghost.ghost-gura-stanga {
-      bottom: -8%; left: -8%; right: auto; top: auto;
-      transform-origin: 38% 76%;
-      background-image: url('frag-gura-stanga.png');
+    #overlay-ghost.ghost-left-mouth {
+      bottom: -5%; left: -5%; right: auto; top: auto;
+      transform-origin: 38% 77%;
+      clip-path: polygon(24.9% 60.8%, 25.6% 57.2%, 28.8% 57.8%, 31.3% 56.6%,
+        34.2% 55.8%, 36.7% 57.4%, 38.9% 59.0%, 40.7% 61.8%,
+        42.7% 63.4%, 48.4% 75.7%, 49.7% 80.7%, 50.4% 87.1%,
+        50.8% 95.2%, 44.1% 97.2%, 39.8% 95.8%, 35.8% 91.6%,
+        32.9% 85.9%, 28.7% 82.9%, 26.4% 78.3%, 26.3% 71.3%,
+        25.1% 66.4%);
     }
-    /* Bottom-right — gura dreapta (05) */
-    #overlay-ghost.ghost-gura-dreapta {
-      bottom: -8%; right: -8%; left: auto; top: auto;
-      transform-origin: 67% 74%;
-      background-image: url('frag-gura-dreapta.png');
+    #overlay-ghost.ghost-right-mouth {
+      bottom: -5%; right: -5%; left: auto; top: auto;
+      transform-origin: 67% 76%;
+      clip-path: polygon(64.0% 62.6%, 61.6% 67.6%, 60.1% 70.9%, 58.6% 74.5%,
+        56.9% 80.3%, 55.9% 85.3%, 54.9% 90.8%, 55.1% 96.0%,
+        57.6% 97.8%, 61.6% 98.4%, 65.4% 94.8%, 69.6% 88.5%,
+        72.9% 80.9%, 75.8% 74.5%, 77.3% 69.5%, 78.2% 65.0%,
+        79.1% 59.2%, 79.3% 52.2%, 75.6% 49.8%, 74.0% 53.6%,
+        71.4% 54.6%, 68.1% 52.6%, 66.4% 54.2%, 65.1% 58.6%);
     }
 
     /* Close button */
@@ -277,12 +298,10 @@
       z-index: 10;
     }
 
-    /* Shift content away from ghost corner so they don't overlap.
-       Panels with .pane-content-vp opt out — their wider container
-       needs to centre on screen instead of being shoved off-side. */
-    #pane-left-eye   .pane-content:not(.pane-content-vp) { margin-left: 30vw; margin-top: 20vh; }
-    #pane-right-eye  .pane-content:not(.pane-content-vp) { margin-right: 30vw; margin-top: 20vh; }
-    #pane-nose       .pane-content:not(.pane-content-vp) { margin-top: 28vh; }
+    /* Shift content away from ghost corner so they don't overlap */
+    #pane-left-eye   .pane-content { margin-left: 30vw; margin-top: 20vh; }
+    #pane-right-eye  .pane-content { margin-right: 30vw; margin-top: 20vh; }
+    #pane-nose       .pane-content { margin-top: 28vh; }
     #pane-left-mouth .pane-content { margin-left: 30vw; margin-bottom: 20vh; }
     #pane-right-mouth .pane-content { margin-right: 30vw; margin-bottom: 20vh; }
 
@@ -298,8 +317,6 @@
     #service-overlay.open .service-pane.active .content-stagger:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.58s; }
     #service-overlay.open .service-pane.active .content-stagger:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.70s; }
     #service-overlay.open .service-pane.active .content-stagger:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.80s; }
-    #service-overlay.open .service-pane.active .content-stagger:nth-child(6) { opacity:1; transform:translateY(0); transition-delay:0.90s; }
-    #service-overlay.open .service-pane.active .content-stagger:nth-child(7) { opacity:1; transform:translateY(0); transition-delay:1.00s; }
 
     /* Typography inside panes */
     .pane-eyebrow {
@@ -322,36 +339,53 @@
       letter-spacing: -0.025em;
       margin-bottom: 18px;
     }
-    /* iPhone Carousel — single row, fits the viewport without scroll */
+    .pane-sub {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.2vw, 16px);
+      color: rgba(255,255,255,0.42);
+      text-align: center;
+      max-width: 460px;
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+
+    /* iPhone Carousel */
     .iphone-carousel {
       width: 100%;
-      overflow: visible;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 0 28px;
+      margin-bottom: 28px;
+      cursor: grab;
       user-select: none;
     }
+    .iphone-carousel::-webkit-scrollbar { display: none; }
+    .iphone-carousel.dragging { cursor: grabbing; }
     .iphone-track {
       display: flex;
-      gap: clamp(24px, 2.6vw, 44px);
-      justify-content: center;
+      gap: 24px;
+      width: max-content;
+      padding: 0 calc(50% - 282px);
       align-items: center;
     }
     .iphone-mockup {
-      position: relative;
-      isolation: isolate; /* each phone gets its own stacking context */
-      filter: drop-shadow(0 28px 60px rgba(0,0,0,0.85)) drop-shadow(0 0 30px rgba(139,92,246,0.07));
+      transform: rotate(var(--rot, 0deg));
+      filter: drop-shadow(0 36px 72px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(139,92,246,0.07));
       flex-shrink: 0;
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
                   filter 0.35s ease;
     }
     .iphone-mockup:hover {
-      transform: translateY(-6px) scale(1.025);
-      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9)) drop-shadow(0 0 50px rgba(139,92,246,0.16));
+      transform: rotate(var(--rot, 0deg)) translateY(-10px) scale(1.03);
+      filter: drop-shadow(0 50px 90px rgba(0,0,0,0.9)) drop-shadow(0 0 60px rgba(139,92,246,0.14));
     }
     .iphone-frame {
-      width: clamp(110px, 11vw, 145px);
+      width: 155px;
       aspect-ratio: 9 / 19.5;
       background: linear-gradient(145deg, #2d2d33 0%, #1c1c20 100%);
-      border-radius: 38px;
-      padding: 12px 8px 16px;
+      border-radius: 42px;
+      padding: 14px 9px 18px;
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035),
                   inset 2px 0 8px rgba(255,255,255,0.025);
@@ -378,831 +412,184 @@
       overflow: hidden;
       position: relative;
     }
-    /* Zoom modal iframe must fill the giant iPhone screen completely */
-    #zoom-iframe {
-      position: absolute;
-      inset: 0;
+    .yt-placeholder {
       width: 100%;
       height: 100%;
-      border: 0;
-      border-radius: inherit;
-      display: block;
+      background: linear-gradient(180deg, #111128 0%, #0a0a18 50%, #060610 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .yt-play-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .yt-play-icon::after {
+      content: '';
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 6px 0 6px 10px;
+      border-color: transparent transparent transparent rgba(255,255,255,0.5);
+      margin-left: 2px;
+    }
+    .yt-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 8.5px;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.1em;
+      text-align: center;
     }
 
-    /* Static thumbnail inside the iPhone screen — clicking it opens
-       the giant phone-zoom overlay that loads the real YouTube iframe. */
-    .phone-thumb {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none;
+    /* Screenshot grid */
+    .screenshot-grid { width: 100%; }
+    .grid-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      text-align: center;
+      margin-bottom: 14px;
     }
-    /* Play badge over the thumbnail */
-    .phone-play {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 48px;
-      height: 48px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5),
-                  0 0 24px rgba(180, 130, 255, 0.18);
-      pointer-events: none;
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                  background 0.3s ease;
-      z-index: 2;
+    .grid-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
-    .phone-play::after {
+    .screenshot-card {
+      width: 180px;
+      height: 102px;
+      background: rgba(255,255,255,0.035);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.065);
+      position: relative;
+      overflow: hidden;
+    }
+    .screenshot-card::after {
       content: '';
       position: absolute;
-      top: 50%;
-      left: 54%;
-      transform: translate(-50%, -50%);
-      width: 0;
-      height: 0;
-      border-style: solid;
-      border-width: 8px 0 8px 13px;
-      border-color: transparent transparent transparent #ffffff;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.65) 100%);
     }
-    .iphone-mockup:hover .phone-play {
-      transform: translate(-50%, -50%) scale(1.12);
-      background: rgba(180, 130, 255, 0.85);
-    }
-
-    /* Videoclipuri Premium pane: wider, no-scroll, compact dark vibe */
-    .pane-content-vp {
-      max-width: 1180px !important;
-      width: 94vw !important;
-      max-height: 100vh;
-      overflow: hidden;
-      padding: clamp(1rem, 2.5vh, 2rem) 1.5rem clamp(1rem, 2.5vh, 2rem);
-      gap: clamp(0.6rem, 1.5vh, 1.2rem);
-    }
-
-    /* Panel label (eyebrow) — mono, wide-spaced, violet */
-    .panel-label {
+    .views-badge {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      z-index: 2;
       font-family: 'DM Sans', sans-serif;
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.45em;
-      text-transform: uppercase;
-      color: rgba(180, 130, 255, 0.7);
-      text-shadow: 0 0 10px rgba(180, 130, 255, 0.25);
-      margin-bottom: 0;
+      color: #fff;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 2px 9px;
+      border-radius: 20px;
     }
 
-    /* Panel title — bold 900 with white→cool grey gradient */
-    .panel-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 900 !important;
-      font-size: clamp(34px, 5.5vw, 76px) !important;
-      letter-spacing: -0.03em !important;
-      line-height: 0.9 !important;
-      margin-bottom: 0 !important;
-      background: linear-gradient(180deg, #ffffff 0%, #a0a0b0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 2px 30px rgba(180, 130, 255, 0.08));
-    }
-
-    /* Panel subtitle — replaces the small descriptive paragraph with
-       a confident two-word statement, sized between the label and the
-       main title. Same gradient family, lighter weight. */
-    .panel-subtitle {
-      font-family: 'Syne', sans-serif;
-      font-weight: 600;
-      font-size: clamp(22px, 2.6vw, 38px);
-      letter-spacing: -0.01em;
-      line-height: 1;
-      text-align: center;
-      margin: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(180,140,220,0.65) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 0 18px rgba(180, 130, 255, 0.08);
-    }
-
-    /* Longer descriptive paragraph — smaller than the title, body-text
-       legibility. Same white→light-violet gradient as .panel-subtitle
-       so the two feel like one voice. Publication names bolded. */
-    .panel-description {
-      font-family: 'DM Sans', 'Inter', sans-serif;
-      font-weight: 400;
-      font-size: clamp(14px, 0.95vw + 6px, 18px);
-      line-height: 1.6;
-      letter-spacing: 0.005em;
-      text-align: center;
-      max-width: 580px;
-      margin: clamp(14px, 1.6vh, 22px) auto 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(180,140,220,0.65) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 18px rgba(180, 130, 255, 0.06);
-    }
-    .panel-description strong {
-      font-weight: 700;
-    }
-
-    /* ── Single site card (pane 04 — agentieseo.net) ─────── */
-    /* Reuses .site-card styling from pane 03 but wrapped in
-       a narrow centred container so a lone card doesn't look
-       stretched. */
-    .single-site {
-      width: 100%;
-      max-width: 340px;
-      margin: clamp(14px, 1.8vh, 22px) auto clamp(6px, 1vh, 12px);
-    }
-
-    /* ── Media Marquee (pane 04 — Romanian news sites) ────── */
-    /* Infinite horizontal scroller. Track holds two copies of the
-       same item list, translateX animates 0 → -50% so the loop is
-       seamless. Edge fades via CSS mask so items enter/leave gently. */
-    .media-marquee {
-      width: 100%;
-      max-width: 620px;
-      margin: clamp(16px, 2vh, 26px) auto 0;
-      overflow: hidden;
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
-              mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
-      padding: 6px 0;
-    }
-    .media-marquee-track {
+    /* Placeholder cards (other services) */
+    .placeholder-cards {
       display: flex;
       gap: 14px;
-      width: max-content;
-      animation: media-marquee-scroll 22s linear infinite;
-      will-change: transform;
-    }
-    .media-marquee:hover .media-marquee-track {
-      animation-play-state: paused;
-    }
-    .media-marquee-item {
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      white-space: nowrap;
-      padding: 8px 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(180, 130, 255, 0.22);
-      background: rgba(180, 130, 255, 0.05);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.72);
-      box-shadow: 0 0 18px rgba(180, 130, 255, 0.05) inset;
-    }
-    /* Left → right scroll: track starts shifted left (items pre-buffered on the
-       left side) and slides right to 0. Seamless loop because the duplicated
-       second half is identical to the first half. The -7px accounts for the
-       half-gap offset (24 items + 23 gaps → -50% is half a gap short). */
-    @keyframes media-marquee-scroll {
-      0%   { transform: translate3d(calc(-50% - 7px), 0, 0); }
-      100% { transform: translate3d(0, 0, 0); }
-    }
-
-    /* Results section — dark moody screenshot grid (compact) */
-    .results-section {
-      width: 100%;
-      max-width: 920px;
-      margin: 0 auto;
-    }
-    .results-label {
-      display: block;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 10px;
-      letter-spacing: 0.5em;
-      text-transform: uppercase;
-      color: rgba(180, 130, 255, 0.55);
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-    .result-card {
-      position: relative;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      background: rgba(255, 255, 255, 0.025);
-      aspect-ratio: 16 / 9;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.35s ease,
-                  box-shadow 0.35s ease;
-    }
-    .result-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(180, 130, 255, 0.35);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55),
-                  0 0 30px rgba(180, 130, 255, 0.18);
-    }
-    .result-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      filter: brightness(0.88) saturate(0.85);
-      transition: filter 0.4s ease;
-    }
-    .result-card:hover img {
-      filter: brightness(1) saturate(1);
-    }
-    @media (max-width: 768px) {
-      .results-grid { grid-template-columns: 1fr; gap: 10px; }
-      .pane-content-vp { padding: 1rem; }
-    }
-
-    /* ── Phone Zoom Overlay (pane 01 iPhone click) ───────── */
-    #phone-zoom-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 300;
-      background: rgba(3, 3, 5, 0.92);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    #phone-zoom-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .zoom-phone {
-      transform: scale(0.4) translateY(40px);
-      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-      filter: drop-shadow(0 50px 120px rgba(0,0,0,0.85))
-              drop-shadow(0 0 80px rgba(180,130,255,0.18));
-    }
-    #phone-zoom-overlay.open .zoom-phone {
-      transform: scale(1) translateY(0);
-    }
-    .zoom-iphone-frame {
-      width: min(310px, 78vw) !important;
-      border-radius: 56px !important;
-      padding: 18px 12px 22px !important;
-    }
-    .zoom-iphone-frame::before {
-      width: 100px !important;
-      height: 28px !important;
-    }
-    .zoom-iphone-frame .iphone-screen {
-      border-radius: 44px;
-    }
-
-    /* Close button shared between zoom + lightbox */
-    .zoom-close, .lightbox-close {
-      position: absolute;
-      top: 1.8rem;
-      right: 2.2rem;
-      width: 46px;
-      height: 46px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 50%;
-      color: rgba(255,255,255,0.65);
-      font-family: 'Inter', sans-serif;
-      font-size: 26px;
-      font-weight: 300;
-      line-height: 1;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 5;
-      transition: all 0.3s ease;
-    }
-    .zoom-close:hover, .lightbox-close:hover {
-      color: #fff;
-      border-color: rgba(180,130,255,0.55);
-      background: rgba(180,130,255,0.12);
-      transform: rotate(90deg);
-    }
-
-    /* ── Image Lightbox (pane 01 result-card click) ──────── */
-    #image-lightbox {
-      position: fixed;
-      inset: 0;
-      z-index: 305;
-      background: rgba(3, 3, 5, 0.95);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: clamp(2rem, 6vh, 4.5rem);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    #image-lightbox.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-    #image-lightbox img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      border-radius: 14px;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.7),
-                  0 0 80px rgba(180,130,255,0.15);
-      transform: scale(0.85);
-      opacity: 0;
-      transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1),
-                  opacity 0.45s ease;
-    }
-    #image-lightbox.open img {
-      transform: scale(1);
-      opacity: 1;
-    }
-
-    /* Make the iPhone mockups + result cards feel clickable */
-    .pane-content-vp .iphone-mockup { cursor: pointer; }
-    .pane-content-vp .result-card { cursor: zoom-in; }
-
-    /* ── Sites Grid (pane 03 — Web Design) ───────────────── */
-    /* Three preview cards side by side. Each card is an <a> so the
-       whole thing is one big native click target → opens the live
-       site in a new tab. Thumbnails come from WordPress mShots
-       (free, cached screenshot service) — will be swapped later
-       for custom presentation images. */
-    .sites-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: clamp(12px, 1.4vw, 20px);
-      width: 100%;
-      max-width: 1180px;
-      margin: 0 auto;
-    }
-    .site-card {
-      display: flex;
-      flex-direction: column;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      background: rgba(255, 255, 255, 0.025);
-      text-decoration: none;
-      color: inherit;
-      cursor: pointer;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.4s ease,
-                  box-shadow 0.4s ease;
-    }
-    .site-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(180, 130, 255, 0.4);
-      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6),
-                  0 0 50px rgba(180, 130, 255, 0.2);
-    }
-    .site-card-thumb {
-      position: relative;
-      aspect-ratio: 16 / 10;
-      overflow: hidden;
-      background: linear-gradient(135deg, #0a0a12 0%, #14101e 100%);
-    }
-    .site-card-thumb::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.55) 100%);
-      pointer-events: none;
-    }
-    .site-card-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: top center;
-      display: block;
-      filter: brightness(0.85) saturate(0.9);
-      transition: filter 0.4s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .site-card:hover .site-card-thumb img {
-      filter: brightness(1) saturate(1);
-      transform: scale(1.04);
-    }
-    .site-card-info {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(0, 0, 0, 0.25);
-    }
-    .site-card-domain {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      letter-spacing: 0.04em;
-      color: rgba(255, 255, 255, 0.78);
-      font-weight: 500;
-    }
-    .site-card-arrow {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
-      color: rgba(180, 130, 255, 0.9);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .site-card:hover .site-card-arrow {
-      transform: translateX(5px);
-      color: #ffffff;
-    }
-    @media (max-width: 1024px) {
-      .sites-grid { grid-template-columns: 1fr 1fr; max-width: 760px; }
-    }
-    @media (max-width: 640px) {
-      .sites-grid { grid-template-columns: 1fr; max-width: 420px; }
-    }
-
-    /* ── Portfolio CTA (pane 03 — under the 3 site cards) ── */
-    /* Small label "Verifică portofoliu" + 2 compact buttons that
-       link to the full agency portfolios (agentieseo.net + cstportfolio.xyz).
-       Kept tight so it fits the no-scroll panel layout. */
-    .portfolio-cta {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-top: clamp(14px, 1.6vh, 22px);
-    }
-    .portfolio-cta-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.55);
-      font-weight: 500;
-    }
-    .portfolio-cta-buttons {
-      display: flex;
-      gap: 10px;
       flex-wrap: wrap;
       justify-content: center;
-    }
-    .portfolio-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 18px;
-      border-radius: 999px;
-      border: 1px solid rgba(180, 130, 255, 0.35);
-      background: rgba(180, 130, 255, 0.06);
-      color: rgba(255, 255, 255, 0.9);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      font-weight: 500;
-      text-decoration: none;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.35s ease,
-                  background 0.35s ease,
-                  box-shadow 0.35s ease,
-                  color 0.35s ease;
-    }
-    .portfolio-btn .portfolio-btn-arrow {
-      font-size: 14px;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .portfolio-btn:hover {
-      transform: translateY(-2px);
-      border-color: rgba(200, 160, 255, 0.7);
-      background: rgba(180, 130, 255, 0.14);
-      color: #ffffff;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
-                  0 0 28px rgba(180, 130, 255, 0.25);
-    }
-    .portfolio-btn:hover .portfolio-btn-arrow {
-      transform: translateX(4px);
-    }
-
-    /* Carousel iPhones are clickable — cursor pointer + relative
-       positioning so the play badge sits over the thumbnail. */
-    .pane-content-vp .iphone-mockup {
-      position: relative;
-    }
-
-    /* ── Panel 02: Performance Ads ───────────────────────── */
-
-    /* Stats row — 2 numbers side by side, second one violet-highlighted */
-    .stats-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: clamp(12px, 1.4vw, 18px);
-      width: 100%;
-      max-width: 760px;
-      margin: 0 auto;
-    }
-    .stat-block {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: clamp(16px, 2vw, 26px) clamp(18px, 2.2vw, 32px);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.35s ease;
-    }
-    .stat-block:hover {
-      transform: translateY(-3px);
-      border-color: rgba(180, 130, 255, 0.25);
-    }
-    .stat-block--highlight {
-      border-color: rgba(180, 130, 255, 0.4);
-      background: rgba(180, 130, 255, 0.07);
-      box-shadow: 0 0 30px rgba(180, 130, 255, 0.08);
-    }
-    .stat-block--highlight:hover {
-      border-color: rgba(180, 130, 255, 0.55);
-    }
-    /* Stat number — switched from Syne to Inter because Syne's heavy-weight
-       digits (3, 0, 5) have ball terminals + wide apertures that read as
-       a retro bevel under a gradient text-clip. Inter is the site body font
-       (already loaded at 900), has crisp geometric digits, and tabular-nums
-       keeps the two cards optically aligned. Gradient + color match the rest
-       of the site voice. */
-    .stat-number {
-      font-family: 'Inter', system-ui, sans-serif;
-      font-weight: 900;
-      font-size: clamp(44px, 5.6vw, 74px);
-      letter-spacing: -0.035em;
-      line-height: 0.95;
-      font-feature-settings: 'tnum' 1, 'lnum' 1, 'ss01' 1;
-      font-variant-numeric: tabular-nums lining-nums;
-      background: linear-gradient(180deg, #ffffff 0%, rgba(200, 190, 230, 0.82) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 0 30px rgba(180, 130, 255, 0.08);
-    }
-    .stat-block--highlight .stat-number {
-      background: linear-gradient(180deg, #ffffff 0%, #c8a8ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 0 30px rgba(180, 130, 255, 0.18);
-    }
-    /* Thin separator between digits (used in "3-5"). The parent
-       .stat-number uses background-clip:text + text-fill-color:
-       transparent, which nested children inherit — meaning a naive
-       child span goes invisible. We explicitly set the child's own
-       text-fill-color + color so it bypasses the parent clip and
-       renders as a real, visible, thin dash. */
-    .stat-number .stat-digit { display: inline-block; }
-    .stat-number .stat-sep {
-      display: inline-block;
-      font-weight: 400;
-      font-size: 0.6em;
-      letter-spacing: 0;
-      vertical-align: 0.2em;
-      margin: 0 0.04em;
-      /* Override parent's transparent fill so the dash is actually visible */
-      -webkit-text-fill-color: rgba(235, 225, 255, 0.7);
-      color: rgba(235, 225, 255, 0.7);
-      /* Kill the gradient background clip for this child */
-      background: none;
-      -webkit-background-clip: initial;
-      background-clip: initial;
-    }
-    .stat-unit {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      color: rgba(180, 130, 255, 0.92);
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
       margin-top: 8px;
     }
-    .stat-desc {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.74rem;
-      font-weight: 400;
-      color: #6a5f82;
-      margin: 0;
-      line-height: 1.5;
-      letter-spacing: 0.005em;
+    .placeholder-card {
+      width: 220px;
+      height: 130px;
+      background: rgba(255,255,255,0.025);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.055);
     }
 
-    /* Meta Ads screenshot — drag-scrollable, inverted to dark mode */
-    .meta-screenshot-wrapper {
-      width: 100%;
-      max-width: 920px;
-      margin: 0 auto;
-    }
-    .screenshot-label {
-      display: block;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      color: rgba(180, 130, 255, 0.6);
-      text-transform: uppercase;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-    .meta-screenshot-scroll {
-      width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      cursor: grab;
-      scrollbar-width: none;
-    }
-    .meta-screenshot-scroll::-webkit-scrollbar { display: none; }
-    .meta-screenshot-scroll.dragging { cursor: grabbing; }
-    .meta-inner {
+    /* ── Nav link hover underline ─────────────────────── */
+    .nav-link {
       position: relative;
-      display: inline-block;
-      line-height: 0;
+      transition: color .3s ease;
     }
-    .meta-screenshot-scroll img {
-      height: 200px;
-      width: auto;
-      max-width: none;
-      display: block;
-      filter: invert(1) hue-rotate(180deg) brightness(0.88) contrast(1.05);
-      transition: filter 0.3s ease;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-    .meta-screenshot-scroll:hover img {
-      filter: invert(1) hue-rotate(180deg) brightness(1) contrast(1.05);
-    }
-    .row-highlight {
+    .nav-link::after {
+      content: '';
       position: absolute;
-      left: 0;
-      right: 0;
-      background: rgba(180, 130, 255, 0.14);
-      border-top: 1px solid rgba(180, 130, 255, 0.45);
-      border-bottom: 1px solid rgba(180, 130, 255, 0.45);
-      box-shadow: 0 0 20px rgba(180, 130, 255, 0.18);
-      pointer-events: none;
+      left: 0; bottom: -4px;
+      width: 0; height: 1.5px;
+      background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+      transition: width .35s cubic-bezier(.4,0,.2,1);
     }
-    .screenshot-hint {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.68rem;
-      color: rgba(255, 255, 255, 0.22);
-      text-align: center;
-      margin: 6px 0 0;
-      letter-spacing: 0.05em;
-    }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link:hover { color: #c4b5fd; }
 
-    /* Servicii title — sits above the mask, hidden until .revealed */
-    .servicii-eyebrow {
-      position: absolute;
-      top: 3rem;
-      left: 50%;
-      transform: translate(-50%, -10px);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.55em;
-      text-transform: uppercase;
-      color: rgba(220, 200, 255, 0.85);
-      z-index: 20;
-      pointer-events: none;
-      margin: 0;
-      opacity: 0;
-      text-shadow: 0 0 12px rgba(167, 139, 250, 0.4);
-      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .fragments-section.revealed .servicii-eyebrow {
-      opacity: 1;
-      transform: translate(-50%, 0);
-      transition-delay: 0.05s;
-    }
-
-    /* ── Mask Fragments — sticky overlay on top of #stage ─────── */
-    /* #servicii lives INSIDE #scroll-scrub-container, sticky-positioned
-       so it sits exactly on top of the last frame painted by #stage's
-       canvas. The fragment PNGs are full-screen via .fragments-canvas
-       so they line up pixel-for-pixel with the video frame underneath. */
+    /* ── Mask Fragments ───────────────────────────────── */
     .fragments-section {
-      position: sticky;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      margin-top: -100vh;   /* overlap exactly with #stage */
-      pointer-events: none; /* JS toggles to 'all' once revealed */
-      z-index: 10;
+      position: relative;
+      z-index: 1; /* sit above sticky #stage on mobile GPU layers */
+      min-height: 100vh;
+      min-height: 100dvh;
       overflow: hidden;
-      will-change: filter, transform, opacity;
+      background: #050505;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* Start hidden – JS will reveal */
+      opacity: 0;
+      transform: scale(.92);
+      transition: opacity .8s cubic-bezier(.16, 1, .3, 1),
+        transform 1s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .fragments-section.revealed {
+      opacity: 1;
+      transform: scale(1);
     }
 
     /* Stage fade-out driven by JS */
     #stage {
       transition: opacity .3s ease, filter .3s ease;
-      will-change: filter, transform, opacity;
     }
 
-    /* Full-screen canvas so fragments line up with the video frame.
-       Opacity is driven by JS during the scrub crossfade so the PNGs
-       can fade in WHILE the canvas underneath is still painting the
-       last frame — zero visual jump between video mask and PNG mask. */
     .fragments-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      will-change: opacity;
-      /* No transform: the mask + annotation SVG fill the full stage
-         and the natural contain letterbox is enough breathing room.
-         Adding scale() here used to leave a visible black band at
-         the bottom on desktop because it compounded with the stage
-         canvas's own letterbox — user read it as 'video cut at
-         bottom'. */
+      position: relative;
+      width: min(90vw, 900px);
+      aspect-ratio: 16 / 9;
     }
 
-    /* Each fragment is full-screen + uses its own transparent PNG.
-       The mask shape comes from the PNG's alpha channel — no clip-path.
-       --fx / --fy are updated per frame by the float animation below so
-       each fragment drifts independently. The JS hit-test reads the same
-       values so clicks still land on the visible pixels, not the
-       original un-drifted PNG position. */
     .mask-fragment {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
-      /* contain — MUST match #stage canvas object-fit: contain above.
-         Both layers use contain semantics so nothing gets cropped at
-         the top (forehead) or bottom (chin) of the viewport, and both
-         layers stay pixel-aligned during the scroll-scrub crossfade. */
-      background-size: contain;
-      background-position: center;
+      background-image: url('masca-despicata.png');
+      background-size: 100% 100%;
       background-repeat: no-repeat;
+      cursor: pointer;
+      transition: filter .5s cubic-bezier(.4, 0, .2, 1),
+                  transform .65s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity .5s ease;
+      will-change: transform, filter, opacity;
+    }
+
+    /* Fragment flies toward its corner when clicked */
+    .mask-fragment.flying {
+      animation: none !important;
+      z-index: 50 !important;
       pointer-events: none;
-      transform: translate3d(var(--fx, 0px), var(--fy, 0px), 0);
-      transition: filter .4s cubic-bezier(.4, 0, .2, 1);
-      will-change: filter, transform;
+      cursor: default;
     }
-    .mask-fragment[data-frag="ochi-stang"]   { background-image: url('frag-ochi-stang.png'); }
-    .mask-fragment[data-frag="ochi-drept"]   { background-image: url('frag-ochi-drept.png'); }
-    .mask-fragment[data-frag="nas"]          { background-image: url('frag-nas.png'); }
-    .mask-fragment[data-frag="gura-stanga"]  { background-image: url('frag-gura-stanga.png'); }
-    .mask-fragment[data-frag="gura-dreapta"] { background-image: url('frag-gura-dreapta.png'); }
+    #frag-left-eye.flying   { transform: translate(-60vw, -58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-right-eye.flying  { transform: translate( 60vw, -58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-nose.flying       { transform: translate(   0,  -62vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-left-mouth.flying { transform: translate(-60vw,  58vh) scale(3.5) !important; opacity: 0 !important; }
+    #frag-right-mouth.flying{ transform: translate( 60vw,  58vh) scale(3.5) !important; opacity: 0 !important; }
 
-    /* The two mouth pieces sit at the bottom of the mask PNG; the
-       broken inner side of the papier-mâché shows as a pale yellow/tan
-       jagged edge right at the viewport bottom, which reads as a
-       rendering glitch. Fade the bottom ~14% of each mouth fragment
-       into transparent so that raw edge dissolves into the black bg.
-       Eyes + nose are NOT masked because their alpha ends well above
-       the fragment box's bottom. Hit-testing is unaffected — the
-       alpha canvas still carries the original pixels. */
-    .mask-fragment[data-frag="gura-stanga"],
-    .mask-fragment[data-frag="gura-dreapta"] {
-      -webkit-mask-image: linear-gradient(180deg,
-        #000 0%,
-        #000 82%,
-        rgba(0,0,0,0.55) 92%,
-        transparent 100%);
-              mask-image: linear-gradient(180deg,
-        #000 0%,
-        #000 82%,
-        rgba(0,0,0,0.55) 92%,
-        transparent 100%);
-    }
-
-    /* Revealed: only after stage canvas has fully faded out, so
-       fragments are the sole visual layer + clicks are enabled. */
-    .fragments-section.revealed {
-      pointer-events: all;
-    }
-    .fragments-section.revealed .mask-fragment {
-      pointer-events: all;
-    }
-
-    /* Hover state — set by JS after alpha-channel hit test on the
-       fragments-canvas. We can't use :hover here because every fragment
-       is full-screen and they overlap pixel-for-pixel. */
-    .mask-fragment.hover {
+    /* White edge glow on hover */
+    .mask-fragment:hover {
       z-index: 20 !important;
       filter:
         drop-shadow(0 0 2px  rgba(255,255,255,1.00))
@@ -1212,16 +599,13 @@
         drop-shadow(0 0 90px rgba(255,255,255,0.25)) !important;
     }
 
-    /* Active (clicked) — violet glow */
+    /* When a fragment is active (clicked) — violet glow */
     .mask-fragment.active {
       filter: drop-shadow(0 0 22px rgba(139, 92, 246, .7)) drop-shadow(0 0 50px rgba(139, 92, 246, .3)) !important;
       z-index: 10;
     }
 
-    /* ── Annotation lines (biology/HUD style) ─────────────
-       Hidden until #servicii.revealed, then animated in with a
-       stroke-dasharray draw-on effect + violet glow + 120ms stagger
-       between the 5 groups. */
+    /* Annotation lines (biology/HUD style) */
     .ann-svg {
       position: absolute;
       inset: 0;
@@ -1232,70 +616,239 @@
       overflow: visible;
     }
     .ann-group {
-      opacity: 0;
-      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0.32;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .ann-line {
-      stroke-dasharray: 1000;
-      stroke-dashoffset: 1000;
-      transition: stroke-dashoffset 0.95s cubic-bezier(0.65, 0, 0.35, 1);
-      filter: drop-shadow(0 0 2px rgba(167, 139, 250, 0.55))
-              drop-shadow(0 0 6px rgba(167, 139, 250, 0.25));
-    }
-    .ann-num, .ann-lbl {
-      opacity: 0;
-      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* Reveal — driven by #servicii.revealed (set by scroll-scrub at 80%) */
-    .fragments-section.revealed .ann-group {
-      opacity: 0.55;
-    }
-    .fragments-section.revealed .ann-line {
-      stroke-dashoffset: 0;
-    }
-    .fragments-section.revealed .ann-num,
-    .fragments-section.revealed .ann-lbl {
+    .ann-group.lit {
       opacity: 1;
     }
-    /* Stagger 120ms between the 5 annotation groups */
-    .fragments-section.revealed #ann-left-eye    { transition-delay: 0.10s; }
-    .fragments-section.revealed #ann-left-eye   .ann-line,
-    .fragments-section.revealed #ann-left-eye   .ann-num,
-    .fragments-section.revealed #ann-left-eye   .ann-lbl  { transition-delay: 0.10s; }
-
-    .fragments-section.revealed #ann-right-eye   { transition-delay: 0.22s; }
-    .fragments-section.revealed #ann-right-eye  .ann-line,
-    .fragments-section.revealed #ann-right-eye  .ann-num,
-    .fragments-section.revealed #ann-right-eye  .ann-lbl { transition-delay: 0.22s; }
-
-    .fragments-section.revealed #ann-nose        { transition-delay: 0.34s; }
-    .fragments-section.revealed #ann-nose       .ann-line,
-    .fragments-section.revealed #ann-nose       .ann-num,
-    .fragments-section.revealed #ann-nose       .ann-lbl { transition-delay: 0.34s; }
-
-    .fragments-section.revealed #ann-left-mouth  { transition-delay: 0.46s; }
-    .fragments-section.revealed #ann-left-mouth .ann-line,
-    .fragments-section.revealed #ann-left-mouth .ann-num,
-    .fragments-section.revealed #ann-left-mouth .ann-lbl { transition-delay: 0.46s; }
-
-    .fragments-section.revealed #ann-right-mouth { transition-delay: 0.58s; }
-    .fragments-section.revealed #ann-right-mouth .ann-line,
-    .fragments-section.revealed #ann-right-mouth .ann-num,
-    .fragments-section.revealed #ann-right-mouth .ann-lbl { transition-delay: 0.58s; }
-
-    /* Hover lit (set by JS via alpha hit-test) */
-    .ann-group.lit {
-      opacity: 1 !important;
-      transition-delay: 0s !important;
+    /* Animate in when section is revealed */
+    .fragments-section.revealed .ann-group {
+      animation: annFadeIn 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .fragments-section.revealed #ann-left-eye   { animation-delay: 0.1s; }
+    .fragments-section.revealed #ann-right-eye  { animation-delay: 0.25s; }
+    .fragments-section.revealed #ann-nose       { animation-delay: 0.4s; }
+    .fragments-section.revealed #ann-left-mouth { animation-delay: 0.55s; }
+    .fragments-section.revealed #ann-right-mouth{ animation-delay: 0.7s; }
+    @keyframes annFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 0.32; }
+    }
+    .fragments-section.revealed .ann-group.lit {
+      animation: none;
+      opacity: 1;
     }
 
-    /* When one fragment is active, dim the rest */
+    /* When any fragment is active, blur the rest */
     .fragments-canvas.has-active .mask-fragment:not(.active) {
-      filter: blur(5px) brightness(.45) !important;
-      opacity: 0.6 !important;
+      filter: blur(5px) brightness(.45);
     }
 
+    .fragments-canvas.has-active .mask-fragment:not(.active):hover {
+      filter: blur(3px) brightness(.55) drop-shadow(0 0 12px rgba(139, 92, 246, .3));
+    }
+
+    /* Clip paths – calibrated manually on the image */
+    #frag-left-eye {
+      clip-path: polygon(49.4% 24.6%, 48.6% 15.2%, 47.6% 7.4%, 45.1% 1.5%,
+          41.1% 0.3%, 37.6% 0.5%, 32.0% 3.3%,
+          26.7% 7.6%, 24.6% 14.4%, 23.8% 22.2%, 23.8% 29.5%,
+          24.3% 36.7%, 25.8% 45.3%, 27.3% 50.8%, 30.1% 53.4%,
+          33.6% 51.2%, 37.3% 50.2%, 41.1% 46.3%, 44.6% 40.7%,
+          46.7% 34.3%, 47.7% 28.7%);
+      transform-origin: 36% 28%;
+    }
+
+    #frag-right-eye {
+      clip-path: polygon(65.0% 0.9%, 62.2% 4.0%, 59.9% 9.6%,
+          58.4% 14.0%, 57.1% 20.0%, 56.2% 26.5%,
+          57.2% 32.7%, 58.7% 38.3%, 60.3% 43.1%,
+          63.1% 48.2%, 66.4% 50.8%, 69.6% 51.4%,
+          73.0% 50.6%, 74.1% 48.0%, 76.3% 40.5%,
+          76.6% 33.7%, 77.4% 26.7%, 78.9% 23.4%,
+          79.0% 16.0%, 77.0% 8.0%, 73.0% 3.0%, 69.0% 1.0%);
+      transform-origin: 67% 28%;
+    }
+
+    #frag-nose {
+      clip-path: polygon(51.4% 30.5%, 50.0% 32.3%, 47.4% 37.5%, 44.0% 45.1%,
+          42.0% 51.4%, 43.8% 56.2%, 45.4% 63.2%, 48.0% 70.5%,
+          51.9% 69.3%, 56.8% 68.5%, 61.3% 63.4%, 61.1% 56.8%,
+          60.2% 51.4%, 59.8% 48.4%, 58.7% 44.7%, 56.8% 40.7%,
+          55.9% 36.7%, 53.7% 31.5%);
+      transform-origin: 52% 50%;
+    }
+
+    #frag-left-mouth {
+      clip-path: polygon(24.9% 60.8%, 25.6% 57.2%, 28.8% 57.8%, 31.3% 56.6%,
+          34.2% 55.8%, 36.7% 57.4%, 38.9% 59.0%, 40.7% 61.8%,
+          42.7% 63.4%, 48.4% 75.7%, 49.7% 80.7%, 50.4% 87.1%,
+          50.8% 95.2%, 44.1% 97.2%, 39.8% 95.8%, 35.8% 91.6%,
+          32.9% 85.9%, 28.7% 82.9%, 26.4% 78.3%, 26.3% 71.3%,
+          25.1% 66.4%);
+      transform-origin: 38% 76%;
+    }
+
+    #frag-right-mouth {
+      clip-path: polygon(64.0% 62.6%, 61.6% 67.6%, 60.1% 70.9%, 58.6% 74.5%,
+          56.9% 80.3%, 55.9% 85.3%, 54.9% 90.8%, 55.1% 96.0%,
+          57.6% 97.8%, 61.6% 98.4%, 65.4% 94.8%, 69.6% 88.5%,
+          72.9% 80.9%, 75.8% 74.5%, 77.3% 69.5%, 78.2% 65.0%,
+          79.1% 59.2%, 79.3% 52.2%, 75.6% 49.8%, 74.0% 53.6%,
+          71.4% 54.6%, 68.1% 52.6%, 66.4% 54.2%, 65.1% 58.6%);
+      transform-origin: 67% 74%;
+    }
+
+    /* Breathing animations – subtle, organic, independent per fragment.
+       Uses micro-drift (±1-2px), gentle scale, and soft opacity pulse.
+       Long durations (8-12s) for a calm, living feel. */
+    @keyframes breathe1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(-4px, -5px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(2px, -8px) scale(1.025);
+      }
+
+      75% {
+        transform: translate(-3px, -3px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(5px, -4px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(3px, -7px) scale(1.03);
+      }
+
+      75% {
+        transform: translate(4px, -2px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe3 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      30% {
+        transform: translate(2px, -6px) scale(1.025);
+      }
+
+      60% {
+        transform: translate(-2px, -4px) scale(1.015);
+      }
+
+      85% {
+        transform: translate(1px, -7px) scale(1.02);
+      }
+    }
+
+    @keyframes breathe4 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(-4px, 4px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(-6px, 2px) scale(1.025);
+      }
+
+      75% {
+        transform: translate(-2px, 5px) scale(1.01);
+      }
+    }
+
+    @keyframes breathe5 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      25% {
+        transform: translate(4px, 3px) scale(1.02);
+      }
+
+      50% {
+        transform: translate(6px, 1px) scale(1.03);
+      }
+
+      75% {
+        transform: translate(3px, 5px) scale(1.01);
+      }
+    }
+
+    /* No floating by default — start only after reveal completes (~1s transition) */
+    #frag-left-eye, #frag-right-eye, #frag-nose, #frag-left-mouth, #frag-right-mouth {
+      animation: none;
+    }
+
+    .fragments-section.revealed #frag-left-eye {
+      animation: breathe1 7s ease-in-out infinite 1.1s;
+    }
+    .fragments-section.revealed #frag-right-eye {
+      animation: breathe2 8s ease-in-out infinite 1.9s;
+    }
+    .fragments-section.revealed #frag-nose {
+      animation: breathe3 6.5s ease-in-out infinite 1.5s;
+    }
+    .fragments-section.revealed #frag-left-mouth {
+      animation: breathe4 8.5s ease-in-out infinite 2.6s;
+    }
+    .fragments-section.revealed #frag-right-mouth {
+      animation: breathe5 9s ease-in-out infinite 2.1s;
+    }
+
+    /* Service info panel */
+    .service-panel {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .4s ease, transform .4s ease;
+      z-index: 20;
+    }
+
+    .service-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .service-panel-inner {
+      background: rgba(10, 10, 10, .85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(139, 92, 246, .25);
+      border-radius: 16px;
+      padding: 20px 28px;
+      min-width: 220px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .5), 0 0 30px rgba(139, 92, 246, .1);
+    }
 
 
     /* ── Scroll-Scrub Stage ────────────────────────────── */
@@ -1308,9 +861,9 @@
       top: 0;
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       background: #000;
-      will-change: filter, transform, opacity;
     }
 
     #stage canvas {
@@ -1319,15 +872,73 @@
       left: 0;
       width: 100%;
       height: 100%;
-      /* contain (not cover) so the video frame is never cropped at
-         the top or bottom edges. #stage canvas + .mask-fragment MUST
-         use identical fit semantics so the scroll-scrub video layer
-         and the PNG mask layer stay pixel-aligned during the
-         crossfade — a cover/contain mismatch causes a visible
-         double-mask. contain on a near-16:9 viewport vs 1.79 image
-         aspect already gives ~4px of natural letterbox on each side
-         — no extra scale needed. */
-      object-fit: contain;
+      object-fit: cover;
+    }
+
+    /* ── Entrance animations ──────────────────────────── */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-up {
+      animation: fadeSlideUp .9s cubic-bezier(.16, 1, .3, 1) forwards;
+      opacity: 0;
+    }
+
+    .delay-100 {
+      animation-delay: .1s;
+    }
+
+    .delay-200 {
+      animation-delay: .2s;
+    }
+
+    .delay-300 {
+      animation-delay: .3s;
+    }
+
+    .delay-400 {
+      animation-delay: .4s;
+    }
+
+    .delay-500 {
+      animation-delay: .5s;
+    }
+
+    .delay-600 {
+      animation-delay: .6s;
+    }
+
+    /* ── Mobile menu ──────────────────────────────────── */
+    .mobile-menu {
+      transform: translateY(-100%);
+      transition: transform .4s cubic-bezier(.4, 0, .2, 1), opacity .3s ease;
+      opacity: 0;
+    }
+
+    .mobile-menu.open {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ── Nav (absolute inside fixed hero) ──────────────── */
+    #hero-nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px clamp(24px, 5vw, 80px);
+      transition: background 0.3s ease, backdrop-filter 0.3s ease;
     }
 
     /* ── Contact Animation Section ──────────────────────── */
@@ -1342,27 +953,6 @@
       height: 100vh;
       overflow: hidden;
       background: #030305;
-      will-change: filter, transform, opacity;
-    }
-    /* Soft top fade — dissolves the palette edge between the end of the
-       mask section above (page bg #050507) and the start of the contact
-       scene below. Sits above the Three.js canvas (z:0) but below the
-       floating labels (z:5), so the CTA text remains crisp over the fade. */
-    #contact-stage::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 22vh;
-      background: linear-gradient(180deg,
-        #050507              0%,
-        rgba(5, 5, 7, 0.92)  20%,
-        rgba(5, 5, 7, 0.70)  45%,
-        rgba(5, 5, 7, 0.35)  72%,
-        rgba(5, 5, 7, 0.00)  100%);
-      pointer-events: none;
-      z-index: 2;
     }
     #contact-canvas {
       position: absolute;
@@ -1440,6 +1030,12 @@
     }
     .contact-form-box input::placeholder,
     .contact-form-box textarea::placeholder { color: rgba(255,255,255,0.18); }
+    .contact-form-box input:focus,
+    .contact-form-box select:focus,
+    .contact-form-box textarea:focus {
+      border-color: rgba(160,140,220,0.35);
+      box-shadow: 0 0 20px rgba(120,80,200,0.08);
+    }
     .contact-form-box select {
       appearance: none; cursor: pointer;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.3)' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
@@ -1503,9 +1099,63 @@
       margin-top: 14px;
     }
 
-    /* SplitType-generated chars inherit this so the revealing GSAP
-       translateY stays clipped inside each character box. */
+    /* ── Custom Cursor (hover-capable devices only) ────── */
+    @media (hover: hover) and (pointer: fine) {
+      * { cursor: none !important; }
+      #cursor-dot {
+        position: fixed; z-index: 9998;
+        top: 0; left: 0;
+        width: 6px; height: 6px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        transition: width 0.2s, height 0.2s, background 0.2s;
+        will-change: transform;
+      }
+      #cursor-ring {
+        position: fixed; z-index: 9997;
+        top: 0; left: 0;
+        width: 28px; height: 28px;
+        border: 1px solid rgba(255,255,255,0.35);
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: difference;
+        will-change: transform;
+        transition: width 0.25s cubic-bezier(0.16,1,0.3,1),
+                    height 0.25s cubic-bezier(0.16,1,0.3,1),
+                    border-color 0.25s;
+      }
+      body.cur-hover #cursor-dot {
+        width: 4px; height: 4px;
+        background: rgba(255,255,255,0.5);
+      }
+      body.cur-hover #cursor-ring {
+        width: 52px; height: 52px;
+        border-color: rgba(255,255,255,0.7);
+      }
+    }
+    /* Hide cursor elements on touch devices */
+    @media (hover: none) {
+      #cursor-dot, #cursor-ring { display: none !important; }
+    }
+
+    /* ── Section transition overlays ────────────────────── */
+    .section-fade-top {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 120px; pointer-events: none; z-index: 4;
+      background: linear-gradient(to bottom, #030305 0%, transparent 100%);
+    }
+    .section-fade-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 120px; pointer-events: none; z-index: 4;
+      background: linear-gradient(to top, #030305 0%, transparent 100%);
+    }
+
+    /* ── GSAP text reveal helpers ────────────────────────── */
     .char { display: inline-block; overflow: hidden; }
+    .split-hidden .word, .split-hidden .char { opacity: 0; transform: translateY(60%); }
 
     /* ── Form input animated focus ring ─────────────────── */
     .contact-form-box input:focus,
@@ -1517,283 +1167,50 @@
                   inset 0 0 12px rgba(120,70,220,0.04);
     }
 
-    /* ══════════════════════════════════════════════════════
-       MOBILE / PORTRAIT OVERRIDES
-       Triggered on narrow viewports OR portrait orientation OR
-       touch-only devices. Addresses the three big mobile pain
-       points: (1) the mask becomes a thin horizontal strip on
-       portrait because the 16:9 image contains to viewport width,
-       (2) the Three.js contact scene has its WhatsApp mesh at
-       world-x = 1.5 which falls OUTSIDE the camera's horizontal
-       FOV on narrow portrait, (3) the hero title is too small.
-       ══════════════════════════════════════════════════════ */
-    @media (max-width: 900px), (orientation: portrait) {
-
-      /* ── Hero title — make it readable on a 390px wide screen */
-      .hero-title-block {
-        bottom: 12%;
-        width: 94%;
-      }
-      .hero-title-block h1 {
-        font-size: clamp(26px, 7.2vw, 38px);
-        letter-spacing: 0.22em;
-        margin-bottom: 12px;
-      }
-      .hero-title-block .sub {
-        font-size: 11px;
-        letter-spacing: 0.18em;
-      }
-
-      /* ── Scroll-scrub video (#stage canvas) — FULL VIEWPORT on
-         portrait. User scrolls through it as a full-screen video.
-         Cover crops a bit on the sides but the scrub content is
-         photogenic enough for that to feel cinematic. */
-      #stage canvas {
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        transform: none !important;
-        object-fit: cover !important;
-      }
-      /* ── 5-fragment mask section — bigger on mobile without
-         pushing labels off the edge of the viewport.
-         Strategy: box stays at 100vw × 56.25vw (exact image aspect)
-         so no crop; transform: scale(1.10) grows the whole thing
-         uniformly by 10% from the centre. Labels 01/02/04/05 sit
-         at x=7.5 / x=92.5 in the SVG viewBox which maps to the
-         visible viewport edges after the 10% scale (safer than
-         the 14% attempt that pushed labels to within ~1vw of the
-         edge). Annotations remain readable, mask feels larger. */
-      .fragments-canvas {
-        top: 50% !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 56.25vw !important;
-        transform: translateY(-50%) scale(1.10) !important;
-        transform-origin: center center !important;
-      }
-      .mask-fragment { background-size: cover !important; }
-
-      /* Annotation text — needs to be larger so 01..05 labels are
-         readable on a 390px wide screen. The ann-svg viewBox is
-         100×56.25, so bumping font-size on .ann-num/.ann-lbl in svg
-         user units propagates to display. */
-      .ann-num { font-size: 2.2px !important; }
-      .ann-lbl { font-size: 1.6px !important; }
-      .ann-line { stroke-width: 0.22 !important; }
-
-      /* ── Contact scene — shrink the section from 350vh to 220vh
-         so the user doesn't have to scroll forever to reach the
-         buttons. Labels also need larger text. */
-      /* Shorter scroll range on mobile — the clipboard + WhatsApp
-         meshes finish their fly-in at ~75% of this, so anything
-         beyond 150vh is just dead scroll past the footer. Was 220vh,
-         then users would keep scrolling into black void after the
-         WA button landed. */
-      .contact-scroll-area { height: 150vh; }
-      #contact-clipLabel span,
-      #contact-waLabel span {
-        font-size: 13px !important;
-        letter-spacing: 0.22em !important;
-      }
-
-      /* ── Servicii eyebrow — keep it visible above the 16:9 box */
-      .servicii-eyebrow {
-        top: 18% !important;
-      }
-
-      /* ── Loader counter — a bit smaller on very narrow screens */
-      #loader-counter {
-        font-size: 58px !important;
-      }
-      #loader-bar-track {
-        width: 140px !important;
-      }
-
-      /* ── iPhone mockups in pane 01 — reliable mobile taps.
-         touch-action: manipulation kills iOS Safari's 300ms
-         double-tap-zoom wait, so a tap on the phone registers as
-         click instantly. -webkit-tap-highlight-color: transparent
-         removes the grey tap flash. Also clear iOS callout. */
-      .iphone-mockup,
-      .iphone-frame,
-      .iphone-screen,
-      .phone-thumb,
-      .phone-play {
-        touch-action: manipulation !important;
-        -webkit-tap-highlight-color: transparent !important;
-        -webkit-touch-callout: none !important;
-      }
-      /* Phone zoom overlay close button — larger touch target */
-      #phone-zoom-overlay .zoom-close {
-        width: 52px !important;
-        height: 52px !important;
-        top: 1rem !important;
-        right: 1rem !important;
-      }
-      /* Phone zoom overlay: make sure it's above everything AND
-         has working touch-action so the YouTube iframe doesn't
-         get double-tap-zoomed. */
-      #phone-zoom-overlay {
-        touch-action: manipulation;
-      }
-      /* When a pane 01 iPhone is tapped the zoom overlay should
-         appear regardless of scroll position — ensure it doesn't
-         inherit the scroll container's overflow constraints. */
-      #phone-zoom-overlay.open {
-        overflow: visible;
-      }
-
-      /* ══════════════════════════════════════════════════════
-         SERVICE PANES ON MOBILE — GROUND-UP REWRITE
-         ══════════════════════════════════════════════════════
-         Every previous attempt tried to make the pane itself a
-         scroll container. That fails on iOS Safari when flex
-         centring, absolute positioning, or nested scroll contexts
-         get in the way. Simplest reliable pattern:
-         - #service-overlay is THE ONLY scroll container. Fixed to
-           the viewport, overflow-y:auto. iOS handles this natively.
-         - .service-pane.active is a plain BLOCK in the overlay's
-           normal flow. Its height is whatever its content demands.
-           Because it flows normally, its height contributes to the
-           overlay's scrollHeight and the overlay scrolls over it.
-         - Inactive panes are display:none (so they don't stack into
-           the flow and break layout).
-         - .pane-content is display:block too — no more flex
-           centring. Content inside stacks top-down naturally.
-         - Inner grids/flex (results-grid, iphone-track) stay as they
-           are but with forced single-column / wrap so narrow-screen
-           content doesn't overflow horizontally.
-         This matches desktop functionality 1:1 (all 5 panes, all
-         content, all click handlers) and is reachable via native
-         touch scroll. */
-
-      #service-overlay {
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        touch-action: pan-y !important;
-      }
-      #service-overlay .service-pane {
-        display: none !important;
-      }
-      #service-overlay .service-pane.active {
-        display: block !important;
-        position: static !important;
-        inset: auto !important;
-        width: 100% !important;
-        height: auto !important;
-        min-height: 100vh !important;
-        padding: 88px 20px 100px !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-      }
-      /* Kill the desktop flex-centring on pane-content so content
-         flows naturally from the top of the scrolling overlay. */
-      #service-overlay .pane-content,
-      #service-overlay .pane-content-vp {
-        display: block !important;
-        position: relative !important;
-        width: 100% !important;
-        max-width: 640px !important;
-        margin: 0 auto !important;
-        padding: 0 !important;
-        height: auto !important;
-        min-height: 0 !important;
-        max-height: none !important;
-        overflow: visible !important;
-        text-align: center;
-      }
-      /* Every child of .pane-content lays out as a block with
-         vertical rhythm — titles, subtitles, cards, grids all
-         stack top-to-bottom with a small gap. */
-      #service-overlay .pane-content > *,
-      #service-overlay .pane-content-vp > * {
-        display: block !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        margin-top: 14px !important;
-        margin-bottom: 0 !important;
-      }
-      #service-overlay .pane-content > *:first-child,
-      #service-overlay .pane-content-vp > *:first-child {
-        margin-top: 0 !important;
-      }
-      /* Force content-stagger visible on mobile in case the
-         delayed reveal doesn't fire for some reason (iOS
-         transition-delay edge cases). */
-      #service-overlay.open .service-pane.active .content-stagger {
-        opacity: 1 !important;
-        transform: none !important;
-      }
-      /* Cancel desktop side/top/bottom offsets on every pane */
-      #pane-left-eye   .pane-content,
-      #pane-right-eye  .pane-content,
-      #pane-nose       .pane-content,
-      #pane-left-mouth .pane-content,
-      #pane-right-mouth .pane-content {
-        margin-left: auto !important;
-        margin-right: auto !important;
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-      }
-      /* Results grid → 1 column so all 3 cards stack */
-      #service-overlay .results-grid {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
-      }
-      /* iPhone carousel → wrap to multiple rows */
-      #service-overlay .iphone-track {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-        gap: 18px !important;
-      }
-      #service-overlay .iphone-carousel {
-        width: 100% !important;
-        overflow: visible !important;
-      }
-      /* Site cards grid in pane 03 — single column */
-      #service-overlay .sites-grid {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 14px !important;
-      }
-      /* Stats row in pane 02 — side by side but flex with wrap */
-      #service-overlay .stats-row {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
-      }
-      /* Meta ads screenshot wrapper — allow horizontal drag scroll */
-      #service-overlay .meta-screenshot-wrapper {
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-      /* Marquee (pane 04) — full width of pane-content */
-      #service-overlay .media-marquee {
-        max-width: 100% !important;
-      }
-
-      /* Overlay close button — bigger touch target on mobile */
-      #overlay-close {
-        font-size: 13px !important;
-        padding: 14px 4px !important;
-      }
+    /* ── Film Grain Overlay ──────────────────────────────── */
+    #film-grain {
+      position: fixed; inset: -50%; z-index: 9989;
+      width: 200%; height: 200%;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grainDrift 0.8s steps(2) infinite;
+    }
+    @keyframes grainDrift {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(-5%, -5%); }
     }
 
-    /* Very narrow phones (iPhone SE width ~320px) — extra tightening */
-    @media (max-width: 380px) {
-      .hero-title-block h1 {
-        font-size: 22px !important;
-      }
-      .ann-num { font-size: 2.6px !important; }
-      .ann-lbl { font-size: 1.85px !important; }
+    /* ── Chromatic Aberration Scroll Overlay ──────────────── */
+    #ca-r, #ca-b {
+      position: fixed; inset: 0; z-index: 9988;
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    #ca-r {
+      background: linear-gradient(0deg,
+        rgba(255,30,30,0.2) 0%, rgba(255,30,30,0.03) 20%,
+        transparent 40%, transparent 60%,
+        rgba(255,30,30,0.03) 80%, rgba(255,30,30,0.2) 100%);
+      mix-blend-mode: screen;
+    }
+    #ca-b {
+      background: linear-gradient(0deg,
+        rgba(40,30,255,0.2) 0%, rgba(40,30,255,0.03) 20%,
+        transparent 40%, transparent 60%,
+        rgba(40,30,255,0.03) 80%, rgba(40,30,255,0.2) 100%);
+      mix-blend-mode: screen;
+    }
+
+    /* ── Section Displacement Transition ─────────────────── */
+    .section-displace {
+      position: absolute; left: 0; right: 0;
+      height: 200px; z-index: 5; pointer-events: none;
+      background: linear-gradient(to bottom,
+        transparent 0%, rgba(5,5,7,0.3) 30%,
+        rgba(5,5,7,0.8) 60%, #050507 100%);
+      filter: blur(1px);
     }
 
     /* ── prefers-reduced-motion ─────────────────────────── */
@@ -1804,23 +1221,11 @@
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
       }
+      #cursor-dot, #cursor-ring { display: none !important; }
+      .section-fade-top, .section-fade-bottom { display: none; }
+      #film-grain, #ca-r, #ca-b { display: none !important; }
       #loader { display: none !important; }
       .hero-title-block { opacity: 1 !important; }
-      /* Under reduced motion the global rule kills our 0.9s sub reveal
-         to 0.01ms, but 'forwards' still applies the end state — force
-         the sub visible in case the class is never added (if loader
-         bails early). */
-      .hero-title-block .sub {
-        opacity: 1 !important;
-        transform: none !important;
-      }
-      /* Marquee is decorative and NOT seizure-inducing — keep it looping even
-         when users (or Windows) request reduced motion. Without this override,
-         the global * rule kills it in 0.01ms. */
-      .media-marquee-track {
-        animation-duration: 22s !important;
-        animation-iteration-count: infinite !important;
-      }
     }
   </style>
 
@@ -1831,9 +1236,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <!-- SplitType -->
   <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
-  <!-- YouTube IFrame API — used to nudge the zoom player to the
-       highest available quality once it's ready -->
-  <script src="https://www.youtube.com/iframe_api" async></script>
 </head>
 
 <body>
@@ -1847,11 +1249,22 @@
     <div id="loader-percent">0%</div>
   </div>
 
+  <!-- Custom Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Film Grain Overlay -->
+  <div id="film-grain" aria-hidden="true"></div>
+  <!-- Chromatic Aberration Scroll Overlays -->
+  <div id="ca-r" aria-hidden="true"></div>
+  <div id="ca-b" aria-hidden="true"></div>
+
   <!-- HERO SECTION: Three.js metallic sphere -->
   <div class="scroll-container" id="hero-scroll-container">
     <section class="hero" id="hero">
       <canvas id="hero-canvas"></canvas>
 
+      <!-- Navigation -->
       <!-- Title -->
       <div class="hero-title-block" id="hero-title-block">
         <h1>All In Media</h1>
@@ -1864,36 +1277,41 @@
 
 
 
-  <!-- SCROLL SCRUB SECTION (now also hosts #servicii so the mask
-       fragments can sticky-overlay the last frame seamlessly) -->
-  <div id="scroll-scrub-container" style="height: 600vh;">
+  <!-- SCROLL SCRUB SECTION -->
+  <div id="scroll-scrub-container" style="height: 500vh;">
+    <!-- SCROLL SCRUB ACTIVE ZONE – aici se va renderiza animația controlată prin scroll -->
     <div id="stage">
       <canvas id="c"></canvas>
     </div>
+  </div>
 
-    <!-- MASK FRAGMENTS — sticky overlay on top of #stage's last frame -->
-    <section id="servicii" class="fragments-section">
 
-      <!-- Eyebrow -->
-      <p class="servicii-eyebrow">SERVICII</p>
+  <!-- MASK FRAGMENTS INTERACTIVE SECTION -->
+  <section id="servicii" class="fragments-section">
 
-      <div class="fragments-canvas" id="fragments-canvas">
+    <!-- Eyebrow -->
+    <p
+      class="absolute top-12 left-1/2 -translate-x-1/2 text-xs font-medium tracking-[.35em] uppercase text-brand-400/50 z-20">
+      Alege un serviciu
+    </p>
 
-        <!-- 5 Mask Fragments — each backed by its own transparent PNG -->
-        <div class="mask-fragment" id="frag-left-eye" data-frag="ochi-stang" data-service="Videoclipuri Premium"
-          data-desc="Producție video cinematică, de la concept la livrare." data-panel-pos="left-top"></div>
+    <div class="fragments-canvas" id="fragments-canvas">
 
-        <div class="mask-fragment" id="frag-right-eye" data-frag="ochi-drept" data-service="Meta ADS"
-          data-desc="Campanii Facebook & Instagram optimizate pentru ROI maxim." data-panel-pos="right-top"></div>
+      <!-- 5 Mask Fragments -->
+      <div class="mask-fragment" id="frag-left-eye" data-service="Videoclipuri Premium"
+        data-desc="Producție video cinematică, de la concept la livrare." data-panel-pos="left-top"></div>
 
-        <div class="mask-fragment" id="frag-nose" data-frag="nas" data-service="Web Design + Site-uri"
-          data-desc="Website-uri premium, rapide și optimizate pentru conversie." data-panel-pos="center"></div>
+      <div class="mask-fragment" id="frag-right-eye" data-service="Meta ADS"
+        data-desc="Campanii Facebook & Instagram optimizate pentru ROI maxim." data-panel-pos="right-top"></div>
 
-        <div class="mask-fragment" id="frag-left-mouth" data-frag="gura-stanga" data-service="SEO + Google"
-          data-desc="Optimizare organică și campanii Google Ads cu impact." data-panel-pos="left-bottom"></div>
+      <div class="mask-fragment" id="frag-nose" data-service="Web Design + Site-uri"
+        data-desc="Website-uri premium, rapide și optimizate pentru conversie." data-panel-pos="center"></div>
 
-        <div class="mask-fragment" id="frag-right-mouth" data-frag="gura-dreapta" data-service="Automatizări Business"
-          data-desc="Fluxuri automate care economisesc timp și cresc profitul." data-panel-pos="right-bottom"></div>
+      <div class="mask-fragment" id="frag-left-mouth" data-service="SEO + Google"
+        data-desc="Optimizare organică și campanii Google Ads cu impact." data-panel-pos="left-bottom"></div>
+
+      <div class="mask-fragment" id="frag-right-mouth" data-service="Automatizări Business"
+        data-desc="Fluxuri automate care economisesc timp și cresc profitul." data-panel-pos="right-bottom"></div>
 
       <!-- Annotation lines — viewBox 0 0 100 56.25 (16:9) -->
       <svg class="ann-svg" viewBox="0 0 100 56.25" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -1947,9 +1365,10 @@
         </g>
       </svg>
 
-      </div>
-    </section>
-  </div><!-- /#scroll-scrub-container -->
+    </div>
+    <!-- Section fade-out at bottom of fragments → contact -->
+    <div class="section-fade-bottom" style="height:180px; z-index:6;"></div>
+  </section>
 
 
   <!-- ═══════════════════════════════════════════════════
@@ -1957,8 +1376,7 @@
        ═══════════════════════════════════════════════════ -->
   <div id="service-overlay" aria-modal="true" role="dialog" aria-label="Detalii serviciu">
 
-    <!-- Blurred ghost fragment anchored to its on-screen corner.
-         The corner + image is set via JS by adding .ghost-<name>. -->
+    <!-- Blurred ghost fragment (position class set by JS) -->
     <div id="overlay-ghost"></div>
 
     <!-- Close -->
@@ -1969,218 +1387,92 @@
 
     <!-- ── 01 Videoclipuri Premium ── -->
     <div class="service-pane" id="pane-left-eye">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">01 — VIDEOCLIPURI PREMIUM</span>
-        <h2 class="content-stagger pane-h2 panel-title">Editare care opreşte<br>thumb-ul.</h2>
-        <h3 class="content-stagger panel-subtitle">Conţinut. Pur.</h3>
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">01 — Videoclipuri Premium</p>
 
-        <!-- 3 Shorts thumbnails in iPhone mockups. We use static <img>
-             previews instead of <iframe> embeds because YouTube's
-             cross-origin iframe swallows click events unevenly across
-             its surface, which made the middle phone unclickable.
-             The real autoplay iframe lives inside #phone-zoom-overlay,
-             which is opened by clicking any thumbnail. -->
+        <!-- iPhone mockup carousel -->
         <div class="content-stagger iphone-carousel" id="iphone-carousel">
           <div class="iphone-track">
-            <div class="iphone-mockup" data-yt-id="6QoeHnucqUs">
+            <div class="iphone-mockup" style="--rot:-5deg">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/6QoeHnucqUs/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #1</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="iphone-mockup" data-yt-id="hW5BLJl37Qs">
+            <div class="iphone-mockup" style="--rot:0deg">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/hW5BLJl37Qs/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #2</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="iphone-mockup" data-yt-id="9EshKr4zksI">
+            <div class="iphone-mockup" style="--rot:5deg">
               <div class="iphone-frame">
                 <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/9EshKr4zksI/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
+                  <div class="yt-placeholder">
+                    <div class="yt-play-icon"></div>
+                    <span class="yt-label">Short #3</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Real result screenshots -->
-        <div class="content-stagger results-section">
-          <span class="results-label">REZULTATELE NOASTRE</span>
-          <div class="results-grid">
-            <div class="result-card">
-              <img src="assets/rezultat-1.png" alt="Rezultat campanie video 1" loading="lazy" />
+        <!-- Screenshot grid -->
+        <div class="content-stagger screenshot-grid">
+          <p class="grid-eyebrow">Rezultatele noastre</p>
+          <div class="grid-row">
+            <div class="screenshot-card">
+              <div class="views-badge">2.4M views</div>
             </div>
-            <div class="result-card">
-              <img src="assets/rezultat-2.png" alt="Rezultat campanie video 2" loading="lazy" />
+            <div class="screenshot-card">
+              <div class="views-badge">1.8M views</div>
             </div>
-            <div class="result-card">
-              <img src="assets/rezultat-3.png" alt="Rezultat campanie video 3" loading="lazy" />
+            <div class="screenshot-card">
+              <div class="views-badge">3.1M views</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── 02 Performance Ads ── -->
+    <!-- ── 02 Meta ADS ── -->
     <div class="service-pane" id="pane-right-eye">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">02 — PERFORMANCE ADS</span>
-        <h2 class="content-stagger pane-h2 panel-title">Ieși pe profit<br>din prima lună.</h2>
-        <h3 class="content-stagger panel-subtitle">Profit. Brutal.</h3>
-
-        <!-- Two stat cards side by side -->
-        <div class="content-stagger stats-row">
-          <div class="stat-block">
-            <span class="stat-number"><span class="stat-digit">3</span><span class="stat-sep">-</span><span class="stat-digit">5</span></span>
-            <span class="stat-unit">lei / lead</span>
-            <p class="stat-desc">cost per lead — campanii Meta &amp; Google</p>
-          </div>
-          <div class="stat-block stat-block--highlight">
-            <span class="stat-number">0.05</span>
-            <span class="stat-unit">lei / interacțiune</span>
-            <p class="stat-desc">marcat „High Performing" de Meta Ads</p>
-          </div>
-        </div>
-
-        <!-- Meta Ads screenshot — inverted dark mode + GIVEAWAY row highlight -->
-        <div class="content-stagger meta-screenshot-wrapper">
-          <span class="screenshot-label">META ADS — DATE REALE · FEB–MAR 2026</span>
-          <div class="meta-screenshot-scroll" id="metaScroll">
-            <div class="meta-inner">
-              <img src="assets/meta-ads-results.jpg" alt="Meta Ads rezultate reale" draggable="false" />
-              <div class="row-highlight" style="top: 110px; height: 35px;"></div>
-            </div>
-          </div>
-          <p class="screenshot-hint">← trage pentru a vedea tot →</p>
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">02 — Meta ADS</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
         </div>
       </div>
     </div>
 
     <!-- ── 03 Web Design ── -->
     <div class="service-pane" id="pane-nose">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">03 — WEB DESIGN + SITE-URI</span>
-        <h2 class="content-stagger pane-h2 panel-title">Site-uri care<br>vând.</h2>
-        <h3 class="content-stagger panel-subtitle">Design. Hipnotic.</h3>
-
-        <!-- 2 site previews — clicking either opens the live site in a new tab -->
-        <div class="content-stagger sites-grid">
-          <a href="https://realestate1233.vercel.app/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Frealestate1233.vercel.app%2F?w=900&amp;h=600"
-                alt="RealEstate — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">realestate1233.vercel.app</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-          <a href="https://www.nordisk-grup.ro/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.nordisk-grup.ro%2F?w=900&amp;h=600"
-                alt="Nordisk Grup — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">nordisk-grup.ro</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-          <a href="https://leadhunt.tech/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fleadhunt.tech%2F?w=900&amp;h=600"
-                alt="LeadHunt — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">leadhunt.tech</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-        </div>
-
-        <!-- Portfolio CTA: small label + 2 buttons to full agency portfolios -->
-        <div class="content-stagger portfolio-cta">
-          <span class="portfolio-cta-label">Verifică portofoliu</span>
-          <div class="portfolio-cta-buttons">
-            <a href="https://www.agentieseo.net/web-design/" target="_blank" rel="noopener noreferrer" class="portfolio-btn">
-              agentieseo.net
-              <span class="portfolio-btn-arrow">→</span>
-            </a>
-            <a href="https://cstportfolio.xyz/portfolio" target="_blank" rel="noopener noreferrer" class="portfolio-btn">
-              cstportfolio.xyz
-              <span class="portfolio-btn-arrow">→</span>
-            </a>
-          </div>
+      <div class="pane-content">
+        <p class="content-stagger pane-eyebrow">03 — Web Design + Site-uri</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
         </div>
       </div>
     </div>
 
-    <!-- ── 04 SEO & Vizibilitate ── -->
+    <!-- ── 04 SEO + Google ── -->
     <div class="service-pane" id="pane-left-mouth">
       <div class="pane-content">
-        <span class="content-stagger pane-eyebrow panel-label">04 — SEO &amp; VIZIBILITATE</span>
-        <h2 class="content-stagger pane-h2 panel-title">Apari acolo unde<br>contează.</h2>
-        <!-- Single site card for agentieseo.net (same style as pane 03) -->
-        <div class="content-stagger single-site">
-          <a href="https://www.agentieseo.net/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.agentieseo.net%2F?w=900&amp;h=600"
-                alt="AgentieSEO — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">agentieseo.net</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-        </div>
-        <h3 class="content-stagger panel-subtitle">Trafic. Real.</h3>
-        <p class="content-stagger panel-description">Avem acces la advertoriale în <strong>Forbes</strong>, <strong>ProTV</strong>, <strong>Antena 3</strong>, <strong>Antena Stars</strong> și zeci de alte publicații premium. Un singur articol în locul potrivit face mai mult decât 6 luni de postări.</p>
-        <!-- Infinite horizontal marquee of Romanian news sites where
-             we can place client advertoriale. Items duplicated twice
-             for seamless loop (CSS translateX 0 → -50%). -->
-        <div class="content-stagger media-marquee">
-          <div class="media-marquee-track">
-            <span class="media-marquee-item">protv.ro</span>
-            <span class="media-marquee-item">stirileprotv.ro</span>
-            <span class="media-marquee-item">a1.ro</span>
-            <span class="media-marquee-item">observatornews.ro</span>
-            <span class="media-marquee-item">antena3.ro</span>
-            <span class="media-marquee-item">kanald.ro</span>
-            <span class="media-marquee-item">digi24.ro</span>
-            <span class="media-marquee-item">prosport.ro</span>
-            <span class="media-marquee-item">sport.ro</span>
-            <span class="media-marquee-item">adevarul.ro</span>
-            <span class="media-marquee-item">libertatea.ro</span>
-            <span class="media-marquee-item">gandul.ro</span>
-            <!-- Duplicate for seamless loop -->
-            <span class="media-marquee-item" aria-hidden="true">protv.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">stirileprotv.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">a1.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">observatornews.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">antena3.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">kanald.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">digi24.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">prosport.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">sport.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">adevarul.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">libertatea.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">gandul.ro</span>
-          </div>
+        <p class="content-stagger pane-eyebrow">04 — SEO + Google</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
         </div>
       </div>
     </div>
@@ -2188,11 +1480,11 @@
     <!-- ── 05 Automatizări Business ── -->
     <div class="service-pane" id="pane-right-mouth">
       <div class="pane-content">
-        <span class="content-stagger pane-eyebrow panel-label">05 — AUTOMATIZĂRI BUSINESS</span>
-        <h2 class="content-stagger pane-h2 panel-title">Sisteme care<br>lucrează pentru tine.</h2>
-        <h3 class="content-stagger panel-subtitle">Procese. Smart.</h3>
-        <p class="content-stagger panel-description">Conectăm <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>, <strong>CRM</strong> și <strong>Google Sheets</strong> într-un singur sistem care lucrează 24/7. Un lead venit la 3 dimineața primește răspuns în <strong>30 de secunde</strong> — fără să miști un deget.</p>
-        <p class="content-stagger panel-description">Plus <strong>agent vocal AI</strong> care sună leadurile, răspunde la apeluri, califică clienții și transferă doar întâlnirile serioase în calendarul tău. Conversație naturală, voce umană, 24/7 — ca și cum ai avea un call center fără să plătești unul.</p>
+        <p class="content-stagger pane-eyebrow">05 — Automatizări Business</p>
+        <div class="content-stagger placeholder-cards">
+          <div class="placeholder-card"></div>
+          <div class="placeholder-card"></div>
+        </div>
       </div>
     </div>
 
@@ -2201,30 +1493,12 @@
   <!-- CONTACT ANIMATION SECTION -->
   <div id="contact" class="contact-scroll-area">
     <div id="contact-stage">
+      <!-- Section fade-in at top of contact → from fragments -->
+      <div class="section-fade-top" style="height:180px; z-index:6;"></div>
       <canvas id="contact-canvas"></canvas>
       <div class="contact-label" id="contact-clipLabel"><span>Click pentru a ne contacta</span></div>
       <div class="contact-label" id="contact-waLabel"><span>WhatsApp</span></div>
     </div>
-  </div>
-
-  <!-- Phone zoom overlay — opened by clicking any iPhone mockup in pane 01 -->
-  <div id="phone-zoom-overlay" aria-hidden="true">
-    <button class="zoom-close" id="phoneZoomClose" aria-label="Închide">&times;</button>
-    <div class="zoom-phone">
-      <div class="iphone-frame zoom-iphone-frame">
-        <div class="iphone-screen">
-          <iframe id="zoom-iframe" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Image lightbox — opened by clicking any result screenshot -->
-  <div id="image-lightbox" aria-hidden="true">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Închide">&times;</button>
-    <img id="lightbox-img" src="" alt="" />
   </div>
 
   <!-- Contact form overlay -->
@@ -2251,6 +1525,8 @@
     </div>
   </div>
 
+  <!-- Loop sentinel -->
+  <div id="loop-sentinel" style="height:1px;"></div>
 
 
   <!-- ═══════════════════════════════════════════════════
@@ -2259,449 +1535,188 @@
   <script>
 
 
-    // ── Scroll-Scrub Frame Animation (ScrollTrigger-driven, Lenis-safe) ──
-    // Uses GSAP ScrollTrigger so it stays in lockstep with Lenis smooth scroll.
-    // Frames are lazy-loaded: first 30 immediately, rest in background.
-    window._scrollScrubInit = function () {
+    // ── Scroll-Scrub Frame Animation ─────────────────────
+    (function () {
       const TOTAL_FRAMES = 576;
-      const EAGER_FRAMES = 30; // load these synchronously before reveal
       const canvas = document.getElementById('c');
       const ctx = canvas.getContext('2d');
-      const stage = document.getElementById('stage');
+      const container = document.getElementById('scroll-scrub-container');
       const images = new Array(TOTAL_FRAMES);
-      const loaded = new Uint8Array(TOTAL_FRAMES);
       let currentFrame = -1;
-      let canvasSized = false;
 
       function pad(i) { return String(i).padStart(4, '0'); }
-
-      function sizeCanvas(img) {
-        if (canvasSized) return;
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        canvasSized = true;
-      }
 
       function drawFrame(index) {
         index = Math.max(0, Math.min(TOTAL_FRAMES - 1, index));
         if (index === currentFrame) return;
         const img = images[index];
-        if (!img || !loaded[index]) return;
-        if (!canvasSized) sizeCanvas(img);
+        if (!img || !img.complete) return;
+        if (canvas.width !== img.naturalWidth) {
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+        }
         ctx.drawImage(img, 0, 0);
         currentFrame = index;
       }
 
-      function loadFrame(idx, eager) {
-        if (images[idx]) return images[idx];
-        const img = new Image();
-        img.decoding = 'async';
-        img.onload = function () {
-          loaded[idx] = 1;
-          if (idx === 0) {
-            sizeCanvas(this);
-            ctx.drawImage(this, 0, 0);
-            currentFrame = 0;
+      // References for crossfade
+      const stage = document.getElementById('stage');
+      const fragmentsSection = document.getElementById('servicii');
+      const FADE_START = 0.80;  // Start fading stage at 80%
+      const FADE_END = 0.95;    // Stage fully gone at 95%
+
+      function onScroll() {
+        const containerRect = container.getBoundingClientRect();
+        const containerTop = window.scrollY + containerRect.top;
+        const containerHeight = container.offsetHeight - window.innerHeight;
+        const scrolled = window.scrollY - containerTop;
+        const progress = Math.max(0, Math.min(1, scrolled / containerHeight));
+        drawFrame(Math.round(progress * (TOTAL_FRAMES - 1)));
+
+        // ── Crossfade: stage out → fragments in (with blur displacement) ──
+        if (progress >= FADE_START) {
+          const fadeProgress = Math.min(1, (progress - FADE_START) / (FADE_END - FADE_START));
+          // Smooth easing for the fade
+          const easedFade = fadeProgress < 0.5
+            ? 2 * fadeProgress * fadeProgress
+            : 1 - Math.pow(-2 * fadeProgress + 2, 2) / 2;
+          stage.style.opacity = 1 - easedFade;
+          // Add blur during transition peak for displacement feel
+          const blurAmt = Math.sin(fadeProgress * Math.PI) * 3;
+          stage.style.filter = blurAmt > 0.1 ? `blur(${blurAmt}px)` : '';
+
+          if (fadeProgress > 0.2) {
+            fragmentsSection.classList.add('revealed');
           }
-        };
-        img.src = 'frames/frame_' + pad(idx + 1) + '.webp';
-        images[idx] = img;
-        return img;
+          // When fully faded: hide stage + clear canvas to kill GPU layer artifact
+          if (fadeProgress >= 1.0) {
+            stage.style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        } else {
+          stage.style.display = '';
+          stage.style.opacity = 1;
+          stage.style.filter = '';
+          fragmentsSection.classList.remove('revealed');
+        }
       }
 
-      // Eager-load the first batch
-      for (let i = 0; i < EAGER_FRAMES && i < TOTAL_FRAMES; i++) loadFrame(i, true);
-
-      // Background-load the rest in chunks via requestIdleCallback (or rAF fallback)
-      const idle = window.requestIdleCallback || function (cb) { return setTimeout(cb, 1); };
-      let bgIdx = EAGER_FRAMES;
-      function loadNextBatch() {
-        const batchEnd = Math.min(bgIdx + 8, TOTAL_FRAMES);
-        for (let i = bgIdx; i < batchEnd; i++) loadFrame(i, false);
-        bgIdx = batchEnd;
-        if (bgIdx < TOTAL_FRAMES) idle(loadNextBatch);
-      }
-      idle(loadNextBatch);
-
-      // ScrollTrigger for frame scrubbing — staged crossfade so the
-      // PNG mask never overlaps the video mask:
-      //
-      //   0%  → 70%  : video frames scrub (mask splits)
-      //   70% → 76%  : fragments-canvas fades in OVER the last frame
-      //                (visually identical, so no jump)
-      //   76% → 80%  : stage canvas fades out (video mask disappears,
-      //                only PNG fragments remain)
-      //   80%+       : .revealed → annotation draw-on animation +
-      //                pointer-events on (clicks enabled)
-      if (window.gsap && window.ScrollTrigger) {
-        // On mobile/portrait the stage canvas renders the mask full
-        // screen while .fragments-canvas renders it inside a smaller
-        // centred 16:9 box — so the desktop overlap crossfade shows
-        // a "big mask + small mask" intercalation at 70-76%. Switch
-        // to a clean SEQUENTIAL crossfade on mobile: stage fades out
-        // completely first, then fragments fade in from black.
-        const IS_NARROW = window.matchMedia(
-          '(max-width: 900px), (orientation: portrait)'
-        ).matches;
-
-        const SCRUB_END          = 0.70;
-        const FRAGMENTS_FADE_IN  = IS_NARROW ? 0.77 : 0.70;
-        const FRAGMENTS_FADE_OUT = IS_NARROW ? 0.83 : 0.76;
-        const STAGE_FADE_START   = IS_NARROW ? 0.70 : 0.76;
-        const STAGE_FADE_END     = IS_NARROW ? 0.76 : 0.80;
-        const REVEAL_AT          = IS_NARROW ? 0.83 : 0.80;
-
-        const servicii = document.getElementById('servicii');
-        const fragsCanvas = document.getElementById('fragments-canvas');
-
-        ScrollTrigger.create({
-          trigger: '#scroll-scrub-container',
-          start: 'top top',
-          end: 'bottom bottom',
-          onUpdate: (self) => {
-            const p = self.progress;
-
-            // 1) Video frames
-            const scrubP = Math.min(1, p / SCRUB_END);
-            drawFrame(Math.round(scrubP * (TOTAL_FRAMES - 1)));
-
-            // 2) Fragments canvas fades in 70 → 76
-            if (p >= FRAGMENTS_FADE_IN) {
-              const fp = Math.min(1, (p - FRAGMENTS_FADE_IN) / (FRAGMENTS_FADE_OUT - FRAGMENTS_FADE_IN));
-              fragsCanvas.style.opacity = fp;
-            } else {
-              fragsCanvas.style.opacity = 0;
-            }
-
-            // 3) Stage canvas fades out 76 → 80
-            if (p >= STAGE_FADE_START) {
-              const sp = Math.min(1, (p - STAGE_FADE_START) / (STAGE_FADE_END - STAGE_FADE_START));
-              stage.style.opacity = 1 - sp;
-            } else {
-              stage.style.opacity = 1;
-            }
-
-            // 4) Full reveal at 80%+ → annotation draw-on + clicks
-            if (p >= REVEAL_AT) {
-              servicii.classList.add('revealed');
-            } else {
-              servicii.classList.remove('revealed');
-            }
-          },
+      // ── Mobile failsafe: as soon as fragments section enters viewport,
+      //    kill the stage entirely (catches momentum-scroll event gaps) ──
+      new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            stage.style.opacity = '0';
+            stage.style.display = 'none';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fragmentsSection.classList.add('revealed');
+          } else if (entry.boundingClientRect.top > 0) {
+            // User scrolled back above fragments — restore stage
+            stage.style.display = '';
+            stage.style.opacity = '1';
+          }
         });
+      }, { threshold: 0.01 }).observe(fragmentsSection);
+
+      // Pre-load all frames
+      for (let i = 0; i < TOTAL_FRAMES; i++) {
+        const img = new Image();
+        img.onload = (function (idx) {
+          return function () {
+            if (idx === 0) {
+              canvas.width = this.naturalWidth;
+              canvas.height = this.naturalHeight;
+              ctx.drawImage(this, 0, 0);
+              currentFrame = 0;
+              window.dispatchEvent(new Event('loaderAssetReady'));
+            }
+          };
+        })(i);
+        img.src = 'frames/frame_' + pad(i + 1) + '.webp';
+        images[i] = img;
       }
-    };
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.scrollTo(0, 0);
+    })();
 
 
     // ── Mask Fragments → Full-screen Overlay ─────────────
-    // Each fragment is a full-screen <div> backed by its own transparent
-    // PNG, so we can't rely on per-element :hover or click events — they
-    // all overlap. Instead we keep an offscreen canvas of every PNG and
-    // hit-test the alpha channel under the cursor to figure out which
-    // fragment was actually pointed at.
     (function () {
       const overlay  = document.getElementById('service-overlay');
       const ghost    = document.getElementById('overlay-ghost');
       const closeBtn = document.getElementById('overlay-close');
-      const canvas   = document.getElementById('fragments-canvas');
-      const servicii = document.getElementById('servicii');
+      const fragments = document.querySelectorAll('.mask-fragment');
 
-      // data-frag value -> fragment DOM id + pane id + ann id
-      const FRAG_BY_NAME = {
-        'ochi-stang':   { id: 'frag-left-eye',    pane: 'pane-left-eye',    ann: 'ann-left-eye' },
-        'ochi-drept':   { id: 'frag-right-eye',   pane: 'pane-right-eye',   ann: 'ann-right-eye' },
-        'nas':          { id: 'frag-nose',        pane: 'pane-nose',        ann: 'ann-nose' },
-        'gura-stanga':  { id: 'frag-left-mouth',  pane: 'pane-left-mouth',  ann: 'ann-left-mouth' },
-        'gura-dreapta': { id: 'frag-right-mouth', pane: 'pane-right-mouth', ann: 'ann-right-mouth' },
+      const FRAGMENT_MAP = {
+        'frag-left-eye':    { ghost: 'ghost-left-eye',   pane: 'pane-left-eye',    ann: 'ann-left-eye' },
+        'frag-right-eye':   { ghost: 'ghost-right-eye',  pane: 'pane-right-eye',   ann: 'ann-right-eye' },
+        'frag-nose':        { ghost: 'ghost-nose',        pane: 'pane-nose',        ann: 'ann-nose' },
+        'frag-left-mouth':  { ghost: 'ghost-left-mouth',  pane: 'pane-left-mouth',  ann: 'ann-left-mouth' },
+        'frag-right-mouth': { ghost: 'ghost-right-mouth', pane: 'pane-right-mouth', ann: 'ann-right-mouth' },
       };
 
-      // ── Pre-load every PNG into an offscreen canvas for alpha hit testing
-      const offscreens = {};
-      Object.keys(FRAG_BY_NAME).forEach(name => {
-        const img = new Image();
-        img.onload = function () {
-          const c = document.createElement('canvas');
-          c.width = img.naturalWidth;
-          c.height = img.naturalHeight;
-          c.getContext('2d').drawImage(img, 0, 0);
-          offscreens[name] = { ctx: c.getContext('2d'), w: img.naturalWidth, h: img.naturalHeight };
-        };
-        img.src = 'frag-' + name + '.png';
-      });
-
-      // ── Float animation params ─────────────────────────
-      // Each fragment drifts on its own sin/cos curve. Different phases,
-      // amplitudes and speeds so the 5 pieces never feel synced. Kept
-      // small (<= 8px) on desktop so it reads as breathing, not sliding.
-      // On mobile we multiply the amplitudes by 0.35 — the mask is
-      // visually smaller on a phone so the same pixel drift made
-      // adjacent fragments overlap each other visibly.
-      const IS_MOBILE_FLOAT = window.matchMedia(
-        '(max-width: 900px), (orientation: portrait)'
-      ).matches;
-      const FLOAT_SCALE = IS_MOBILE_FLOAT ? 0.35 : 1.0;
-      const FLOAT_PARAMS = {
-        'ochi-stang':   { ax: 6 * FLOAT_SCALE, ay: 5 * FLOAT_SCALE, phx: 0.0,  phy: 1.2, sx: 0.45, sy: 0.38 },
-        'ochi-drept':   { ax: 5 * FLOAT_SCALE, ay: 6 * FLOAT_SCALE, phx: 0.8,  phy: 0.4, sx: 0.42, sy: 0.50 },
-        'nas':          { ax: 4 * FLOAT_SCALE, ay: 4 * FLOAT_SCALE, phx: 2.0,  phy: 2.5, sx: 0.55, sy: 0.48 },
-        'gura-stanga':  { ax: 5 * FLOAT_SCALE, ay: 6 * FLOAT_SCALE, phx: 1.5,  phy: 0.7, sx: 0.38, sy: 0.52 },
-        'gura-dreapta': { ax: 6 * FLOAT_SCALE, ay: 5 * FLOAT_SCALE, phx: 0.4,  phy: 2.2, sx: 0.48, sy: 0.40 },
-      };
-      // Live per-fragment pixel offsets — read by hitTest() so clicks
-      // land on the visible drifted pixels, not the original PNG coords.
-      const fragmentOffsets = {
-        'ochi-stang':   { x: 0, y: 0 },
-        'ochi-drept':   { x: 0, y: 0 },
-        'nas':          { x: 0, y: 0 },
-        'gura-stanga':  { x: 0, y: 0 },
-        'gura-dreapta': { x: 0, y: 0 },
-      };
-      // Cache DOM refs so we don't hit getElementById every frame
-      const fragmentEls = {};
-      Object.entries(FRAG_BY_NAME).forEach(([name, cfg]) => {
-        fragmentEls[name] = document.getElementById(cfg.id);
-      });
-      // The float animation must NOT start until the scroll-scrub
-      // crossfade is fully done (at which point #servicii has the
-      // .revealed class). Otherwise the last video frames show the
-      // mask static and centred while the PNG overlay drifts — the
-      // two layers interleave visibly. We ramp the blend from 0 to
-      // 1 over ~700ms once revealed to avoid snapping into motion.
-      const serviciiEl = document.getElementById('servicii');
-      let floatBlendStart = -1;
-      let floatBlend = 0;
-      function floatTick(tMs) {
-        const revealed = serviciiEl && serviciiEl.classList.contains('revealed');
-        if (revealed && floatBlendStart < 0) floatBlendStart = tMs;
-        if (!revealed) { floatBlendStart = -1; floatBlend = 0; }
-        else floatBlend = Math.min(1, (tMs - floatBlendStart) / 700);
-
-        const t = tMs * 0.001;
-        for (const name in FLOAT_PARAMS) {
-          const p = FLOAT_PARAMS[name];
-          const fx = Math.sin(t * p.sx + p.phx) * p.ax * floatBlend;
-          const fy = Math.cos(t * p.sy + p.phy) * p.ay * floatBlend;
-          fragmentOffsets[name].x = fx;
-          fragmentOffsets[name].y = fy;
-          const el = fragmentEls[name];
-          if (el) {
-            el.style.setProperty('--fx', fx.toFixed(2) + 'px');
-            el.style.setProperty('--fy', fy.toFixed(2) + 'px');
-          }
-        }
-        requestAnimationFrame(floatTick);
-      }
-      requestAnimationFrame(floatTick);
-
-      // Returns the data-frag name under the given client coords, or null.
-      // Uses contain semantics everywhere. On mobile portrait the CSS
-      // sizes .fragments-canvas to a 100vw × 56.25vw box (exactly the
-      // image aspect) so cover and contain give the same result —
-      // Math.min works uniformly. Subtracts each fragment's float
-      // offset so clicks land on visibly drifted pixels.
-      function hitTest(clientX, clientY) {
-        const r = canvas.getBoundingClientRect();
-        if (clientX < r.left || clientX > r.right || clientY < r.top || clientY > r.bottom) return null;
-        for (const name in offscreens) {
-          const off = offscreens[name];
-          if (!off) continue;
-          const drift = fragmentOffsets[name] || { x: 0, y: 0 };
-          const scale = Math.min(r.width / off.w, r.height / off.h);
-          const drawnW = off.w * scale;
-          const drawnH = off.h * scale;
-          const dx = (r.width - drawnW) / 2;  // could be negative
-          const dy = (r.height - drawnH) / 2;
-          // Undo the visual drift so we sample the un-moved PNG at the
-          // correct logical pixel for where the user is actually pointing
-          const localX = clientX - r.left - dx - drift.x;
-          const localY = clientY - r.top - dy - drift.y;
-          const px = Math.floor(localX / scale);
-          const py = Math.floor(localY / scale);
-          if (px < 0 || py < 0 || px >= off.w || py >= off.h) continue;
-          try {
-            const data = off.ctx.getImageData(px, py, 1, 1).data;
-            if (data[3] > 50) return name;
-          } catch (e) { /* CORS-tainted, skip */ }
-        }
-        return null;
-      }
-
-      // ── State ──
+      const canvas = document.getElementById('fragments-canvas');
       let currentPane = null;
       let currentFragEl = null;
       let isOpen = false;
-      const pendingTimers = new Set();
-      function later(fn, ms) {
-        const id = setTimeout(() => { pendingTimers.delete(id); fn(); }, ms);
-        pendingTimers.add(id);
-        return id;
-      }
-      function cancelPending() {
-        pendingTimers.forEach(id => clearTimeout(id));
-        pendingTimers.clear();
-      }
+      let closeTimer = null;
 
-      function hardReset() {
-        cancelPending();
-        document.querySelectorAll('.mask-fragment.active, .mask-fragment.hover')
-          .forEach(el => el.classList.remove('active', 'hover'));
-        document.querySelectorAll('.service-pane.active')
-          .forEach(el => el.classList.remove('active'));
-        if (canvas) canvas.classList.remove('has-active');
-        if (ghost) ghost.className = '';
-        currentFragEl = null;
-        currentPane = null;
-      }
-
-      // Mobile check — used by openService/closeService to apply
-      // inline styles that override the CSS cascade entirely, so
-      // no matter what the stylesheet says the pane will scroll
-      // natively on iOS Safari.
-      const _isMobilePane = () => window.matchMedia(
-        '(max-width: 900px), (hover: none) and (pointer: coarse)'
-      ).matches;
-
-      // Apply mobile-only inline styles to the overlay + active pane
-      // the moment it opens. This bypasses the CSS cascade entirely —
-      // inline style beats any !important in a stylesheet. We also
-      // force every pane-content descendant visible (cancels the
-      // content-stagger reveal opacity:0 on mobile) and reset the
-      // desktop flex centring that otherwise pushes tall content's
-      // top above the viewport.
-      function applyMobileScrollStyles(paneEl) {
-        if (!_isMobilePane() || !paneEl) return;
-        // Overlay = scroll container
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.right = '0';
-        overlay.style.bottom = '0';
-        overlay.style.overflowY = 'auto';
-        overlay.style.overflowX = 'hidden';
-        overlay.style.webkitOverflowScrolling = 'touch';
-        overlay.style.touchAction = 'pan-y';
-        overlay.style.overscrollBehavior = 'contain';
-        // Active pane = normal block flow
-        paneEl.style.display = 'block';
-        paneEl.style.position = 'static';
-        paneEl.style.inset = 'auto';
-        paneEl.style.width = '100%';
-        paneEl.style.height = 'auto';
-        paneEl.style.minHeight = '100vh';
-        paneEl.style.padding = '92px 20px 108px';
-        paneEl.style.opacity = '1';
-        paneEl.style.pointerEvents = 'auto';
-        // pane-content as block, centred horizontally, full width
-        const pc = paneEl.querySelector('.pane-content');
-        if (pc) {
-          pc.style.display = 'block';
-          pc.style.position = 'relative';
-          pc.style.width = '100%';
-          pc.style.maxWidth = '640px';
-          pc.style.margin = '0 auto';
-          pc.style.padding = '0';
-          pc.style.height = 'auto';
-          pc.style.minHeight = '0';
-          pc.style.maxHeight = 'none';
-          pc.style.overflow = 'visible';
-          pc.style.textAlign = 'center';
-        }
-        // Force every content-stagger child visible (no transform,
-        // full opacity) so nothing stays hidden on mobile.
-        paneEl.querySelectorAll('.content-stagger').forEach(el => {
-          el.style.opacity = '1';
-          el.style.transform = 'none';
-          el.style.transition = 'none';
-        });
-        // Force results-grid → 1 column, iphone-track → wrap,
-        // sites-grid → 1 column on this specific pane
-        const rg = paneEl.querySelector('.results-grid');
-        if (rg) {
-          rg.style.display = 'grid';
-          rg.style.gridTemplateColumns = '1fr';
-          rg.style.gap = '12px';
-        }
-        const it = paneEl.querySelector('.iphone-track');
-        if (it) {
-          it.style.display = 'flex';
-          it.style.flexWrap = 'wrap';
-          it.style.justifyContent = 'center';
-          it.style.gap = '18px';
-        }
-        const sg = paneEl.querySelector('.sites-grid');
-        if (sg) {
-          sg.style.display = 'grid';
-          sg.style.gridTemplateColumns = '1fr';
-          sg.style.gap = '14px';
-        }
-        // Scroll to top so user starts at the pane label
-        overlay.scrollTop = 0;
-      }
-
-      function clearMobileScrollStyles(paneEl) {
-        overlay.style.cssText = '';
-        if (paneEl) paneEl.style.cssText = '';
-      }
-
-      function openService(name) {
-        const cfg = FRAG_BY_NAME[name];
+      function openService(fragId) {
+        const cfg = FRAGMENT_MAP[fragId];
         if (!cfg) return;
 
-        hardReset();
+        if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
 
-        currentFragEl = document.getElementById(cfg.id);
-        if (currentFragEl) currentFragEl.classList.add('active');
-        if (canvas) canvas.classList.add('has-active');
+        // Reset previous flying fragment immediately
+        if (currentFragEl) {
+          currentFragEl.classList.remove('flying', 'active');
+        }
+        ghost.className = '';
+        if (currentPane) currentPane.classList.remove('active');
+        if (canvas) canvas.classList.remove('has-active');
 
-        // Park a giant blurred copy of THIS fragment in its corner so the
-        // user always sees which mask piece the open panel belongs to.
-        if (ghost) ghost.classList.add('ghost-' + name);
-
-        // Body lock — but on mobile we DON'T stop Lenis because Lenis
-        // has touch disabled anyway, and we don't set body overflow
-        // because the overlay's own overflow:auto needs touches to
-        // reach it directly.
-        if (!_isMobilePane()) {
-          document.body.style.overflow = 'hidden';
-          window._lenis?.stop();
-        } else {
-          // On mobile, prevent body from scrolling in the background
-          // by fixing its position. Restored in closeService.
-          document.body.dataset.serviceOpenScroll = String(window.scrollY || 0);
-          document.body.style.position = 'fixed';
-          document.body.style.top = '-' + (window.scrollY || 0) + 'px';
-          document.body.style.left = '0';
-          document.body.style.right = '0';
-          document.body.style.width = '100%';
+        // Fly the clicked fragment toward its corner
+        currentFragEl = document.getElementById(fragId);
+        if (currentFragEl) {
+          currentFragEl.classList.add('flying', 'active');
+          if (canvas) canvas.classList.add('has-active');
         }
 
+        // Apply ghost position class
+        ghost.classList.add(cfg.ghost);
+
+        // Lock scroll
+        document.body.style.overflow = 'hidden';
+        window._lenis?.stop();
+
+        // Open overlay simultaneously with fragment flying out
         requestAnimationFrame(() => {
           overlay.classList.add('open');
           isOpen = true;
           currentPane = document.getElementById(cfg.pane);
+          // Stagger content in after ghost appears
           requestAnimationFrame(() => requestAnimationFrame(() => {
-            if (!currentPane) return;
-            currentPane.classList.add('active');
-            // Inject mobile inline styles AFTER .active is added so
-            // they override any CSS that would otherwise win.
-            applyMobileScrollStyles(currentPane);
-            const h2 = currentPane.querySelector('.pane-h2');
-            if (h2 && window.SplitType) {
-              if (h2._st) { h2._st.revert(); delete h2._st; }
-              const st = new SplitType(h2, { types: 'chars' });
-              h2._st = st;
-              // Skip the SplitType animation on mobile — it sometimes
-              // leaves chars at opacity:0 if the reveal timing misses,
-              // and on mobile we want reliability over polish.
-              if (!_isMobilePane()) {
+            if (currentPane) {
+              currentPane.classList.add('active');
+              // SplitType char reveal on pane h2
+              const h2 = currentPane.querySelector('.pane-h2');
+              if (h2 && window.SplitType) {
+                if (h2._st) { h2._st.revert(); delete h2._st; }
+                const st = new SplitType(h2, { types: 'chars' });
+                h2._st = st;
                 gsap.from(st.chars, {
                   y: 45, opacity: 0, rotateX: -40,
                   duration: 0.7, stagger: 0.022,
-                  ease: 'power3.out', delay: 0.20,
+                  ease: 'power3.out', delay: 0.38,
                   transformPerspective: 600,
                 });
-              } else {
-                st.revert();
+              }
+              // Eyebrow SplitType
+              const ey = currentPane.querySelector('.pane-eyebrow');
+              if (ey && window.SplitType && !ey._st) {
+                const stE = new SplitType(ey, { types: 'chars' });
+                ey._st = stE;
               }
             }
           }));
@@ -2710,326 +1725,79 @@
 
       function closeService() {
         if (!isOpen) return;
-        cancelPending();
-        const closingPane = currentPane;
-        if (closingPane) {
-          closingPane.classList.remove('active');
-          clearMobileScrollStyles(closingPane);
-        }
-        later(() => {
+        // Fade pane content out
+        if (currentPane) currentPane.classList.remove('active');
+
+        closeTimer = setTimeout(() => {
           overlay.classList.remove('open');
-          // Restore body — different unwind for mobile vs desktop
-          if (document.body.dataset.serviceOpenScroll !== undefined) {
-            const savedY = parseInt(document.body.dataset.serviceOpenScroll, 10) || 0;
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.left = '';
-            document.body.style.right = '';
-            document.body.style.width = '';
-            delete document.body.dataset.serviceOpenScroll;
-            window.scrollTo(0, savedY);
-          } else {
-            document.body.style.overflow = '';
-            window._lenis?.start();
+          document.body.style.overflow = '';
+          window._lenis?.start();
+
+          // Return fragment back to mask
+          if (currentFragEl) {
+            currentFragEl.classList.remove('flying', 'active');
+            if (canvas) canvas.classList.remove('has-active');
+            currentFragEl = null;
           }
-          later(() => { hardReset(); isOpen = false; }, 550);
+
+          closeTimer = setTimeout(() => {
+            ghost.className = '';
+            currentPane = null;
+            isOpen = false;
+          }, 550);
         }, 160);
       }
 
-      // ── Annotation highlight ─────────────────────────────
-      function litAnnByName(name, on) {
-        const cfg = FRAG_BY_NAME[name];
-        if (!cfg) return;
+      // ── Annotation highlight on fragment hover ───────────
+      function litAnn(fragId, on) {
+        const cfg = FRAGMENT_MAP[fragId];
+        if (!cfg || !cfg.ann) return;
         const el = document.getElementById(cfg.ann);
         if (el) el.classList.toggle('lit', on);
       }
-      function clearAllAnn() {
-        document.querySelectorAll('.ann-group.lit').forEach(el => el.classList.remove('lit'));
-      }
 
-      // ── Pointer wiring on the WHOLE servicii section ─────
-      // We listen on #servicii (the sticky overlay) so the events fire
-      // even after pointer-events:all is enabled by .revealed.
-      let lastHover = null;
-      let _moveThrottle = 0;
-      function onMove(e) {
-        if (isOpen) return;
-        if (!servicii.classList.contains('revealed')) return;
-        const now = performance.now();
-        if (now - _moveThrottle < 30) return;
-        _moveThrottle = now;
-        const name = hitTest(e.clientX, e.clientY);
-        if (name === lastHover) return;
-        // remove old hover
-        if (lastHover) {
-          const oldId = FRAG_BY_NAME[lastHover].id;
-          document.getElementById(oldId).classList.remove('hover');
-          litAnnByName(lastHover, false);
-        }
-        lastHover = name;
-        if (name) {
-          const newId = FRAG_BY_NAME[name].id;
-          document.getElementById(newId).classList.add('hover');
-          litAnnByName(name, true);
-          servicii.style.cursor = 'pointer';
-        } else {
-          servicii.style.cursor = 'default';
-        }
-      }
-      function onClick(e) {
-        if (isOpen) return;
-        if (!servicii.classList.contains('revealed')) return;
-        const name = hitTest(e.clientX, e.clientY);
-        if (!name) return;
-        clearAllAnn();
-        openService(name);
-      }
-      servicii.addEventListener('mousemove', onMove);
-      servicii.addEventListener('click', onClick);
-      servicii.addEventListener('mouseleave', () => {
-        if (lastHover) {
-          document.getElementById(FRAG_BY_NAME[lastHover].id).classList.remove('hover');
-          litAnnByName(lastHover, false);
-          lastHover = null;
-        }
+      // Fragment clicks → open overlay
+      fragments.forEach(frag => {
+        frag.addEventListener('click', e => {
+          e.stopPropagation();
+          litAnn(frag.id, false);
+          openService(frag.id);
+        });
+        frag.addEventListener('mouseenter', () => {
+          if (!isOpen) litAnn(frag.id, true);
+        });
+        frag.addEventListener('mouseleave', () => {
+          litAnn(frag.id, false);
+        });
       });
 
-      // Close button + ESC
+      // Close button
       closeBtn.addEventListener('click', closeService);
+
+      // ESC key
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && isOpen) closeService();
       });
 
-      // Generic drag-to-scroll wiring (works on any element with the
-       // `data-drag-scroll` attribute or matching id list)
-      function wireDragScroll(el) {
-        if (!el) return;
+      // Drag-to-scroll on iPhone carousel
+      const carousel = document.getElementById('iphone-carousel');
+      if (carousel) {
         let isDown = false, startX = 0, scrollLeft = 0;
-        el.addEventListener('mousedown', e => {
+        carousel.addEventListener('mousedown', e => {
           isDown = true;
-          el.classList.add('dragging');
-          startX = e.pageX - el.offsetLeft;
-          scrollLeft = el.scrollLeft;
+          carousel.classList.add('dragging');
+          startX = e.pageX - carousel.offsetLeft;
+          scrollLeft = carousel.scrollLeft;
         });
-        el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('dragging'); });
-        el.addEventListener('mouseup',    () => { isDown = false; el.classList.remove('dragging'); });
-        el.addEventListener('mousemove', e => {
+        carousel.addEventListener('mouseleave', () => { isDown = false; carousel.classList.remove('dragging'); });
+        carousel.addEventListener('mouseup', () => { isDown = false; carousel.classList.remove('dragging'); });
+        carousel.addEventListener('mousemove', e => {
           if (!isDown) return;
           e.preventDefault();
-          const x = e.pageX - el.offsetLeft;
-          el.scrollLeft = scrollLeft - (x - startX) * 1.5;
+          const x = e.pageX - carousel.offsetLeft;
+          carousel.scrollLeft = scrollLeft - (x - startX) * 1.4;
         });
       }
-      wireDragScroll(document.getElementById('iphone-carousel'));
-      wireDragScroll(document.getElementById('metaScroll'));
-    })();
-
-
-    // ── Phone zoom + image lightbox (pane 01) ────────────
-    (function () {
-      // Phone zoom — clicking any iPhone mockup pops a giant version
-      // of itself into the centre of the screen + autoplays the video.
-      const phoneZoom = document.getElementById('phone-zoom-overlay');
-      const zoomClose = document.getElementById('phoneZoomClose');
-      // Parent <div class="iphone-screen"> where the iframe lives.
-      // We intentionally DO NOT cache the iframe element — we rebuild
-      // it from scratch every open, because YT.Player.destroy() mangles
-      // the original iframe node and any cached reference becomes dead.
-      const zoomScreen = phoneZoom
-        ? phoneZoom.querySelector('.iphone-screen')
-        : null;
-
-      // Track the YT.Player instance so we can tear it down on close
-      let ytPlayer = null;
-
-      // Try to nudge the player to the highest available quality.
-      // YouTube no longer reliably honours setPlaybackQuality (it's
-      // deprecated), but combined with the vq=hd1080 URL hint and the
-      // explicit setPlaybackQualityRange call it works in most cases.
-      function pushHighestQuality(player) {
-        try {
-          const levels = player.getAvailableQualityLevels && player.getAvailableQualityLevels();
-          let target = 'hd1080';
-          if (levels && levels.length) {
-            // Prefer the first level (YouTube returns highest -> lowest)
-            target = levels[0];
-          }
-          if (player.setPlaybackQualityRange) player.setPlaybackQualityRange(target, target);
-          if (player.setPlaybackQuality) player.setPlaybackQuality(target);
-        } catch (e) { /* API may have changed; safe to ignore */ }
-      }
-
-      // Rip out any previous iframe (dead or alive) and build a fresh
-      // one each time. This is the only reliable way to reopen after a
-      // YT.Player.destroy() — reusing the same node gives a black screen.
-      function buildFreshIframe() {
-        if (!zoomScreen) return null;
-        // Nuke any leftover iframe from the previous open
-        const old = zoomScreen.querySelector('iframe');
-        if (old) old.remove();
-        const iframe = document.createElement('iframe');
-        iframe.id = 'zoom-iframe';
-        iframe.frameBorder = '0';
-        iframe.setAttribute('allow',
-          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-        iframe.setAttribute('allowfullscreen', '');
-        zoomScreen.appendChild(iframe);
-        return iframe;
-      }
-
-      const IS_MOBILE_ZOOM = window.matchMedia(
-        '(max-width: 900px), (hover: none) and (pointer: coarse)'
-      ).matches;
-
-      function openPhoneZoom(src) {
-        if (!phoneZoom || !zoomScreen || !src) return;
-        // Add the HD hints; skip the JS API on mobile because the
-        // YT.Player wrapper tends to leave stale state between
-        // opens on iOS, which caused the 2nd-open black screen.
-        if (!IS_MOBILE_ZOOM && !/[?&]enablejsapi=/.test(src)) src += '&enablejsapi=1';
-        if (!/[?&]vq=/.test(src))  src += '&vq=hd1080';
-        if (!/[?&]hd=/.test(src))  src += '&hd=1';
-        // Extra autoplay/mute-related hints for iOS Safari
-        if (!/[?&]autoplay=/.test(src)) src += '&autoplay=1';
-        if (!/[?&]playsinline=/.test(src)) src += '&playsinline=1';
-
-        // Aggressive cleanup of any leftover state before opening
-        // a new video. Any previous YT.Player instance is destroyed,
-        // any previous iframe is stopped (about:blank) then removed,
-        // and a forced reflow makes sure the DOM change has landed
-        // before the new iframe goes in.
-        if (ytPlayer && ytPlayer.destroy) {
-          try { ytPlayer.destroy(); } catch (e) {}
-          ytPlayer = null;
-        }
-        if (zoomScreen) {
-          const stale = zoomScreen.querySelector('iframe');
-          if (stale) {
-            try { stale.src = 'about:blank'; } catch (e) {}
-            stale.remove();
-          }
-          // Force layout flush so the removal is committed before
-          // the new iframe is appended (iOS Safari was sometimes
-          // reusing the removed element's internal media state).
-          void zoomScreen.offsetHeight;
-        }
-
-        const iframe = buildFreshIframe();
-        if (!iframe) return;
-        iframe.src = src;
-        phoneZoom.classList.add('open');
-
-        // YT.Player wrapper is DESKTOP-ONLY. On mobile it's pure
-        // overhead — iOS Safari ignores setPlaybackQualityRange
-        // anyway, and the wrapper + destroy cycle leaves stale
-        // internal state that breaks subsequent opens.
-        if (!IS_MOBILE_ZOOM) {
-          iframe.onload = function () {
-            if (!window.YT || !window.YT.Player) return;
-            try {
-              ytPlayer = new window.YT.Player('zoom-iframe', {
-                events: {
-                  onReady: function (e) { pushHighestQuality(e.target); },
-                  onPlaybackQualityChange: function (e) {
-                    pushHighestQuality(e.target);
-                  },
-                },
-              });
-            } catch (e) { /* ignore — quality bump is best-effort */ }
-          };
-        }
-      }
-      function closePhoneZoom() {
-        if (!phoneZoom) return;
-        phoneZoom.classList.remove('open');
-        // After the fade-out, tear the iframe out completely. Next
-        // open will build a brand-new one from scratch. On mobile
-        // we also set the src to about:blank first so YouTube
-        // releases its audio context cleanly — otherwise iOS was
-        // holding on to the last stream.
-        setTimeout(() => {
-          if (ytPlayer && ytPlayer.destroy) {
-            try { ytPlayer.destroy(); } catch (e) {}
-            ytPlayer = null;
-          }
-          if (zoomScreen) {
-            const iframe = zoomScreen.querySelector('iframe');
-            if (iframe) {
-              try { iframe.src = 'about:blank'; } catch (e) {}
-              iframe.remove();
-            }
-          }
-        }, 450);
-      }
-      // Click on any carousel iPhone -> open zoom with that video.
-      // Now uses static <img> thumbnails (no iframes in carousel) and
-      // reads the YouTube ID from data-yt-id, so click capture is
-      // bullet-proof — img elements never swallow events.
-      function handlePhoneClick(e) {
-        const mockup = e.target.closest && e.target.closest('#pane-left-eye .iphone-mockup');
-        if (!mockup) return;
-        e.preventDefault();
-        e.stopPropagation();
-        const ytId = mockup.dataset.ytId;
-        if (!ytId) return;
-
-        // MOBILE: open the video directly in a new tab (YouTube app
-        // or mobile site). The custom phone-zoom overlay + iframe
-        // embed has too many iOS quirks — 2nd-open black screens,
-        // the whole page reloading when the iframe fails autoplay,
-        // memory pressure from destroy/recreate cycles. Native
-        // YouTube on iOS just works, and the tap context is a
-        // valid user gesture so the new tab is allowed.
-        if (IS_MOBILE_ZOOM) {
-          window.open('https://www.youtube.com/watch?v=' + ytId, '_blank', 'noopener');
-          return;
-        }
-
-        // DESKTOP: keep the fancy phone-zoom overlay
-        const src = 'https://www.youtube-nocookie.com/embed/' + ytId
-                  + '?autoplay=1&playsinline=1&rel=0&modestbranding=1';
-        openPhoneZoom(src);
-      }
-      const carouselEl = document.getElementById('iphone-carousel');
-      if (carouselEl) carouselEl.addEventListener('click', handlePhoneClick);
-      if (zoomClose) zoomClose.addEventListener('click', closePhoneZoom);
-      if (phoneZoom) phoneZoom.addEventListener('click', e => {
-        if (e.target === phoneZoom) closePhoneZoom();
-      });
-
-      // Image lightbox — clicking any result screenshot opens it full-screen
-      const lightbox    = document.getElementById('image-lightbox');
-      const lightboxImg = document.getElementById('lightbox-img');
-      const lightboxClose = document.getElementById('lightboxClose');
-
-      function openLightbox(src, alt) {
-        if (!lightbox || !lightboxImg) return;
-        lightboxImg.src = src;
-        lightboxImg.alt = alt || '';
-        lightbox.classList.add('open');
-      }
-      function closeLightbox() {
-        if (!lightbox) return;
-        lightbox.classList.remove('open');
-      }
-      document.querySelectorAll('#pane-left-eye .result-card').forEach(card => {
-        card.addEventListener('click', e => {
-          e.stopPropagation();
-          const img = card.querySelector('img');
-          if (img) openLightbox(img.src, img.alt);
-        });
-      });
-      if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
-      if (lightbox) lightbox.addEventListener('click', e => {
-        if (e.target === lightbox) closeLightbox();
-      });
-
-      // ESC closes lightbox first, then phone zoom
-      document.addEventListener('keydown', e => {
-        if (e.key !== 'Escape') return;
-        if (lightbox && lightbox.classList.contains('open')) { closeLightbox(); return; }
-        if (phoneZoom && phoneZoom.classList.contains('open')) closePhoneZoom();
-      });
     })();
 
 
@@ -3047,28 +1815,9 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-// ── Device profile ──
-// IMPORTANT: the sphere must look IDENTICAL on every machine (same geometry,
-// same lighting, same post-processing). The only thing we adapt for weak
-// GPUs is internal render resolution (pixelRatio) and a half-rate vertex
-// deform — both invisible to the eye. The actual scroll-lag fix lives in
-// the Lenis init: smoothWheel is disabled on LOW_POWER machines so the
-// page falls back to native scroll. window._lowPowerGpu set in init script.
-const IS_MOBILE = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
-const HW = navigator.hardwareConcurrency || 4;
-// LOW_POWER is ONLY for genuinely weak hardware — old phones (HW<6),
-// integrated/software GPUs (_lowPowerGpu), or HW<=4 desktops. Modern
-// iPhone 13+/Pixel 7+ etc. have 6-8 cores and render the full composer
-// (bloom + chromatic aberration) at 60fps without issue. Forcing them
-// to the LOW_POWER path made the dark metallic sphere look like just
-// 4-5 faint purple dots because bloom was disabled.
-const LOW_POWER = (IS_MOBILE && HW < 6) || HW <= 4 || !!window._lowPowerGpu;
-
 const canvas   = document.getElementById('hero-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: LOW_POWER ? 'low-power' : 'high-performance' });
-// Pixel ratio: 1.5 on weak GPUs vs 2 on strong ones — sharper than 1.25
-// but still ~2x cheaper than full DPR. Visually almost indistinguishable.
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, LOW_POWER ? 1.5 : 2));
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.85;
@@ -3077,15 +1826,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x030305);
 
 const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
-// On mobile the default FOV + z=5 makes the sphere fill most of the
-// portrait viewport — too dominant. Pull the camera back to z=8.5
-// on narrow screens so the sphere reads at ~60% of the previous
-// size, leaving room for the "All In Media" title block underneath.
-// Desktop keeps the original z=5 so the hero is unchanged there.
-(function () {
-  const mobile = window.innerWidth < 768;
-  camera.position.set(0, 0.3, mobile ? 8.5 : 5);
-})();
+camera.position.set(0, 0.3, 5);
 
 const pmrem = new THREE.PMREMGenerator(renderer);
 let envMap = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
@@ -3102,10 +1843,6 @@ const mat = new THREE.MeshPhysicalMaterial({
   reflectivity: 0.7,
 });
 
-// HDRI environment map — restored because it gives the sphere its
-// distinctive "smileyface" highlights on the forehead and nose that
-// Lucian specifically asked to keep. RoomEnvironment alone gave a
-// flatter, less characterful look.
 new RGBELoader().load(
   'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
   function(hdr) {
@@ -3118,13 +1855,7 @@ new RGBELoader().load(
   }
 );
 
-// Geometry detail drops on low-power GPUs: level 6 = ~10k tris
-// on desktop, level 4 = ~2.5k tris on mobile/weak integrated graphics.
-// At the sizes the sphere is rendered the silhouette difference is
-// imperceptible but the CPU-side deform loop in tick() runs ~4x
-// cheaper, which is where the jank lives on Intel HD / older laptops.
-const SPHERE_DETAIL = LOW_POWER ? 4 : 6;
-const geo = new THREE.IcosahedronGeometry(0.9, SPHERE_DETAIL);
+const geo = new THREE.IcosahedronGeometry(0.9, 6);
 const basePos = geo.attributes.position.array.slice();
 const sphere = new THREE.Mesh(geo, mat);
 sphere.position.y = 0.4;
@@ -3143,49 +1874,40 @@ lights[3].position.set(-2,  3, -2);
 lights.forEach(l => scene.add(l));
 scene.add(new THREE.AmbientLight(0x0a0515, 0.3));
 
-// ── Post-Processing ──
-// Full bloom + chromatic aberration pipeline on capable GPUs; a
-// plain renderer.render() path on low-power. UnrealBloomPass is the
-// single most expensive thing in the hero frame (~40% of GPU cost
-// on Intel HD). Dropping it + chromatic aberration + OutputPass
-// shaves ~12-15ms/frame on weak integrated graphics — enough to
-// stay pinned to 60fps on laptops that used to stutter at 30-40.
-const composer = LOW_POWER ? null : new EffectComposer(renderer);
-let bloomPass = null;
-let caPass = null;
-if (composer) {
-  composer.addPass(new RenderPass(scene, camera));
-  bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.4, 0.55, 0.82
-  );
-  composer.addPass(bloomPass);
+// ── Post-Processing: Bloom + Chromatic Aberration ──
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
 
-  const ChromaticAberrationShader = {
-    uniforms: {
-      tDiffuse: { value: null },
-      amount: { value: 0.0025 },
-    },
-    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: `
-      uniform sampler2D tDiffuse;
-      uniform float amount;
-      varying vec2 vUv;
-      void main() {
-        vec2 dir = vUv - vec2(0.5);
-        float dist = length(dir);
-        vec2 offset = dir * dist * amount;
-        float r = texture2D(tDiffuse, vUv + offset).r;
-        float g = texture2D(tDiffuse, vUv).g;
-        float b = texture2D(tDiffuse, vUv - offset).b;
-        gl_FragColor = vec4(r, g, b, 1.0);
-      }
-    `,
-  };
-  caPass = new ShaderPass(ChromaticAberrationShader);
-  composer.addPass(caPass);
-  composer.addPass(new OutputPass());
-}
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.4, 0.55, 0.82
+);
+composer.addPass(bloomPass);
+
+const ChromaticAberrationShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    amount: { value: 0.0025 },
+  },
+  vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float amount;
+    varying vec2 vUv;
+    void main() {
+      vec2 dir = vUv - vec2(0.5);
+      float dist = length(dir);
+      vec2 offset = dir * dist * amount;
+      float r = texture2D(tDiffuse, vUv + offset).r;
+      float g = texture2D(tDiffuse, vUv).g;
+      float b = texture2D(tDiffuse, vUv - offset).b;
+      gl_FragColor = vec4(r, g, b, 1.0);
+    }
+  `,
+};
+const caPass = new ShaderPass(ChromaticAberrationShader);
+composer.addPass(caPass);
+composer.addPass(new OutputPass());
 
 let mx = 0, my = 0, smx = 0, smy = 0;
 window.addEventListener('mousemove', e => {
@@ -3193,20 +1915,11 @@ window.addEventListener('mousemove', e => {
   my = -(e.clientY / window.innerHeight) * 2 + 1;
 });
 
-// scrollP is driven by Lenis (smooth scroll) on desktop AND by native
-// scroll events on mobile. Critical: on touch phones Lenis has
-// smoothTouch:false so it does NOT intercept native touch scroll —
-// lenis.on('scroll') never fires, and scrollP would get stuck. We
-// attach BOTH listeners so scrollP always updates. readScrollP also
-// falls back to window.scrollY when Lenis hasn't been created yet.
 let scrollP = 0;
-function readScrollP() {
-  const sy = window._lenis ? window._lenis.scroll : window.scrollY;
-  scrollP = Math.min(Math.max(sy / window.innerHeight, 0), 1);
-}
-if (window._lenis) window._lenis.on('scroll', readScrollP);
-window.addEventListener('scroll', readScrollP, { passive: true });
-readScrollP();
+const scrollHeight = window.innerHeight;
+window.addEventListener('scroll', () => {
+  scrollP = Math.min(Math.max(window.scrollY / scrollHeight, 0), 1);
+}, { passive: true });
 
 function snoise(x, y, z) {
   return (
@@ -3219,15 +1932,11 @@ const titleEl     = document.getElementById('hero-title-block');
 const heroEl      = document.getElementById('hero');
 
 window.addEventListener('resize', () => {
-  const mobile = window.innerWidth < 768;
-  camera.position.z = mobile ? 8.5 : 5;
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  if (composer) {
-    composer.setSize(window.innerWidth, window.innerHeight);
-    bloomPass.resolution.set(window.innerWidth, window.innerHeight);
-  }
+  composer.setSize(window.innerWidth, window.innerHeight);
+  bloomPass.resolution.set(window.innerWidth, window.innerHeight);
 });
 
 function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; }
@@ -3236,38 +1945,10 @@ function clamp01(t)   { return Math.max(0, Math.min(1, t)); }
 function mapRange(v,s,e){ return clamp01((v-s)/(e-s)); }
 
 const clock = new THREE.Clock();
-let frameCounter = 0;
 
 function tick() {
   requestAnimationFrame(tick);
-
-  // Always update the hero wrapper's CSS state from scrollP — even
-  // when the hero is off-screen and we'll skip the Three.js render.
-  // This is what restores the sphere when the user scrolls back to
-  // the hero from below: scrollP updates via the scroll listener,
-  // this block sets opacity/visibility back to visible, then the
-  // render resumes once IntersectionObserver flags hero visible.
-  if (heroEl) {
-    const op = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
-    heroEl.style.opacity = op;
-    if (op < 0.02) {
-      heroEl.style.visibility = 'hidden';
-      heroEl.style.pointerEvents = 'none';
-    } else {
-      heroEl.style.visibility = '';
-      heroEl.style.pointerEvents = '';
-    }
-  }
-  if (titleEl && window._loaderDone) {
-    titleEl.style.opacity = 1;
-    const titleDrift = easeIn(mapRange(scrollP, 0.82, 0.98));
-    titleEl.style.transform = `translateY(${titleDrift * -14}px)`;
-  }
-
-  // GPU-heavy work pauses when hero is off-screen for battery savings
   if (window._heroVisible === false) return;
-
-  frameCounter++;
   const t = clock.getElapsedTime();
 
   smx += (mx - smx) * 0.03;
@@ -3278,49 +1959,37 @@ function tick() {
   const pRotSpeed  = easeInOut(mapRange(scrollP, 0.20, 0.50));
   const pRise      = easeIn(mapRange(scrollP, 0.60, 0.90));
 
-  // (titleEl state is already set in the always-run block above)
-  // Camera base z is 5 on desktop, 8.5 on mobile (sphere reads
-  // smaller in the portrait viewport). The scroll-driven pZoom
-  // ease still pulls the camera in by 1 unit either way.
-  const _mobileHero = window.innerWidth < 768;
-  const _camZBase = _mobileHero ? 8.5 : 5;
-  camera.position.z = _camZBase - pZoom * 1.0;
+  if (titleEl && window._loaderDone) {
+    titleEl.style.opacity   = 1 - easeInOut(mapRange(scrollP, 0.03, 0.20));
+    titleEl.style.transform = `translateY(${scrollP * -40}px)`;
+  }
+  camera.position.z = 5 - pZoom * 1.0;
   camera.position.y = 0.3 + pRise * 0.5;
   sphere.position.y = 0.4 + pRise * 6;
 
-  // Per-vertex deformation is the hot loop. Strategy by tier:
-  //  - Desktop / capable GPU  → every frame (full quality)
-  //  - Low-power (Intel HD, mobile, 4 cores or less, reduced subdivs)
-  //    → every 3rd frame. With SPHERE_DETAIL=4 the vertex count is
-  //    already ~4x smaller, so this combo is about 12x cheaper than
-  //    the desktop path. The sphere still breathes and reacts to
-  //    the cursor, just at a slightly lower cadence no one notices.
-  const skipDeform = LOW_POWER && (frameCounter % 3 !== 0);
-  if (!skipDeform) {
-    const pos = geo.attributes.position.array;
-    const deformMult = 1 + pIntensity * 0.3;
-    const speed = 0.25;
-    for (let i = 0; i < pos.length; i += 3) {
-      const bx=basePos[i], by=basePos[i+1], bz=basePos[i+2];
-      const len=Math.sqrt(bx*bx+by*by+bz*bz);
-      const nx=bx/len, ny=by/len, nz=bz/len;
-      const breath = Math.sin(t*0.5)*0.02 + Math.sin(t*1.1)*0.01;
-      const n1 = snoise(nx*1.2+t*speed, ny*1.2+t*speed*0.8, nz*1.2)*0.08*deformMult;
-      const n2 = snoise(nx*2.5+t*speed*0.5, ny*2.5-t*speed*0.4, nz*2.5)*0.03*deformMult;
-      const mouseDot  = nx*smx + ny*smy;
-      const mdx=nx-smx*0.8, mdy=ny-smy*0.8;
-      const mouseBulge = Math.max(0,1-Math.sqrt(mdx*mdx+mdy*mdy)*1.2)*0.08*(Math.abs(smx)+Math.abs(smy));
-      const scale = 1 + breath + n1 + n2 + mouseDot*0.1 + mouseBulge;
-      pos[i]=nx*len*scale; pos[i+1]=ny*len*scale; pos[i+2]=nz*len*scale;
-    }
-    const normals = geo.attributes.normal.array;
-    for (let i=0;i<pos.length;i+=3) {
-      const l=Math.sqrt(pos[i]*pos[i]+pos[i+1]*pos[i+1]+pos[i+2]*pos[i+2]);
-      normals[i]=pos[i]/l; normals[i+1]=pos[i+1]/l; normals[i+2]=pos[i+2]/l;
-    }
-    geo.attributes.position.needsUpdate = true;
-    geo.attributes.normal.needsUpdate   = true;
+  const pos = geo.attributes.position.array;
+  const deformMult = 1 + pIntensity * 0.3;
+  const speed = 0.25;
+  for (let i = 0; i < pos.length; i += 3) {
+    const bx=basePos[i], by=basePos[i+1], bz=basePos[i+2];
+    const len=Math.sqrt(bx*bx+by*by+bz*bz);
+    const nx=bx/len, ny=by/len, nz=bz/len;
+    const breath = Math.sin(t*0.5)*0.02 + Math.sin(t*1.1)*0.01;
+    const n1 = snoise(nx*1.2+t*speed, ny*1.2+t*speed*0.8, nz*1.2)*0.08*deformMult;
+    const n2 = snoise(nx*2.5+t*speed*0.5, ny*2.5-t*speed*0.4, nz*2.5)*0.03*deformMult;
+    const mouseDot  = nx*smx + ny*smy;
+    const mdx=nx-smx*0.8, mdy=ny-smy*0.8;
+    const mouseBulge = Math.max(0,1-Math.sqrt(mdx*mdx+mdy*mdy)*1.2)*0.08*(Math.abs(smx)+Math.abs(smy));
+    const scale = 1 + breath + n1 + n2 + mouseDot*0.1 + mouseBulge;
+    pos[i]=nx*len*scale; pos[i+1]=ny*len*scale; pos[i+2]=nz*len*scale;
   }
+  const normals = geo.attributes.normal.array;
+  for (let i=0;i<pos.length;i+=3) {
+    const l=Math.sqrt(pos[i]*pos[i]+pos[i+1]*pos[i+1]+pos[i+2]*pos[i+2]);
+    normals[i]=pos[i]/l; normals[i+1]=pos[i+1]/l; normals[i+2]=pos[i+2]/l;
+  }
+  geo.attributes.position.needsUpdate = true;
+  geo.attributes.normal.needsUpdate   = true;
 
   const rotSpeed = 0.05 + pRotSpeed * 0.15;
   sphere.rotation.y = t*rotSpeed + smx*0.3;
@@ -3334,21 +2003,18 @@ function tick() {
   lights[0].position.y = 2 + Math.cos(t*0.4)*0.4;
   lights[1].position.x = -3 + Math.sin(t*0.25)*0.4;
 
-  // (heroEl opacity/visibility is already set in the always-run
-  // block at the top of tick() — don't duplicate it here.)
-
-  // Render path: full composer (bloom + CA + OutputPass) on capable
-  // GPUs, plain renderer.render() on low-power. The plain path skips
-  // the custom chromatic-aberration shader pass + the bloom multi-
-  // downsample blur, which together cost ~12-15ms/frame on weak
-  // integrated graphics.
-  if (composer) {
-    bloomPass.strength = 0.4 + pIntensity * 0.7;
-    caPass.uniforms.amount.value = 0.002 + pIntensity * 0.003;
-    composer.render();
-  } else {
-    renderer.render(scene, camera);
+  if (heroEl) {
+    const op = 1 - easeIn(mapRange(scrollP, 0.82, 0.98));
+    heroEl.style.opacity = op;
+    heroEl.style.pointerEvents = op < 0.02 ? 'none' : '';
   }
+
+  // Dynamic post-processing: bloom intensifies with scroll, CA with velocity
+  bloomPass.strength = 0.4 + pIntensity * 0.7;
+  const vel = Math.abs(window._scrollVelocity || 0);
+  caPass.uniforms.amount.value = 0.002 + vel * 0.0012 + pIntensity * 0.003;
+
+  composer.render();
 }
 tick();
 </script>
@@ -3359,16 +2025,11 @@ tick();
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-// Same contact scene visuals on every device — only pixelRatio adapts.
-const C_IS_MOBILE = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
-const C_HW = navigator.hardwareConcurrency || 4;
-// Same rule as the hero: modern mobile with HW>=6 gets full quality.
-const C_LOW_POWER = (C_IS_MOBILE && C_HW < 6) || C_HW <= 4 || !!window._lowPowerGpu;
-
 const contactArea  = document.getElementById('contact');
+const contactStage = document.getElementById('contact-stage');
 const cCanvas      = document.getElementById('contact-canvas');
-const renderer2    = new THREE.WebGLRenderer({ canvas: cCanvas, antialias: true, powerPreference: C_LOW_POWER ? 'low-power' : 'high-performance' });
-renderer2.setPixelRatio(Math.min(window.devicePixelRatio, C_LOW_POWER ? 1.5 : 2));
+const renderer2    = new THREE.WebGLRenderer({ canvas: cCanvas, antialias: true });
+renderer2.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer2.setSize(window.innerWidth, window.innerHeight);
 
 const scene2  = new THREE.Scene();
@@ -3380,40 +2041,24 @@ camera2.position.set(0, 0, 4);
 const pmrem2 = new THREE.PMREMGenerator(renderer2);
 scene2.environment = pmrem2.fromScene(new RoomEnvironment(), 0.04).texture;
 
+const chromeMat = new THREE.MeshPhysicalMaterial({
+  color: 0x0a0a12, metalness: 1, roughness: 0.02,
+  clearcoat: 0.3, reflectivity: 0.7,
+});
 
 // ── Load textures ──
 const loader = new THREE.TextureLoader();
 let clipMesh = null, waMesh = null;
 
-// Mesh target positions depend on viewport aspect. On a portrait
-// phone (aspect < 0.8) the clipboard + WhatsApp meshes stack
-// vertically because the camera's horizontal FOV can't fit the
-// desktop side-by-side layout (waMesh at x=1.5 is OUTSIDE the
-// ~±0.67 horizontal view at z=4 on a narrow portrait). On
-// desktop/tablet landscape they stay side-by-side as designed.
-const C_PORTRAIT = window.innerWidth / window.innerHeight < 0.8;
-
-// Mesh scale is also smaller on mobile so the two stacked meshes
-// don't collide in the middle of the screen.
-const C_MESH_SCALE = C_PORTRAIT ? 0.72 : 1.0;
-
-const clipFinal = C_PORTRAIT
-  ? { x: 0,    y:  0.62 }   // top-center on portrait
-  : { x: -0.45, y: 0 };     // left on desktop
-const waFinal   = C_PORTRAIT
-  ? { x: 0,    y: -0.62 }   // bottom-center on portrait
-  : { x: 1.5,  y: -0.1 };   // right on desktop
-const clipStart = C_PORTRAIT
-  ? { x: 0, y:  5.0 }       // fly down from top
-  : { x: -5.5, y: 0.5 };
-const waStart   = C_PORTRAIT
-  ? { x: 0, y: -5.0 }       // fly up from bottom
-  : { x: 5.5, y: 0.3 };
+const clipFinal = { x: -0.45, y: 0 };
+const waFinal   = { x: 1.5,  y: -0.1 };
+const clipStart = { x: -5.5, y: 0.5 };
+const waStart   = { x: 5.5,  y: 0.3 };
 
 loader.load('clipboard-t.png', (tex) => {
   tex.colorSpace = THREE.SRGBColorSpace;
   const aspect = tex.image.width / tex.image.height;
-  const h = 1.6 * C_MESH_SCALE;
+  const h = 1.6;
   clipMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(h * aspect, h),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
@@ -3425,7 +2070,7 @@ loader.load('clipboard-t.png', (tex) => {
 loader.load('whatsapp-t.png', (tex) => {
   tex.colorSpace = THREE.SRGBColorSpace;
   const aspect = tex.image.width / tex.image.height;
-  const h = 0.85 * C_MESH_SCALE;
+  const h = 0.85;
   waMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(h * aspect, h),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
@@ -3434,6 +2079,22 @@ loader.load('whatsapp-t.png', (tex) => {
   scene2.add(waMesh);
 });
 
+// ── Chrome particles ──
+function snoise2(x,y,z) {
+  return (Math.sin(x*1.7+y*2.1+z*0.9)*Math.cos(y*1.3+z*2.7+x*0.6)+
+    Math.sin(x*3.1+z*1.9)*Math.cos(y*2.9+x*1.1)*0.5)*0.55;
+}
+const particles2 = [];
+for (let i = 0; i < 10; i++) {
+  const r = 0.012 + Math.random()*0.03;
+  const p = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 3), chromeMat);
+  p.position.set((Math.random()-0.5)*7, (Math.random()-0.5)*4, -0.5 - Math.random()*2);
+  const bp = p.geometry.attributes.position.array.slice();
+  p.userData = { bp, spd: 0.04+Math.random()*0.1, off: Math.random()*Math.PI*2,
+    bx: p.position.x, by: p.position.y, dx: 0.3+Math.random()*0.6, dy: 0.15+Math.random()*0.25 };
+  scene2.add(p);
+  particles2.push(p);
+}
 
 // ── Lights ──
 const clipGlow = new THREE.PointLight(0x8050d0, 4, 8);
@@ -3445,21 +2106,14 @@ scene2.add(waGlow);
 scene2.add(new THREE.PointLight(0x6030b0, 3, 15));
 scene2.add(new THREE.AmbientLight(0x080410, 0.4));
 
-// ── Scroll (Lenis on desktop + native on mobile) ──
-// Both listeners are attached because Lenis doesn't fire its scroll
-// event on native touch scroll (smoothTouch:false). Without the
-// native listener cScrollP freezes and the clipboard + WhatsApp
-// meshes never animate in on phones.
+// ── Scroll ──
 let cScrollP = 0;
 function updateContactScroll() {
-  const sy = window._lenis ? window._lenis.scroll : window.scrollY;
   const scrollable = contactArea.offsetHeight - window.innerHeight;
-  const scrolled   = sy - contactArea.offsetTop;
+  const scrolled   = window.scrollY - contactArea.offsetTop;
   cScrollP = Math.min(Math.max(scrolled / scrollable, 0), 1);
 }
-if (window._lenis) window._lenis.on('scroll', updateContactScroll);
 window.addEventListener('scroll', updateContactScroll, { passive: true });
-updateContactScroll();
 
 // ── Helpers ──
 function easeOutCubic(t) { return 1 - Math.pow(1-t, 3); }
@@ -3554,13 +2208,8 @@ function tick2() {
     clipGlow.intensity = (3 + Math.sin(t*1.5)*1.5 + hClipS*5) * clipP;
     clipGlow.position.x = clipMesh.position.x;
 
-    // Label position. On desktop the label sits BELOW the clipboard
-    // mesh (negative y offset). On portrait the clipboard mesh is
-    // stacked in the top half so the label goes ABOVE it (positive
-    // offset) — otherwise it falls into the middle of the screen
-    // and overlaps the WhatsApp mesh below.
-    const clipLabelOffset = C_PORTRAIT ? 0.75 : -1.05;
-    const v1 = clipMesh.position.clone(); v1.y += clipLabelOffset; v1.project(camera2);
+    // Label position
+    const v1 = clipMesh.position.clone(); v1.y -= 1.05; v1.project(camera2);
     clipLabelEl.style.left = ((v1.x*0.5+0.5)*window.innerWidth) + 'px';
     clipLabelEl.style.top  = ((-v1.y*0.5+0.5)*window.innerHeight) + 'px';
     clipLabelEl.style.opacity = mapRange2(clipP, 0.85, 1) * (0.5 + hClipS*0.5);
@@ -3576,14 +2225,26 @@ function tick2() {
     waGlow.intensity = (2 + Math.sin(t*1.8)*1 + hWaS*4) * waP;
     waGlow.position.x = waMesh.position.x;
 
-    // On portrait waMesh is in bottom half, label sits a touch lower.
-    // On desktop waMesh is side-right, label below it.
-    const waLabelOffset = C_PORTRAIT ? -0.42 : -0.6;
-    const v2 = waMesh.position.clone(); v2.y += waLabelOffset; v2.project(camera2);
+    const v2 = waMesh.position.clone(); v2.y -= 0.6; v2.project(camera2);
     waLabelEl.style.left = ((v2.x*0.5+0.5)*window.innerWidth) + 'px';
     waLabelEl.style.top  = ((-v2.y*0.5+0.5)*window.innerHeight) + 'px';
     waLabelEl.style.opacity = mapRange2(waP, 0.85, 1) * (0.5 + hWaS*0.5);
   }
+
+  // Particles
+  particles2.forEach(p => {
+    const d = p.userData;
+    p.position.x = d.bx + Math.sin(t*d.spd+d.off)*d.dx;
+    p.position.y = d.by + Math.cos(t*d.spd*0.7+d.off)*d.dy;
+    p.rotation.y = t*d.spd; p.rotation.x = t*d.spd*0.3;
+    const pp = p.geometry.attributes.position.array, bp = d.bp;
+    for (let i=0;i<pp.length;i+=3) {
+      const bx=bp[i],by=bp[i+1],bz=bp[i+2], l=Math.sqrt(bx*bx+by*by+bz*bz)||1;
+      const s=1+Math.sin(t*0.8+d.off)*0.04+snoise2((bx/l)*2+t*0.2+d.off,(by/l)*2,(bz/l)*2)*0.07;
+      pp[i]=bx*s; pp[i+1]=by*s; pp[i+2]=bz*s;
+    }
+    p.geometry.attributes.position.needsUpdate = true;
+  });
 
   renderer2.render(scene2, camera2);
 }
@@ -3596,64 +2257,24 @@ tick2();
    INIT: Lenis · GSAP · Cursor · Loader · SplitType
    ═══════════════════════════════════════════════════ */
 
-// ── 0. GPU DETECTION ────────────────────────────────
-// Reads the WebGL renderer string and flags integrated/software GPUs
-// (Intel HD/UHD, SwiftShader, llvmpipe, low-end mobile chips). On those
-// machines we skip the smooth-wheel layer entirely (lerping at <60fps
-// looks like scroll lag) AND tell the Three.js scenes to drop their
-// post-processing pipelines. The detection runs synchronously on a
-// throwaway canvas so the result is ready before Lenis is constructed.
-function detectLowPowerGpu() {
-  try {
-    const c = document.createElement('canvas');
-    const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-    if (!gl) return { low: true, renderer: 'no-webgl' };
-    const ext = gl.getExtension('WEBGL_debug_renderer_info');
-    const renderer = ext ? (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '') : '';
-    const r = renderer.toLowerCase();
-    let low = false;
-    // Software renderers — always slow
-    if (r.includes('swiftshader') || r.includes('llvmpipe') || r.includes('software') || r.includes('basic render')) low = true;
-    // Intel integrated graphics — HD Graphics, UHD Graphics, Iris (non-Pro)
-    if (r.includes('intel') && (r.includes('hd graphics') || r.includes('uhd graphics') || (r.includes('iris') && !r.includes('iris pro')))) low = true;
-    // Older mobile GPUs that sometimes appear on cheap Chromebooks
-    if (r.includes('mali-')) low = true;
-    if (/adreno \(?\d{2,3}\)?$/.test(r)) low = true; // Adreno 3xx/4xx etc.
-    // No debug info available + only 1 logical CPU = also treat as low
-    if (!renderer && (navigator.hardwareConcurrency || 4) <= 2) low = true;
-    return { low, renderer: renderer || '(unknown)' };
-  } catch (e) {
-    return { low: false, renderer: '(error)' };
+// ── 0. MOBILE VIEWPORT HEIGHT FIX ──────────────────
+// Keep --vh variable available for any future use; primary fix is 100dvh in CSS.
+(function () {
+  function applyVh() {
+    document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
   }
-}
-const _gpu = detectLowPowerGpu();
-window._lowPowerGpu = _gpu.low;
-// Expose at ?debug=1 so we can verify on a slow machine
-if (location.search.includes('debug=1')) {
-  console.log('[gpu]', _gpu.renderer, '→ lowPower:', _gpu.low);
-}
-
+  applyVh();
+  window.addEventListener('resize', applyVh, { passive: true });
+})();
 
 // ── 1. LENIS SMOOTH SCROLL ──────────────────────────
-// Tuned for a tight, responsive feel:
-//  - duration 1.6 -> 1.05 so the wheel reacts almost immediately
-//  - lerp added so fast wheel ticks settle without overshoot
-//  - touch falls through to native scroll on phones (no smooth lag)
-//  - on detected low-power GPUs we DISABLE smoothWheel entirely so the
-//    page falls back to the browser's native scroll, which is silky on
-//    integrated graphics where lerping at <60fps looks like jank.
 const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const lenis = new Lenis({
-  duration: 1.05,
-  lerp: 0.12,
-  smoothWheel: !prefersReduced && !window._lowPowerGpu,
-  smoothTouch: false,
-  syncTouch: false,
+  duration: 1.6,
+  smoothWheel: !prefersReduced,
   orientation: 'vertical',
   gestureOrientation: 'vertical',
-  wheelMultiplier: 1.0,
-  touchMultiplier: 1.4,
-  easing: (t) => 1 - Math.pow(1 - t, 3),
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
 });
 window._lenis = lenis;
 
@@ -3662,60 +2283,54 @@ lenis.on('scroll', ScrollTrigger.update);
 gsap.ticker.add((time) => { lenis.raf(time * 1000); });
 gsap.ticker.lagSmoothing(0);
 
-// Boot the ScrollTrigger-driven scroll-scrub once GSAP is configured
-if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
-
 
 // ── 2. LOADING SCREEN ───────────────────────────────
-// Smooth rAF-driven counter 0 → 100 over a fixed duration with
-// ease-out cubic. No fake random steps, no 'sprint from 17 to 100'
-// jump — every frame pushes the bar forward by a smooth delta.
 (function () {
   const loader   = document.getElementById('loader');
   const fill     = document.getElementById('loader-bar-fill');
   const pctEl    = document.getElementById('loader-percent');
+  let progress   = 0;
+  let finished   = false;
 
-  const DURATION = 3200;   // total time for 0 → 100
-  const startTime = performance.now();
-  let finished = false;
-
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-
-  function tickFrame(now) {
+  // Ease progress up to 88% organically
+  const tick = setInterval(() => {
     if (finished) return;
-    const elapsed = now - startTime;
-    const t = Math.min(1, elapsed / DURATION);
-    const v = easeOutCubic(t) * 100;
-    fill.style.width = v + '%';
-    pctEl.textContent = Math.floor(v) + '%';
-    if (t < 1) {
-      requestAnimationFrame(tickFrame);
-    } else {
-      pctEl.textContent = '100%';
-      fill.style.width = '100%';
-      // Brief hold at 100 so the user registers the end state, then exit
-      setTimeout(complete, 260);
-    }
-  }
-  requestAnimationFrame(tickFrame);
+    const step = Math.max(0.4, (88 - progress) * 0.03 + Math.random() * 1.8);
+    progress = Math.min(progress + step, 88);
+    fill.style.width = progress + '%';
+    pctEl.textContent = Math.floor(progress) + '%';
+  }, 70);
 
   function complete() {
     if (finished) return;
     finished = true;
-    // Dramatic mask-expand reveal (same feel as before)
-    gsap.to(loader, {
-      clipPath: 'circle(0% at 50% 50%)',
-      duration: 1.0, delay: 0.1,
-      ease: 'power3.inOut',
+    clearInterval(tick);
+    // Sprint 88 → 100
+    gsap.to({ p: progress }, {
+      p: 100, duration: 0.6, ease: 'power2.out',
+      onUpdate: function () {
+        const v = Math.floor(this.targets()[0].p);
+        fill.style.width = v + '%';
+        pctEl.textContent = v + '%';
+      },
       onComplete: () => {
-        loader.style.display = 'none';
-        revealPage();
+        // Dramatic mask-expand reveal
+        gsap.to(loader, {
+          clipPath: 'circle(0% at 50% 50%)',
+          duration: 1.0, delay: 0.2,
+          ease: 'power3.inOut',
+          onComplete: () => {
+            loader.style.display = 'none';
+            revealPage();
+          }
+        });
       }
     });
   }
 
-  // Hard fallback — fire reveal after 6s no matter what
-  setTimeout(complete, 6000);
+  window.addEventListener('loaderAssetReady', complete, { once: true });
+  // Fallback — hide after 4s no matter what
+  setTimeout(complete, 4000);
 
   function revealPage() {
     window._loaderDone = true;
@@ -3740,22 +2355,95 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
       });
     }
     if (sub) {
-      // Trigger the CSS keyframe reveal (opacity + y). Using CSS here
-      // instead of gsap.from because the CSS animation's 'forwards' fill
-      // mode can't be interrupted by rapid scroll that toggles the hero's
-      // visibility — the old GSAP tween used to get stuck at opacity:0
-      // if visibility:hidden kicked in mid-tween.
-      sub.classList.add('sub-reveal');
+      gsap.from(sub, { opacity: 0, y: 14, duration: 0.9, ease: 'power2.out', delay: 0.55 });
     }
   }
 })();
 
 
-// ── 3. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
+// ── 3. CUSTOM CURSOR (skip on touch) ────────────────
 (function () {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+
+  let mx = 0, my = 0;
+  let rx = 0, ry = 0;
+
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  // Dot follows instantly, ring lerps
+  gsap.ticker.add(() => {
+    dot.style.transform  = `translate(calc(${mx}px - 50%), calc(${my}px - 50%))`;
+    rx += (mx - rx) * 0.10;
+    ry += (my - ry) * 0.10;
+    ring.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
+  });
+
+  // Hover state on interactive elements
+  const hoverSel = 'a, button, [role="button"], .mask-fragment, .cf-submit, #contact-canvas, .ann-group';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(hoverSel)) document.body.classList.add('cur-hover');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(hoverSel)) document.body.classList.remove('cur-hover');
+  });
+
+  // Hide cursor when mouse leaves window
+  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = ''; ring.style.opacity = ''; });
+})();
+
+
+// ── 4. GSAP SCROLLTRIGGER ANIMATIONS ────────────────
+(function () {
+  // ── Eyebrow text in fragments section — char reveal
+  const eyebrow = document.querySelector('#servicii > p');
+  if (eyebrow && window.SplitType) {
+    const split = new SplitType(eyebrow, { types: 'chars' });
+    gsap.from(split.chars, {
+      scrollTrigger: { trigger: eyebrow, start: 'top 88%', once: true },
+      y: 22, opacity: 0, duration: 0.55,
+      stagger: 0.028, ease: 'power3.out',
+    });
+  }
+
+  // ── Fragments canvas — subtle parallax on scroll through section
+  gsap.to('.fragments-canvas', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 1.8,
+    },
+    y: -55, ease: 'none',
+  });
+
+  // ── Annotation SVG — opposite parallax (slower)
+  gsap.to('.ann-svg', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 2.5,
+    },
+    y: -25, ease: 'none',
+  });
+
+  // Fragments section reveal is handled by CSS .revealed class
+  // GSAP just ensures ScrollTrigger refresh for parallax accuracy
   ScrollTrigger.refresh();
 
-  // ── Contact labels fade in (lightweight, no scale/blur on the stage)
+  // ── Contact section entrance — cinematic rise with blur
+  gsap.from('#contact-stage', {
+    scrollTrigger: { trigger: '#contact', start: 'top 85%', once: true },
+    opacity: 0, y: 60, scale: 0.97,
+    filter: 'blur(6px)',
+    duration: 1.3, ease: 'power3.out',
+  });
+
+  // ── Contact labels slide in on scroll
   ['contact-clipLabel', 'contact-waLabel'].forEach((id, i) => {
     const el = document.getElementById(id);
     if (el) {
@@ -3766,13 +2454,142 @@ if (typeof window._scrollScrubInit === 'function') window._scrollScrubInit();
       });
     }
   });
+
+  // ── Fragments section — scroll-driven scale down + blur as user leaves
+  gsap.to('#servicii', {
+    scrollTrigger: {
+      trigger: '#servicii',
+      start: 'bottom 60%',
+      end: 'bottom top',
+      scrub: 1.5,
+    },
+    scale: 0.96, filter: 'blur(3px) brightness(0.7)',
+    ease: 'none',
+  });
 })();
 
 
-// ── 4. RENDERER PAUSING (off-screen Three.js scenes) ─────
-window._heroVisible = true;
-window._contactVisible = true;
+// ── 5. MICRO-INTERACTIONS ────────────────────────────
 (function () {
+  // Fragment 3D tilt on mouse move
+  document.querySelectorAll('.mask-fragment').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      gsap.to(el, {
+        rotateY: x * 12, rotateX: -y * 9,
+        duration: 0.35, ease: 'power2.out',
+        transformPerspective: 900, transformOrigin: 'center center',
+      });
+    });
+    el.addEventListener('mouseleave', () => {
+      gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.7, ease: 'power3.out' });
+    });
+  });
+
+  // Submit button GSAP hover glow
+  document.querySelectorAll('.cf-submit').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      gsap.to(btn, {
+        scale: 1.025,
+        boxShadow: '0 0 30px rgba(110,60,200,0.45), 0 0 60px rgba(110,60,200,0.2)',
+        duration: 0.35, ease: 'power2.out',
+      });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, {
+        scale: 1, boxShadow: '0 0 0px rgba(110,60,200,0)',
+        duration: 0.4, ease: 'power3.out',
+      });
+    });
+  });
+
+  // Link underline reveal — clip-path left→right
+  // Applied to any .pane-sub links if they exist
+  document.querySelectorAll('a:not([class])').forEach(a => {
+    a.style.position = 'relative';
+    a.style.textDecoration = 'none';
+    const line = document.createElement('span');
+    line.style.cssText = `
+      position:absolute; bottom:-1px; left:0; width:100%; height:1px;
+      background:currentColor; transform:scaleX(0); transform-origin:left;
+      transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    `;
+    a.appendChild(line);
+    a.addEventListener('mouseenter', () => { line.style.transform = 'scaleX(1)'; });
+    a.addEventListener('mouseleave', () => {
+      line.style.transformOrigin = 'right';
+      line.style.transform = 'scaleX(0)';
+      setTimeout(() => { line.style.transformOrigin = 'left'; }, 350);
+    });
+  });
+
+  // Form input focus glow — animated via GSAP
+  document.querySelectorAll('.contact-form-box input, .contact-form-box select, .contact-form-box textarea').forEach(inp => {
+    inp.addEventListener('focus', () => {
+      gsap.to(inp, {
+        boxShadow: '0 0 0 3px rgba(120,70,220,0.12), 0 0 32px rgba(120,70,220,0.2), inset 0 0 14px rgba(120,70,220,0.05)',
+        borderColor: 'rgba(140,100,240,0.55)',
+        duration: 0.4, ease: 'power2.out',
+      });
+    });
+    inp.addEventListener('blur', () => {
+      gsap.to(inp, {
+        boxShadow: '0 0 0 0px transparent, 0 0 0px transparent, inset 0 0 0px transparent',
+        borderColor: 'rgba(160,140,220,0.1)',
+        duration: 0.35, ease: 'power2.out',
+      });
+    });
+  });
+
+  // Overlay close button hover
+  const overlayClose = document.getElementById('overlay-close');
+  if (overlayClose) {
+    overlayClose.addEventListener('mouseenter', () => {
+      gsap.to(overlayClose, { scale: 1.1, rotation: 90, duration: 0.3, ease: 'power2.out' });
+    });
+    overlayClose.addEventListener('mouseleave', () => {
+      gsap.to(overlayClose, { scale: 1, rotation: 0, duration: 0.4, ease: 'power3.out' });
+    });
+  }
+})();
+
+
+// ── 6. SCROLL VELOCITY EFFECTS + RENDERER PAUSING ─────
+(function () {
+  // ── Track scroll velocity via Lenis ──
+  window._scrollVelocity = 0;
+  let velocityDecay = 0;
+  lenis.on('scroll', ({ velocity }) => {
+    window._scrollVelocity = velocity;
+    velocityDecay = Math.abs(velocity);
+  });
+
+  // ── Chromatic Aberration overlay driven by velocity ──
+  const caR = document.getElementById('ca-r');
+  const caB = document.getElementById('ca-b');
+  if (caR && caB && !prefersReduced) {
+    gsap.ticker.add(() => {
+      velocityDecay *= 0.88; // smooth decay
+      const amt = Math.min(velocityDecay * 0.4, 5);
+      if (amt > 0.2) {
+        const op = Math.min(amt * 0.07, 0.35);
+        caR.style.opacity = op;
+        caB.style.opacity = op;
+        caR.style.transform = `translateX(${-amt}px)`;
+        caB.style.transform = `translateX(${amt}px)`;
+      } else {
+        caR.style.opacity = 0;
+        caB.style.opacity = 0;
+      }
+    });
+  }
+
+  // ── IntersectionObservers — pause off-screen Three.js ──
+  window._heroVisible = true;
+  window._contactVisible = true;
+
   const heroEl = document.getElementById('hero');
   if (heroEl) {
     new IntersectionObserver(([e]) => { window._heroVisible = e.isIntersecting; }, { threshold: 0 })
@@ -3786,252 +2603,27 @@ window._contactVisible = true;
 })();
 
 
-</script>
-
-<!-- ═══════════════════════════════════════════════════
-     DUST PARTICLES OVERLAY — ported from particule-preview.html
-     110 white particles drifting permanently over every section
-     (hero, scroll-scrub, mask fragments, contact). Repel from the
-     cursor within 130px radius. pointer-events:none so nothing
-     blocks clicks or scroll, z-index:9999 so nothing hides them.
-     ═══════════════════════════════════════════════════ -->
-<script>
+// ── 7. INFINITE LOOP — use Lenis for clean jump ──────
 (function () {
-  const canvas = document.createElement('canvas');
-  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
-  document.body.appendChild(canvas);
-
-  const ctx = canvas.getContext('2d');
-  let W, H;
-
-  // On mobile / touch / narrow viewport we cut the particle count
-  // aggressively so the rAF loop doesn't steal frames from the
-  // Three.js hero sphere + scroll-scrub canvas. 110 was too heavy
-  // on iPhone when combined with the deform loop + bloom.
-  const IS_TOUCH_OR_NARROW = window.matchMedia(
-    '(max-width: 900px), (hover: none) and (pointer: coarse)'
-  ).matches;
-  const PARTICLE_COUNT = IS_TOUCH_OR_NARROW ? 32 : 65;
-  const MOUSE_RADIUS   = 130;
-  const MOUSE_FORCE    = 0.20;
-
-  // Flag consumed by Particle.update() to apply a sphere-exclusion
-  // zone on mobile while the hero section is on screen. Updated by
-  // syncMobileVisibility() below. Always false on desktop.
-  let _inHeroMobile = false;
-
-  const mouse = { x: -999, y: -999 };
-  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-  window.addEventListener('mouseleave', () => { mouse.x = -999; mouse.y = -999; });
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  function Particle(init) { this.reset(init); }
-
-  Particle.prototype.reset = function (init) {
-    this.x    = Math.random() * W;
-    this.y    = init ? Math.random() * H : (Math.random() > 0.5 ? -6 : H + 6);
-    this.size = Math.random() * 2.5 + 0.8;
-    this.base = Math.random() * 0.18 + 0.08;
-    this.vx   = (Math.random() - 0.5) * 0.28;
-    this.vy   = (Math.random() - 0.5) * 0.18 - 0.04;
-    this.ph   = Math.random() * Math.PI * 2;
-    this.ps   = Math.random() * 0.006 + 0.002;
-    this.px   = 0;
-    this.py   = 0;
-  };
-
-  Particle.prototype.update = function () {
-    this.ph += this.ps;
-    this.x  += this.vx + Math.sin(this.ph) * 0.14;
-    this.y  += this.vy + Math.cos(this.ph * 0.7) * 0.09;
-
-    const dx   = this.x - mouse.x;
-    const dy   = this.y - mouse.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < MOUSE_RADIUS && dist > 0) {
-      const f = (1 - dist / MOUSE_RADIUS) * MOUSE_FORCE;
-      this.px += (dx / dist) * f;
-      this.py += (dy / dist) * f;
-    }
-
-    this.px *= 0.91;
-    this.py *= 0.91;
-    this.x  += this.px;
-    this.y  += this.py;
-
-    // Sphere exclusion — only on mobile hero state. Any particle
-    // that ends up inside the sphere's screen-space radius is
-    // snapped to the edge and has its inward velocity flipped
-    // outward, so they physically cannot overlap the sphere.
-    if (_inHeroMobile) {
-      const scx = W * 0.5;
-      const scy = H * 0.46;
-      const sr  = Math.min(W, H) * 0.38;
-      const sdx = this.x - scx;
-      const sdy = this.y - scy;
-      const sd  = Math.sqrt(sdx * sdx + sdy * sdy);
-      if (sd < sr) {
-        if (sd === 0) {
-          this.x = scx + sr;
-          this.y = scy;
+  let looping = false;
+  const sentinel = document.getElementById('loop-sentinel');
+  if (!sentinel) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !looping) {
+        looping = true;
+        if (window._lenis) {
+          window._lenis.scrollTo(0, { immediate: true });
         } else {
-          const nx = sdx / sd;
-          const ny = sdy / sd;
-          this.x = scx + nx * sr;
-          this.y = scy + ny * sr;
-          // If velocity was pointing into the sphere, flip it out
-          if (this.vx * nx + this.vy * ny < 0) {
-            this.vx = nx * 0.22;
-            this.vy = ny * 0.22;
-          }
+          window.scrollTo({ top: 0, behavior: 'instant' });
         }
+        setTimeout(() => { looping = false; }, 600);
       }
-    }
-
-    if (this.x < -8)  this.x = W + 8;
-    if (this.x > W+8) this.x = -8;
-    if (this.y < -8 || this.y > H + 8) this.reset(false);
-  };
-
-  Particle.prototype.draw = function () {
-    const op = this.base * (0.65 + Math.sin(this.ph * 2.1) * 0.35);
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,' + op + ')';
-    ctx.fill();
-  };
-
-  const particles = [];
-  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle(true));
-
-  (function loop() {
-    ctx.clearRect(0, 0, W, H);
-    for (let i = 0; i < particles.length; i++) {
-      particles[i].update();
-      particles[i].draw();
-    }
-    requestAnimationFrame(loop);
-  })();
-
-  // ── Mobile-only visibility gating ─────────────────────
-  // On phones the particles live in THREE states:
-  //   hero     → visible, BUT with a sphere-exclusion zone so
-  //              particles can never overlap the metal sphere
-  //   hidden   → opacity 0 through the entire scroll-scrub video
-  //              section so the footage stays clean
-  //   revealed → visible, no exclusion, on the broken-mask +
-  //              contact sections (#servicii.revealed is true)
-  // Desktop code path is unchanged — always visible, 110 dots.
-  if (IS_TOUCH_OR_NARROW) {
-    canvas.style.transition = 'opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
-    canvas.style.opacity = '1';
-    const serviciiEl = document.getElementById('servicii');
-    let lastVisible = true;
-    function syncMobileVisibility() {
-      const sy = window.scrollY || window.pageYOffset || 0;
-      const vh = window.innerHeight;
-      const revealed = !!(serviciiEl && serviciiEl.classList.contains('revealed'));
-      const onHero = sy < vh * 0.9;
-      // Active sphere exclusion flag — read by Particle.update()
-      _inHeroMobile = onHero;
-      // Visible on hero OR when fragments+contact are revealed
-      const visible = onHero || revealed;
-      if (visible !== lastVisible) {
-        canvas.style.opacity = visible ? '1' : '0';
-        lastVisible = visible;
-      }
-    }
-    window.addEventListener('scroll', syncMobileVisibility, { passive: true });
-    // Poll at 220ms — the scroll-scrub onUpdate that toggles
-    // .revealed can fire slightly off-phase with native scroll
-    // events on mobile, so a low-rate poll keeps the canvas in sync.
-    setInterval(syncMobileVisibility, 220);
-    syncMobileVisibility();
-  }
-})();
-</script>
-
-<!-- ═══════════════════════════════════════════════════
-     SCROLL BLUR ENGINE — every major section progressively
-     blurs as it leaves the viewport centre (both up and down).
-     Sticky sections (#stage, #contact-stage, #servicii) use
-     getBoundingClientRect() so the visual position is tracked,
-     not the DOM position. Works on both desktop and mobile —
-     rAF-throttled so touch scroll on iOS stays smooth.
-     ═══════════════════════════════════════════════════ -->
-<script>
-(function () {
-  // Note: we target #hero-scroll-container (not .hero) because
-  // .hero is position:fixed and its getBoundingClientRect() never
-  // changes regardless of scroll — so dist stays 0 and the blur
-  // never engaged on the hero → stage transition. The container
-  // is a normal-flow 110vh block with will-change:filter, which
-  // (a) tracks real scroll position and (b) creates a containing
-  // block for the fixed .hero child so filter cascades visually.
-  const targets = [
-    document.getElementById('hero-scroll-container'),
-    document.getElementById('stage'),
-    document.getElementById('servicii'),
-    document.getElementById('contact-stage'),
-  ].filter(Boolean);
-
-  const MAX_BLUR  = window._lowPowerGpu ? 4 : 10;
-  const MAX_SCALE = 0.03;
-  const DEAD      = 0.42;
-  const FADE      = 0.42;
-
-  function easeIn(t) { return t * t; }
-  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-
-  function update() {
-    const winH     = window.innerHeight;
-    const vpCenter = winH * 0.5;
-
-    targets.forEach((el) => {
-      const rect     = el.getBoundingClientRect();
-      const elCenter = rect.top + Math.min(rect.height, winH) / 2;
-      const dist     = Math.abs(elCenter - vpCenter);
-      const progress = clamp((dist - winH * DEAD) / (winH * FADE), 0, 1);
-
-      const above   = elCenter < vpCenter;
-      const blurAmt = above ? MAX_BLUR : MAX_BLUR * 1.8;
-      const blur    = easeIn(progress) * blurAmt;
-      const scale   = above
-        ? 1 - easeIn(progress) * MAX_SCALE
-        : 1 + easeIn(progress) * MAX_SCALE;
-      const op = 1 - easeIn(progress) * 0.35;
-
-      el.style.filter    = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : '';
-      el.style.transform = Math.abs(scale - 1) > 0.001 ? `scale(${scale.toFixed(4)})` : '';
-      el.style.opacity   = op < 0.999 ? op.toFixed(3) : '';
     });
-  }
-
-  // rAF-throttle the scroll handler so touch-scroll on iOS stays
-  // smooth even when the scroll event fires dozens of times per
-  // frame. update() itself is cheap (4 getBoundingClientRect +
-  // 4 style writes) but clamping to one call per frame keeps the
-  // main thread unblocked on low-power devices.
-  let rafPending = false;
-  function onScroll() {
-    if (rafPending) return;
-    rafPending = true;
-    requestAnimationFrame(() => {
-      rafPending = false;
-      update();
-    });
-  }
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  update();
+  }, { threshold: 0.5 });
+  obs.observe(sentinel);
 })();
+
 </script>
 
 </body>
