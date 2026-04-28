@@ -3,3 +3,5 @@ dist/
 .env
 *.local
 src/App.jsx.bak
+assets/video/
+*.mp4
