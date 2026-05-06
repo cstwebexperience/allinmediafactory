@@ -794,15 +794,11 @@
         top: -2% !important;
         transform: translateX(-50%) !important;
       }
-      /* On mobile skip expensive blur — simple low opacity only */
-      .s-frag-blur {
-        filter: brightness(.35);
-        opacity: .25;
-      }
-      .s-frag-sharp {
-        filter: none;
-        opacity: .12;
-      }
+      /* On mobile: hide blur layer entirely (prevents doubling artifact) */
+      .s-frag-blur { display: none; }
+      .s-frag-sharp { filter: none; opacity: .12; }
+      /* Hide hero badge — redundant on small screens */
+      .hero-tag { display: none; }
 
       .vp-iphone-frame { width: clamp(88px, 24vw, 130px) !important; }
       .vp-iphone-track { gap: 10px; }
@@ -1257,9 +1253,10 @@ document.addEventListener('click', e => {
   function pushHQ(player) {
     try {
       const lvls = player.getAvailableQualityLevels && player.getAvailableQualityLevels();
-      const t = (lvls && lvls.length) ? lvls[0] : 'hd1080';
-      if (player.setPlaybackQualityRange) player.setPlaybackQualityRange(t, t);
-      if (player.setPlaybackQuality)      player.setPlaybackQuality(t);
+      const prefer = ['hd2160','hd1440','hd1080'];
+      const best = prefer.find(q => lvls && lvls.includes(q)) || (lvls && lvls[0]) || 'hd1080';
+      if (player.setPlaybackQualityRange) player.setPlaybackQualityRange(best, best);
+      if (player.setPlaybackQuality)      player.setPlaybackQuality(best);
     } catch(e) {}
   }
 
@@ -1278,7 +1275,7 @@ document.addEventListener('click', e => {
   function openZoom(src) {
     if (!src) return;
     if (!IS_MOBILE && !/enablejsapi/.test(src)) src += '&enablejsapi=1';
-    src += !/vq=/.test(src)        ? '&vq=hd1080'    : '';
+    src += !/vq=/.test(src)        ? '&vq=hd1080&hd=1' : '';
     src += !/autoplay=/.test(src)  ? '&autoplay=1'   : '';
     src += !/playsinline=/.test(src) ? '&playsinline=1' : '';
 
