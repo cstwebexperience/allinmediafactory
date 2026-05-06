@@ -1,529 +1,1393 @@
 <!DOCTYPE html>
 <html lang="ro">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#050507">
-  <title>ALL IN MEDIA FACTORY — Agenție de Marketing & Media</title>
-  <meta name="description"
-    content="ALL IN MEDIA FACTORY — Agenție de top specializată în marketing digital, strategie media, branding și producție vizuală de impact.">
-
-  <!-- Favicon (inline SVG, no extra request) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23050507'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='DM Sans,sans-serif' font-size='28' font-weight='800' fill='%23a78bfa'%3EA%3C/text%3E%3C/svg%3E">
-
-  <!-- Open Graph / Twitter -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="ALL IN MEDIA FACTORY — Agenție de Marketing & Media">
-  <meta property="og:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări — agenția care îți pune brandul în lumina reflectoarelor.">
-  <meta property="og:image" content="masca-despicata.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ALL IN MEDIA FACTORY">
-  <meta name="twitter:description" content="Videoclipuri premium · Meta Ads · Web Design · SEO · Automatizări.">
-  <meta name="twitter:image" content="masca-despicata.png">
-
-  <!-- DNS prefetch for external resources -->
-  <link rel="dns-prefetch" href="https://unpkg.com">
-  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-  <link rel="dns-prefetch" href="https://dl.polyhaven.org">
-
-  <!-- Google Fonts -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All In Media – Agenție de Marketing Digital</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ── RESET & BASE ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
-  <!-- Critical asset preloads — tell the browser to fetch the first
-       scroll-scrub frame + the 5 mask PNGs in parallel with the main
-       HTML/CSS/JS so they're ready the moment the scene initialises.
-       The rest of the 192 frames load lazily from the scroll-scrub
-       init routine. -->
-  <link rel="preload" as="image" href="frames/frame_0001.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="frag-ochi-stang.png">
-  <link rel="preload" as="image" href="frag-ochi-drept.png">
-  <link rel="preload" as="image" href="frag-nas.png">
-  <link rel="preload" as="image" href="frag-gura-stanga.png">
-  <link rel="preload" as="image" href="frag-gura-dreapta.png">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@600;700;800;900&family=DM+Sans:wght@400;500&display=swap"
-    rel="stylesheet">
-
-  <!-- Three.js import map -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+    :root {
+      --bg:       #0a0a0a;
+      --text:     #f5f0eb;
+      --muted:    rgba(245,240,235,.55);
+      --purple:   #7c3aed;
+      --purple-h: #6d28d9;
+      --purple-g: rgba(124,58,237,.28);
+      --border:   rgba(255,255,255,.08);
+      --border-h: rgba(255,255,255,.16);
     }
-  }
-  </script>
 
-    <link rel="stylesheet" href="css/styles.css">
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 9999;
+      pointer-events: none; opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
+    }
 
-  <!-- Schema.org structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "name": "ALL IN MEDIA FACTORY",
-    "description": "Agenție de marketing digital specializată în videoclipuri premium, Meta Ads, web design, SEO și automatizări business.",
-    "url": "https://allinmediafactory.com",
-    "telephone": "+40743391581",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "RO"
-    },
-    "sameAs": [
-      "https://wa.me/40743391581"
-    ],
-    "serviceType": ["Video Production", "Meta Ads", "Web Design", "SEO", "Business Automation"]
-  }
-  </script>
+    a { text-decoration: none; color: inherit; }
+    [id] { scroll-margin-top: 88px; }
 
-  <!-- Lenis Smooth Scroll -->
-  <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <!-- GSAP + ScrollTrigger -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <!-- SplitType -->
-  <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
-  <!-- YouTube IFrame API — lazy-loaded when pane 01 is opened
-       to avoid blocking initial page load with an external script -->
-  <!-- <script src="https://www.youtube.com/iframe_api" async></script> -->
+    /* ── HEADER ────────────────────────────────────────────── */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 16px 24px; transition: padding 300ms ease;
+    }
+    .header.is-scrolled { padding: 10px 24px; }
+
+    .logo {
+      position: absolute; left: 44px; top: 50%;
+      transform: translateY(-50%); z-index: 1;
+      display: flex; align-items: center;
+    }
+    .logo-crop {
+      width: 50px; height: 50px; border-radius: 50%; overflow: hidden;
+      position: relative; flex-shrink: 0; background: #0a0a0a;
+      border: 1.5px solid rgba(168,85,247,.45);
+      box-shadow: 0 0 10px rgba(124,58,237,.35), 0 0 20px rgba(124,58,237,.15), inset 0 0 8px rgba(124,58,237,.2);
+      transition: box-shadow 300ms, border-color 300ms;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-crop:hover {
+      border-color: rgba(168,85,247,.8);
+      box-shadow: 0 0 16px rgba(124,58,237,.6), 0 0 30px rgba(124,58,237,.3), inset 0 0 12px rgba(124,58,237,.3);
+    }
+    .logo-img {
+      position: absolute; width: 135%; height: 135%; left: -17.5%; top: -17.5%;
+      object-fit: contain; filter: invert(1) hue-rotate(180deg) contrast(1.2) saturate(1.2);
+    }
+
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1280px; height: 56px; margin: 0 auto; padding: 0 20px;
+      border-radius: 100px; border: 1px solid var(--border);
+      background: rgba(10,10,10,.72);
+      backdrop-filter: blur(24px) saturate(1.2);
+      -webkit-backdrop-filter: blur(24px) saturate(1.2);
+      transition: all 300ms;
+    }
+    .header.is-scrolled .header-inner {
+      height: 50px; background: rgba(10,10,10,.92); border-color: var(--border-h);
+    }
+    .logo-spacer { width: 38px; flex-shrink: 0; }
+
+    .nav {
+      display: flex; align-items: center; gap: 2px;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
+    .nav a {
+      padding: 7px 13px; border-radius: 8px;
+      font-size: 12.5px; font-weight: 500; color: var(--muted);
+      white-space: nowrap; transition: color 200ms, background 200ms;
+    }
+    .nav a:hover, .nav a.active { color: var(--text); background: rgba(255,255,255,.06); }
+    .nav a.active { color: rgba(167,139,250,.9); }
+
+    .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .btn-contact {
+      display: inline-flex; align-items: center; height: 36px; padding: 0 18px;
+      border-radius: 100px; border: 1px solid var(--border-h);
+      font-size: 13px; font-weight: 600; color: var(--text); background: transparent;
+      cursor: pointer; transition: all 200ms;
+    }
+    .btn-contact:hover { background: var(--purple); border-color: var(--purple); box-shadow: 0 0 20px var(--purple-g); }
+
+    .btn-hamburger {
+      display: none; width: 40px; height: 40px; flex-direction: column;
+      align-items: center; justify-content: center; gap: 5px;
+      border: none; border-radius: 10px; background: transparent; cursor: pointer;
+    }
+    .btn-hamburger span {
+      display: block; width: 18px; height: 1.5px;
+      background: var(--text); border-radius: 2px; transition: all 200ms;
+    }
+    .btn-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
+    .btn-hamburger.open span:nth-child(2) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
+
+    .mobile-menu {
+      display: none; position: fixed; top: 88px; inset-inline: 16px;
+      background: rgba(10,10,10,.97); backdrop-filter: blur(24px);
+      border: 1px solid var(--border); border-radius: 20px;
+      flex-direction: column; padding: 12px; gap: 2px; z-index: 99;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      padding: 13px 16px; border-radius: 10px;
+      font-size: 15px; font-weight: 500; color: var(--muted);
+      transition: color 200ms, background 200ms;
+    }
+    .mobile-menu a:hover { color: var(--text); background: rgba(255,255,255,.05); }
+    .mobile-menu a.mobile-cta { color: var(--purple); font-weight: 600; }
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    .hero { padding: 88px 16px 16px; }
+    .hero-video-wrap {
+      position: relative; width: 100%; max-width: 1400px; margin: 0 auto;
+      aspect-ratio: 16/8; min-height: 520px; max-height: 80vh;
+      border-radius: 36px; overflow: hidden; border: 1px solid rgba(255,255,255,.06);
+    }
+    .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero-gradient {
+      position: absolute; inset: 0;
+      background: linear-gradient(0deg, rgba(10,10,10,.75) 0%, transparent 52%),
+                  linear-gradient(90deg, rgba(10,10,10,.45) 0%, transparent 60%);
+      pointer-events: none; z-index: 1;
+    }
+    .hero-content {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: clamp(28px,5vw,56px); z-index: 2;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-bottom: 16px; padding: 6px 14px; border-radius: 999px;
+      background: rgba(255,255,255,.10); backdrop-filter: blur(12px);
+      color: rgba(255,255,255,.80); font-size: 12px; font-weight: 600;
+      letter-spacing: .05em; text-transform: uppercase;
+    }
+    .hero-content h1 {
+      font-size: clamp(36px,6vw,72px); font-weight: 700;
+      line-height: 1.05; letter-spacing: -.03em; color: #fff; max-width: 600px;
+    }
+    .hero-desc { margin-top: 12px; font-size: clamp(16px,2vw,20px); color: rgba(255,255,255,.60); }
+    .hero-cta { margin-top: 28px; display: flex; gap: 12px; }
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 48px; padding: 0 28px; border: 1px solid transparent; border-radius: 12px;
+      font-size: 14px; font-weight: 600; letter-spacing: .01em; cursor: pointer;
+      white-space: nowrap; transition: all 320ms cubic-bezier(.25,.46,.45,.94);
+      background: var(--purple); color: #fff; box-shadow: 0 4px 24px var(--purple-g);
+    }
+    .btn-primary:hover { background: var(--purple-h); box-shadow: 0 8px 32px var(--purple-g); transform: translateY(-1px); }
+
+    /* ── SECTION SEPARATOR ─────────────────────────────────── */
+    .section-sep {
+      position: relative; width: 1px; height: clamp(60px,8vw,100px);
+      background: linear-gradient(to bottom, transparent, rgba(124,58,237,.5), transparent);
+      margin: 0 auto;
+    }
+    .section-sep::after {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(124,58,237,.7);
+      box-shadow: 0 0 12px rgba(124,58,237,.8), 0 0 24px rgba(124,58,237,.35);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       MASK SECTIONS
+    ══════════════════════════════════════════════════════════ */
+    .mask-section {
+      position: relative;
+      min-height: 92vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: clamp(88px,11vh,140px) clamp(24px,5vw,80px) clamp(72px,9vh,110px);
+      overflow: hidden;
+      /* perf: contain painting to this element */
+      contain: layout style;
+    }
+
+    /* ── Ghost mask — absolutely on the edge ── */
+    .s-mask-abs {
+      position: absolute;
+      pointer-events: none; z-index: 0;
+      width: clamp(420px, 52vw, 860px);
+      isolation: isolate;
+      contain: layout style;
+    }
+    .mask-section.mask-left  .s-mask-abs { left: -10%; top: 50%; transform: translateY(-50%); }
+    .mask-section.mask-right .s-mask-abs { right: -10%; top: 50%; transform: translateY(-50%); }
+    .mask-section.mask-top   .s-mask-abs {
+      width: clamp(340px, 42vw, 720px);
+      top: -6%; left: 50%; transform: translateX(-50%);
+    }
+
+    /* Blurred ghost — blur 16px (cheaper than 30px, still atmospheric) */
+    .s-frag-blur {
+      position: absolute; inset: 0;
+      width: 100%; height: auto; object-fit: contain;
+      filter: blur(16px) brightness(.4) saturate(1.3);
+      transform: scale(1.08);
+      opacity: .45;
+      user-select: none; -webkit-user-drag: none;
+      contain: layout style;
+    }
+    /* Sharp fragment — animation starts paused, JS resumes when in viewport */
+    .s-frag-sharp {
+      position: relative; width: 100%; height: auto; object-fit: contain;
+      animation: maskFloat 14s ease-in-out infinite paused;
+      filter: drop-shadow(0 0 20px rgba(124,58,237,.35));
+      opacity: .18;
+      user-select: none; -webkit-user-drag: none;
+      contain: layout style;
+    }
+    .s-frag-sharp.anim-active {
+      animation-play-state: running;
+      will-change: transform;
+    }
+
+    @keyframes maskFloat {
+      0%,100% { transform: translate3d(0,   0px,0) rotate(-1.5deg); }
+      33%      { transform: translate3d(0, -18px,0) rotate( 0.5deg); }
+      66%      { transform: translate3d(0,  -9px,0) rotate( 1.8deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .s-frag-sharp, .s-frag-sharp.anim-active { animation: none; will-change: auto; }
+    }
+
+    /* ── Centered content ── */
+    .s-content-wrap {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      width: 100%; max-width: 1100px; gap: 10px;
+    }
+
+    /* Typography — Inter throughout (lighter, more refined than Syne) */
+    .s-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: .38em;
+      text-transform: uppercase; color: rgba(167,139,250,.75);
+    }
+    .s-title {
+      font-family: 'Inter', sans-serif; font-weight: 800;
+      font-size: clamp(30px,4vw,58px); line-height: 1.06;
+      letter-spacing: -.03em; color: #fff; margin-top: 8px;
+    }
+    .s-subtitle {
+      font-family: 'Inter', sans-serif; font-weight: 500;
+      font-size: clamp(14px,1.5vw,20px); letter-spacing: .06em;
+      color: rgba(255,255,255,.28); margin-bottom: 4px;
+    }
+    .s-desc {
+      font-size: clamp(14px,1vw,16px); color: rgba(255,255,255,.52);
+      line-height: 1.78; max-width: 540px;
+    }
+    .s-desc strong { font-weight: 700; color: rgba(255,255,255,.82); }
+
+    /* ── IPHONE CAROUSEL ──────────────────────────────────── */
+    .vp-iphone-carousel {
+      width: 100%; overflow: visible; user-select: none;
+      margin-top: 16px;
+    }
+    .vp-iphone-track {
+      display: flex; gap: clamp(20px,2.8vw,44px);
+      justify-content: center; align-items: flex-end;
+    }
+    /* Middle phone slightly larger for depth */
+    .vp-iphone-mockup:nth-child(2) .vp-iphone-frame {
+      width: clamp(148px, 15.5vw, 210px);
+    }
+    .vp-iphone-mockup {
+      position: relative; isolation: isolate; cursor: pointer;
+      filter: drop-shadow(0 28px 60px rgba(0,0,0,.85)) drop-shadow(0 0 30px rgba(139,92,246,.06));
+      transition: transform .35s cubic-bezier(.16,1,.3,1), filter .35s;
+    }
+    .vp-iphone-mockup:hover {
+      transform: translateY(-8px) scale(1.03);
+      filter: drop-shadow(0 40px 80px rgba(0,0,0,.9)) drop-shadow(0 0 50px rgba(139,92,246,.20));
+    }
+    .vp-iphone-frame {
+      width: clamp(128px, 13vw, 178px); aspect-ratio: 9/19.5;
+      background: linear-gradient(145deg,#2d2d33,#1c1c20);
+      border-radius: 40px; padding: 12px 8px 16px;
+      border: 1px solid rgba(255,255,255,.09);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.035), inset 2px 0 8px rgba(255,255,255,.025);
+      position: relative;
+    }
+    .vp-iphone-frame::before {
+      content: ''; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      width: 64px; height: 20px; background: #000; border-radius: 20px; z-index: 3;
+    }
+    .vp-iphone-screen {
+      width: 100%; height: 100%; background: #0a0a0f;
+      border-radius: 34px; overflow: hidden; position: relative;
+    }
+    .vp-phone-thumb {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; display: block; pointer-events: none;
+    }
+    .vp-phone-play {
+      position: absolute; top: 50%; left: 50%; width: 48px; height: 48px;
+      transform: translate(-50%,-50%); border-radius: 50%;
+      background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 6px 20px rgba(0,0,0,.5), 0 0 24px rgba(180,130,255,.20);
+      pointer-events: none;
+      transition: transform .3s cubic-bezier(.16,1,.3,1), background .3s;
+      z-index: 2;
+    }
+    .vp-phone-play::after {
+      content: ''; position: absolute; top: 50%; left: 54%;
+      transform: translate(-50%,-50%); width: 0; height: 0;
+      border-style: solid; border-width: 8px 0 8px 13px;
+      border-color: transparent transparent transparent #fff;
+    }
+    .vp-iphone-mockup:hover .vp-phone-play {
+      transform: translate(-50%,-50%) scale(1.14);
+      background: rgba(180,130,255,.88);
+    }
+
+    /* ── RESULT CARDS ─────────────────────────────────────── */
+    .vp-results {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 1100px;
+      margin-top: clamp(40px,5vh,72px);
+    }
+    .vp-results-label {
+      display: block; font-size: 10px; font-weight: 600;
+      letter-spacing: .5em; text-transform: uppercase;
+      color: rgba(180,130,255,.55); text-align: center; margin-bottom: 16px;
+    }
+    .vp-results-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .vp-result-card {
+      border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,.07); background: #111;
+      aspect-ratio: 4/3; cursor: zoom-in; position: relative;
+      transition: transform .35s cubic-bezier(.16,1,.3,1), border-color .35s, box-shadow .35s;
+    }
+    .vp-result-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(180,130,255,.38);
+      box-shadow: 0 16px 40px rgba(0,0,0,.55), 0 0 32px rgba(180,130,255,.18);
+    }
+    .vp-result-card img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; filter: brightness(.88) saturate(.85); transition: filter .4s;
+    }
+    .vp-result-card:hover img { filter: brightness(1) saturate(1); }
+
+    /* ── STATS (section 02) ───────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(12px,1.4vw,18px); width: 100%; max-width: 580px; margin-top: 8px;
+    }
+    .stat-block {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px; padding: clamp(16px,1.8vw,24px);
+      transition: transform .35s cubic-bezier(.16,1,.3,1), border-color .35s;
+      text-align: left;
+    }
+    .stat-block:hover { transform: translateY(-3px); border-color: rgba(180,130,255,.25); }
+    .stat-block--highlight {
+      border-color: rgba(180,130,255,.4); background: rgba(180,130,255,.07);
+      box-shadow: 0 0 30px rgba(180,130,255,.08);
+    }
+    .stat-number {
+      font-weight: 900; font-size: clamp(36px,4.5vw,64px);
+      letter-spacing: -.035em; line-height: .95;
+      font-variant-numeric: tabular-nums lining-nums;
+      background: linear-gradient(180deg,#fff 0%,rgba(200,190,230,.82) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stat-block--highlight .stat-number {
+      background: linear-gradient(180deg,#fff 0%,#c8a8ff 100%);
+      -webkit-background-clip: text; background-clip: text;
+    }
+    .stat-digit { display: inline-block; }
+    .stat-sep {
+      display: inline-block; font-weight: 400; font-size: .6em; vertical-align: .2em; margin: 0 .04em;
+      -webkit-text-fill-color: rgba(235,225,255,.7); color: rgba(235,225,255,.7);
+      background: none; -webkit-background-clip: initial; background-clip: initial;
+    }
+    .stat-unit {
+      font-size: .8rem; color: rgba(180,130,255,.92); font-weight: 800;
+      text-transform: uppercase; letter-spacing: .14em; margin-top: 8px; display: block;
+    }
+    .stat-desc { font-size: .72rem; color: #6a5f82; line-height: 1.5; margin-top: 4px; }
+
+    .meta-screenshot-wrapper { width: 100%; max-width: 580px; margin-top: 16px; }
+    .screenshot-label {
+      display: block; font-size: .68rem; font-weight: 700;
+      letter-spacing: .18em; color: rgba(180,130,255,.6);
+      text-transform: uppercase; margin-bottom: 8px; text-align: left;
+    }
+    .meta-screenshot-scroll {
+      width: 100%; overflow-x: auto; overflow-y: hidden;
+      border-radius: 12px; border: 1px solid rgba(255,255,255,.07);
+      cursor: grab; scrollbar-width: none;
+    }
+    .meta-screenshot-scroll::-webkit-scrollbar { display: none; }
+    .meta-screenshot-scroll.dragging { cursor: grabbing; }
+    .meta-inner { position: relative; display: inline-block; line-height: 0; }
+    .meta-screenshot-scroll img {
+      height: 180px; width: auto; max-width: none; display: block;
+      filter: invert(1) hue-rotate(180deg) brightness(.88) contrast(1.05);
+      transition: filter .3s; user-select: none; -webkit-user-drag: none;
+    }
+    .meta-screenshot-scroll:hover img { filter: invert(1) hue-rotate(180deg) brightness(1) contrast(1.05); }
+    .row-highlight {
+      position: absolute; left: 0; right: 0;
+      background: rgba(180,130,255,.14);
+      border-top: 1px solid rgba(180,130,255,.45);
+      border-bottom: 1px solid rgba(180,130,255,.45);
+      box-shadow: 0 0 20px rgba(180,130,255,.18); pointer-events: none;
+    }
+    .screenshot-hint {
+      font-size: .65rem; color: rgba(255,255,255,.22);
+      text-align: center; margin: 6px 0 0; letter-spacing: .05em;
+    }
+
+    /* ── SITE CARDS (sections 03 & 04) ───────────────────── */
+    .sites-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: clamp(10px,1.4vw,18px); width: 100%; max-width: 1000px;
+      margin-top: 8px;
+    }
+    .site-card {
+      display: flex; flex-direction: column; border-radius: 16px;
+      overflow: hidden; border: 1px solid rgba(255,255,255,.08); background: #0d0d0d;
+      transition: transform .4s cubic-bezier(.16,1,.3,1), border-color .4s, box-shadow .4s;
+    }
+    .site-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(180,130,255,.4);
+      box-shadow: 0 22px 50px rgba(0,0,0,.6), 0 0 50px rgba(180,130,255,.2);
+    }
+    .site-card-thumb {
+      position: relative; aspect-ratio: 16/10; overflow: hidden;
+      background: linear-gradient(135deg,#0a0a12,#14101e);
+    }
+    .site-card-thumb::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg,transparent 60%,rgba(0,0,0,.55) 100%);
+      pointer-events: none;
+    }
+    .site-card-thumb img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: brightness(.85) saturate(.9);
+      transition: filter .4s, transform .6s cubic-bezier(.16,1,.3,1);
+    }
+    .site-card:hover .site-card-thumb img { filter: brightness(1) saturate(1); transform: scale(1.04); }
+    .site-card-info {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.05);
+      background: rgba(0,0,0,.25);
+    }
+    .site-card-domain { font-size: 13px; color: rgba(255,255,255,.78); font-weight: 500; letter-spacing: .04em; }
+    .site-card-arrow {
+      font-size: 18px; font-weight: 600; color: rgba(180,130,255,.9);
+      transition: transform .4s cubic-bezier(.16,1,.3,1), color .4s;
+    }
+    .site-card:hover .site-card-arrow { transform: translateX(5px); color: #fff; }
+
+    .portfolio-cta {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; margin-top: 28px;
+    }
+    .portfolio-cta-label {
+      font-size: 11px; letter-spacing: .28em; text-transform: uppercase;
+      color: rgba(255,255,255,.45); font-weight: 500;
+    }
+    .portfolio-cta-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .portfolio-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 18px; border-radius: 10px;
+      border: 1px solid rgba(180,130,255,.28); background: rgba(180,130,255,.07);
+      font-size: 13px; font-weight: 500; color: rgba(200,170,255,.9);
+      transition: transform .35s cubic-bezier(.16,1,.3,1), border-color .35s, background .35s, box-shadow .35s;
+    }
+    .portfolio-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(200,160,255,.7); background: rgba(180,130,255,.14);
+      box-shadow: 0 10px 30px rgba(0,0,0,.5), 0 0 28px rgba(180,130,255,.25);
+    }
+    .portfolio-btn-arrow { font-size: 14px; transition: transform .35s cubic-bezier(.16,1,.3,1); }
+    .portfolio-btn:hover .portfolio-btn-arrow { transform: translateX(4px); }
+
+    /* Single site card (section 04) */
+    .single-site { width: 100%; max-width: 460px; margin-top: 8px; }
+
+    /* ── MARQUEE (section 04) ─────────────────────────────── */
+    .media-marquee {
+      width: 100%; max-width: 560px; margin-top: 24px;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
+              mask-image: linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
+      padding: 6px 0;
+    }
+    .media-marquee-track {
+      display: flex; gap: 14px; width: max-content;
+      animation: marqueeScroll 22s linear infinite; will-change: transform;
+    }
+    .media-marquee:hover .media-marquee-track { animation-play-state: paused; }
+    .media-marquee-item {
+      flex-shrink: 0; display: inline-flex; align-items: center;
+      padding: 5px 14px; border-radius: 999px;
+      border: 1px solid rgba(167,130,255,.28); background: rgba(124,58,237,.08);
+      font-size: 12px; font-weight: 500; color: rgba(200,170,255,.8); letter-spacing: .04em;
+      box-shadow: 0 0 10px rgba(124,58,237,.15), inset 0 0 8px rgba(167,130,255,.06);
+    }
+    @keyframes marqueeScroll {
+      0%   { transform: translate3d(calc(-50% - 7px),0,0); }
+      100% { transform: translate3d(0,0,0); }
+    }
+
+    /* ── AUTO DESCS (section 05) ──────────────────────────── */
+    .auto-descs {
+      display: flex; flex-direction: column; gap: 18px;
+      max-width: 580px; margin-top: 8px;
+    }
+
+    /* ── BOTTOM CTA ────────────────────────────────────────── */
+    .bottom-cta {
+      padding: clamp(80px,10vw,140px) clamp(20px,5vw,72px);
+      text-align: center; position: relative; overflow: hidden;
+      min-height: 520px; display: flex; align-items: center; justify-content: center;
+    }
+    .bottom-cta::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 1px; height: clamp(60px,8vw,100px);
+      background: linear-gradient(to bottom,transparent,rgba(124,58,237,.5));
+    }
+    .bottom-cta::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%,rgba(124,58,237,.10) 0%,transparent 70%);
+      pointer-events: none;
+    }
+    .bottom-cta-inner { position: relative; z-index: 1; width: 100%; }
+    .bottom-cta-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: .35em;
+      text-transform: uppercase; color: rgba(167,139,250,.7); margin-bottom: 16px;
+    }
+    .bottom-cta-title {
+      font-family: 'Inter', sans-serif; font-weight: 800;
+      font-size: clamp(36px,5vw,72px); line-height: 1.06;
+      letter-spacing: -.025em; color: #fff; margin-bottom: 40px;
+    }
+    /* ── CTA ICON BUTTONS ──────────────────────────────────── */
+    .cta-icons-row {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: clamp(40px,9vw,110px);
+    }
+    .cta-icon-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      background: none; border: none; cursor: pointer; padding: 0;
+      text-decoration: none;
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    .cta-icon-btn:hover { transform: scale(1.08) translateY(-6px); }
+    .cta-icon-img {
+      width: clamp(130px,14vw,190px);
+      height: auto; display: block;
+      filter: drop-shadow(0 8px 32px rgba(0,0,0,.6));
+      transition: filter .4s ease;
+    }
+    .cta-icon-btn--contact:hover .cta-icon-img {
+      filter: drop-shadow(0 8px 32px rgba(0,0,0,.6)) drop-shadow(0 0 24px rgba(160,120,255,.45));
+    }
+    .cta-icon-btn--wa:hover .cta-icon-img {
+      filter: drop-shadow(0 8px 32px rgba(0,0,0,.6)) drop-shadow(0 0 24px rgba(37,211,102,.45));
+    }
+    .cta-icon-label {
+      font-family: 'Inter',sans-serif; font-size: 10.5px; font-weight: 500;
+      letter-spacing: .28em; text-transform: uppercase;
+      transition: color .3s, text-shadow .3s;
+    }
+    .cta-icon-btn--contact .cta-icon-label {
+      color: rgba(180,140,255,.75);
+      text-shadow: 0 0 10px rgba(120,60,220,.4);
+    }
+    .cta-icon-btn--wa .cta-icon-label {
+      color: rgba(37,211,102,.75);
+      text-shadow: 0 0 10px rgba(37,211,102,.35);
+    }
+    .cta-icon-btn--contact:hover .cta-icon-label {
+      color: rgba(200,160,255,.95);
+      text-shadow: 0 0 16px rgba(140,60,255,.7);
+    }
+    .cta-icon-btn--wa:hover .cta-icon-label {
+      color: rgba(37,211,102,.95);
+      text-shadow: 0 0 14px rgba(37,211,102,.65);
+    }
+
+    /* ── CONTACT FORM OVERLAY ──────────────────────────────── */
+    .cf-overlay {
+      position: fixed; inset: 0; z-index: 400;
+      background: rgba(3,3,5,.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .4s cubic-bezier(.65,0,.35,1);
+    }
+    .cf-overlay.open { opacity: 1; pointer-events: all; }
+    .cf-box {
+      background: #111118; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px; padding: clamp(28px,4vw,48px);
+      width: min(520px,92vw); position: relative;
+      transform: scale(.95) translateY(20px);
+      transition: transform .5s cubic-bezier(.65,0,.35,1);
+    }
+    .cf-overlay.open .cf-box { transform: scale(1) translateY(0); }
+    .cf-close {
+      position: absolute; top: 18px; right: 18px;
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.7); font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all .3s;
+    }
+    .cf-close:hover { color: #fff; border-color: rgba(180,130,255,.55); background: rgba(180,130,255,.12); transform: rotate(90deg); }
+    .cf-title { font-family: 'Inter',sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -.02em; margin-bottom: 24px; }
+    .cf-form { display: flex; flex-direction: column; gap: 12px; }
+    .cf-form input, .cf-form select, .cf-form textarea {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px; padding: 13px 16px; color: var(--text);
+      font-family: inherit; font-size: 14px;
+      transition: border-color .2s, background .2s; outline: none; width: 100%;
+    }
+    .cf-form input:focus, .cf-form select:focus, .cf-form textarea:focus {
+      border-color: rgba(124,58,237,.6); background: rgba(124,58,237,.06);
+    }
+    .cf-form select option { background: #111118; }
+    .cf-form textarea { resize: vertical; min-height: 90px; }
+    .cf-submit {
+      height: 48px; border-radius: 12px; border: none;
+      background: var(--purple); color: #fff; font-size: 15px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 24px var(--purple-g);
+      transition: all 300ms cubic-bezier(.25,.46,.45,.94);
+    }
+    .cf-submit:hover { background: var(--purple-h); box-shadow: 0 8px 32px var(--purple-g); transform: translateY(-1px); }
+
+    /* ── PHONE ZOOM OVERLAY ────────────────────────────────── */
+    #phone-zoom-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(3,3,5,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .4s cubic-bezier(.65,0,.35,1);
+    }
+    #phone-zoom-overlay.open { opacity: 1; pointer-events: all; }
+    .zoom-phone {
+      transform: scale(.4) translateY(40px);
+      transition: transform .6s cubic-bezier(.65,0,.35,1);
+      filter: drop-shadow(0 50px 120px rgba(0,0,0,.85)) drop-shadow(0 0 80px rgba(180,130,255,.18));
+    }
+    #phone-zoom-overlay.open .zoom-phone { transform: scale(1) translateY(0); }
+    .zoom-iphone-frame {
+      width: min(310px,78vw); aspect-ratio: 9/19.5;
+      background: linear-gradient(145deg,#2d2d33,#1c1c20);
+      border-radius: 56px; padding: 18px 12px 22px;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.035); position: relative;
+    }
+    .zoom-iphone-frame::before {
+      content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+      width: 100px; height: 28px; background: #000; border-radius: 20px; z-index: 3;
+    }
+    .zoom-iphone-screen {
+      width: 100%; height: 100%; background: #000;
+      border-radius: 44px; overflow: hidden; position: relative;
+    }
+
+    /* ── IMAGE LIGHTBOX ────────────────────────────────────── */
+    #image-lightbox {
+      position: fixed; inset: 0; z-index: 305;
+      background: rgba(3,3,5,.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .4s cubic-bezier(.65,0,.35,1);
+    }
+    #image-lightbox.open { opacity: 1; pointer-events: all; }
+    #lightbox-img {
+      max-width: 90vw; max-height: 88vh; object-fit: contain;
+      border-radius: 14px; box-shadow: 0 40px 120px rgba(0,0,0,.7);
+      transform: scale(.9); opacity: 0;
+      transition: transform .55s cubic-bezier(.65,0,.35,1), opacity .45s;
+    }
+    #image-lightbox.open #lightbox-img { transform: scale(1); opacity: 1; }
+
+    /* ── SHARED CLOSE BUTTON ───────────────────────────────── */
+    .overlay-close {
+      position: absolute; top: 1.8rem; right: 2.2rem;
+      width: 46px; height: 46px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.7); font-size: 22px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 5; transition: all .3s;
+    }
+    .overlay-close:hover { color: #fff; border-color: rgba(180,130,255,.55); background: rgba(180,130,255,.12); transform: rotate(90deg); }
+
+
+    /* ── SCROLL REVEAL ─────────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(48px);
+      transition: opacity .8s cubic-bezier(.16,1,.3,1) var(--d,0ms),
+                  transform .8s cubic-bezier(.16,1,.3,1) var(--d,0ms);
+    }
+    .reveal-left {
+      opacity: 0; transform: translateX(-48px);
+      transition: opacity .8s cubic-bezier(.16,1,.3,1) var(--d,0ms),
+                  transform .8s cubic-bezier(.16,1,.3,1) var(--d,0ms);
+    }
+    .reveal-right {
+      opacity: 0; transform: translateX(48px);
+      transition: opacity .8s cubic-bezier(.16,1,.3,1) var(--d,0ms),
+                  transform .8s cubic-bezier(.16,1,.3,1) var(--d,0ms);
+    }
+    .reveal.in-view, .reveal-left.in-view, .reveal-right.in-view { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .sites-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
+      .s-mask-abs { width: clamp(340px, 46vw, 680px); }
+    }
+    @media (max-width: 900px) {
+      .nav { display: none; }
+      .btn-hamburger { display: flex; }
+    }
+    @media (max-width: 768px) {
+      .header { padding: 10px 12px; }
+      .header.is-scrolled { padding: 8px 12px; }
+      .logo { left: 28px; }
+
+      .hero { padding: 72px 10px 10px; }
+      .hero-video-wrap {
+        aspect-ratio: 4/5; min-height: auto; max-height: none;
+        border-radius: 24px; height: calc(100dvh - 82px);
+      }
+      .hero-content { padding: 24px; }
+
+      /* Mobile sections: shorter, no huge viewport height */
+      .mask-section {
+        min-height: auto;
+        padding: 72px 20px 56px;
+        contain: layout style paint;
+      }
+
+      /* Mobile mask: small, top-center, low opacity — just a hint */
+      .s-mask-abs {
+        width: 70vw !important;
+        left: 50% !important; right: auto !important;
+        top: -2% !important;
+        transform: translateX(-50%) !important;
+      }
+      /* On mobile skip expensive blur — simple low opacity only */
+      .s-frag-blur {
+        filter: brightness(.35);
+        opacity: .25;
+      }
+      .s-frag-sharp {
+        filter: none;
+        opacity: .12;
+      }
+
+      .vp-iphone-frame { width: clamp(88px, 24vw, 130px) !important; }
+      .vp-iphone-track { gap: 10px; }
+
+      .s-title { font-size: clamp(26px, 7.5vw, 40px); }
+      .s-desc { max-width: 100%; }
+      .stats-row { max-width: 100%; }
+      .vp-results-grid { grid-template-columns: 1fr 1fr; }
+      .sites-grid { grid-template-columns: 1fr; max-width: 360px; }
+      .meta-screenshot-wrapper { max-width: 100%; }
+      .media-marquee { max-width: 100%; }
+      .single-site { max-width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .logo-crop { width: 36px; height: 36px; }
+      .hero-video-wrap { border-radius: 18px; }
+      .vp-results-grid { grid-template-columns: 1fr; }
+      .overlay-close { top: 1rem; right: 1rem; width: 40px; height: 40px; }
+      .bottom-cta-title { font-size: clamp(28px,8vw,42px); }
+      .cta-icons-row { gap: clamp(28px,10vw,56px); }
+      .cta-icon-img { width: clamp(100px,26vw,140px); }
+    }
+  </style>
 </head>
-
 <body>
 
-  <!-- Loading Screen -->
-  <div id="loader">
-    <div id="loader-logo">All In Media</div>
-    <div id="loader-bar-track">
-      <div id="loader-bar-fill"></div>
+<!-- ══ HEADER ══════════════════════════════════════════════════ -->
+<header class="header" id="header">
+  <a class="logo" href="#" aria-label="All In Media">
+    <div class="logo-crop">
+      <img src="logo.png" alt="All In Media" class="logo-img" />
     </div>
-    <div id="loader-percent">0%</div>
-  </div>
+  </a>
 
-  <!-- HERO SECTION: Three.js metallic sphere -->
-  <div class="scroll-container" id="hero-scroll-container">
-    <section class="hero" id="hero">
-      <canvas id="hero-canvas"></canvas>
+  <div class="header-inner">
+    <div class="logo-spacer"></div>
 
-      <!-- Title -->
-      <div class="hero-title-block" id="hero-title-block">
-        <h1>All In Media</h1>
-        <div class="sub">Your brand is invisible. We fix that.</div>
-      </div>
+    <nav class="nav" aria-label="Main">
+      <a href="#videoclipuri" data-nav="videoclipuri">Videoclipuri</a>
+      <a href="#ads"          data-nav="ads">Ads</a>
+      <a href="#webdesign"    data-nav="webdesign">Web Design</a>
+      <a href="#seo"          data-nav="seo">SEO</a>
+      <a href="#automatizari" data-nav="automatizari">Automatizări</a>
+    </nav>
 
-
-    </section>
-  </div>
-
-
-
-  <!-- SCROLL SCRUB SECTION (now also hosts #servicii so the mask
-       fragments can sticky-overlay the last frame seamlessly) -->
-  <div id="scroll-scrub-container" style="height: 600vh;">
-    <div id="stage">
-      <canvas id="c"></canvas>
-    </div>
-
-    <!-- MASK FRAGMENTS — sticky overlay on top of #stage's last frame -->
-    <section id="servicii" class="fragments-section">
-
-      <!-- Eyebrow -->
-      <p class="servicii-eyebrow">SERVICII</p>
-
-      <div class="fragments-canvas" id="fragments-canvas">
-
-        <!-- 5 Mask Fragments — each backed by its own transparent PNG -->
-        <div class="mask-fragment" id="frag-left-eye" data-frag="ochi-stang" data-service="Videoclipuri Premium"
-          data-desc="Producție video cinematică, de la concept la livrare." data-panel-pos="left-top"></div>
-
-        <div class="mask-fragment" id="frag-right-eye" data-frag="ochi-drept" data-service="Meta ADS"
-          data-desc="Campanii Facebook & Instagram optimizate pentru ROI maxim." data-panel-pos="right-top"></div>
-
-        <div class="mask-fragment" id="frag-nose" data-frag="nas" data-service="Web Design + Site-uri"
-          data-desc="Website-uri premium, rapide și optimizate pentru conversie." data-panel-pos="center"></div>
-
-        <div class="mask-fragment" id="frag-left-mouth" data-frag="gura-stanga" data-service="SEO + Google"
-          data-desc="Optimizare organică și campanii Google Ads cu impact." data-panel-pos="left-bottom"></div>
-
-        <div class="mask-fragment" id="frag-right-mouth" data-frag="gura-dreapta" data-service="Automatizări Business"
-          data-desc="Fluxuri automate care economisesc timp și cresc profitul." data-panel-pos="right-bottom"></div>
-
-      <!-- Annotation lines — viewBox 0 0 100 56.25 (16:9) -->
-      <svg class="ann-svg" viewBox="0 0 100 56.25" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <defs>
-          <style>
-            .ann-line { stroke: rgba(255,255,255,0.9); stroke-width: 0.18; fill: none; }
-            .ann-dot  { fill: rgba(255,255,255,0.9); }
-            .ann-num  { fill: #c4b5fd; font-size: 1.15px; font-family: 'DM Sans', sans-serif; font-weight: 600; letter-spacing: 0.12em; }
-            .ann-lbl  { fill: rgba(255,255,255,0.9); font-size: 1.05px; font-family: 'DM Sans', sans-serif; font-weight: 400; letter-spacing: 0.15em; }
-          </style>
-        </defs>
-
-        <!-- 01 — Ochiul stâng → top-left -->
-        <g class="ann-group" id="ann-left-eye">
-          <polyline class="ann-line" points="35.5,15.75 20,8 6.5,8"/>
-          <line class="ann-line" x1="6.5" y1="6.2" x2="6.5" y2="8"/>
-          <text class="ann-num" x="7.5" y="5.8">01</text>
-          <text class="ann-lbl" x="7.5" y="7.8">VIDEOCLIPURI PREMIUM</text>
-        </g>
-
-        <!-- 02 — Ochiul drept → top-right -->
-        <g class="ann-group" id="ann-right-eye">
-          <polyline class="ann-line" points="67,14.06 80,6.5 93.5,6.5"/>
-          <line class="ann-line" x1="93.5" y1="4.7" x2="93.5" y2="6.5"/>
-          <text class="ann-num" x="92.5" y="4.3" text-anchor="end">02</text>
-          <text class="ann-lbl" x="92.5" y="6.3" text-anchor="end">META ADS</text>
-        </g>
-
-        <!-- 03 — Nasul → stânga centru (între 01 și 04) -->
-        <g class="ann-group" id="ann-nose">
-          <polyline class="ann-line" points="52,28.13 22,30.5 6.5,30.5"/>
-          <line class="ann-line" x1="6.5" y1="28.7" x2="6.5" y2="30.5"/>
-          <text class="ann-num" x="7.5" y="28.3">03</text>
-          <text class="ann-lbl" x="7.5" y="30.3">WEB DESIGN + SITE-URI</text>
-        </g>
-
-        <!-- 04 — Gura stânga → bottom-left -->
-        <g class="ann-group" id="ann-left-mouth">
-          <polyline class="ann-line" points="37.5,43.31 20,50.5 6.5,50.5"/>
-          <line class="ann-line" x1="6.5" y1="50.5" x2="6.5" y2="52.3"/>
-          <text class="ann-num" x="7.5" y="53.5">04</text>
-          <text class="ann-lbl" x="7.5" y="55.5">SEO + GOOGLE</text>
-        </g>
-
-        <!-- 05 — Gura dreapta → bottom-right -->
-        <g class="ann-group" id="ann-right-mouth">
-          <polyline class="ann-line" points="67,42.75 80,50.5 93.5,50.5"/>
-          <line class="ann-line" x1="93.5" y1="50.5" x2="93.5" y2="52.3"/>
-          <text class="ann-num" x="92.5" y="53.5" text-anchor="end">05</text>
-          <text class="ann-lbl" x="92.5" y="55.5" text-anchor="end">AUTOMATIZĂRI BUSINESS</text>
-        </g>
-      </svg>
-
-      </div>
-
-    </section>
-  </div><!-- /#scroll-scrub-container -->
-
-
-  <!-- ═══════════════════════════════════════════════════
-       SERVICE OVERLAY — Full-screen zoom per fragment
-       ═══════════════════════════════════════════════════ -->
-  <div id="service-overlay" aria-modal="true" role="dialog" aria-label="Detalii serviciu">
-
-    <!-- Blurred ghost fragment anchored to its on-screen corner.
-         The corner + image is set via JS by adding .ghost-<name>. -->
-    <div id="overlay-ghost"></div>
-
-    <!-- Close -->
-    <button id="overlay-close" aria-label="Închide">
-      <span class="close-x">×</span>
-      <span>CLOSE</span>
-    </button>
-
-    <!-- ── 01 Videoclipuri Premium ── -->
-    <div class="service-pane" id="pane-left-eye">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">01 — VIDEOCLIPURI PREMIUM</span>
-        <h2 class="content-stagger pane-h2 panel-title">Editare care opreşte<br>thumb-ul.</h2>
-        <h3 class="content-stagger panel-subtitle">Conţinut. Pur.</h3>
-
-        <!-- 3 Shorts thumbnails in iPhone mockups. We use static <img>
-             previews instead of <iframe> embeds because YouTube's
-             cross-origin iframe swallows click events unevenly across
-             its surface, which made the middle phone unclickable.
-             The real autoplay iframe lives inside #phone-zoom-overlay,
-             which is opened by clicking any thumbnail. -->
-        <div class="content-stagger iphone-carousel" id="iphone-carousel">
-          <div class="iphone-track">
-            <div class="iphone-mockup" data-yt-id="6QoeHnucqUs">
-              <div class="iphone-frame">
-                <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/6QoeHnucqUs/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
-                </div>
-              </div>
-            </div>
-            <div class="iphone-mockup" data-yt-id="hW5BLJl37Qs">
-              <div class="iphone-frame">
-                <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/hW5BLJl37Qs/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
-                </div>
-              </div>
-            </div>
-            <div class="iphone-mockup" data-yt-id="9EshKr4zksI">
-              <div class="iphone-frame">
-                <div class="iphone-screen">
-                  <img class="phone-thumb"
-                    src="https://i.ytimg.com/vi/9EshKr4zksI/hqdefault.jpg"
-                    alt="Short — Click pentru a joca" loading="lazy" draggable="false" />
-                  <span class="phone-play"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Real result screenshots -->
-        <div class="content-stagger results-section">
-          <span class="results-label">REZULTATELE NOASTRE</span>
-          <div class="results-grid">
-            <div class="result-card">
-              <img src="assets/rezultat-1.png" alt="Rezultat campanie video 1" loading="lazy" />
-            </div>
-            <div class="result-card">
-              <img src="assets/rezultat-2.png" alt="Rezultat campanie video 2" loading="lazy" />
-            </div>
-            <div class="result-card">
-              <img src="assets/rezultat-3.png" alt="Rezultat campanie video 3" loading="lazy" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 02 Performance Ads ── -->
-    <div class="service-pane" id="pane-right-eye">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">02 — PERFORMANCE ADS</span>
-        <h2 class="content-stagger pane-h2 panel-title">Ieși pe profit<br>din prima lună.</h2>
-        <h3 class="content-stagger panel-subtitle">Profit. Brutal.</h3>
-
-        <!-- Two stat cards side by side -->
-        <div class="content-stagger stats-row">
-          <div class="stat-block">
-            <span class="stat-number"><span class="stat-digit">3</span><span class="stat-sep">-</span><span class="stat-digit">5</span></span>
-            <span class="stat-unit">lei / lead</span>
-            <p class="stat-desc">cost per lead — campanii Meta &amp; Google</p>
-          </div>
-          <div class="stat-block stat-block--highlight">
-            <span class="stat-number">0.05</span>
-            <span class="stat-unit">lei / interacțiune</span>
-            <p class="stat-desc">marcat „High Performing" de Meta Ads</p>
-          </div>
-        </div>
-
-        <!-- Meta Ads screenshot — inverted dark mode + GIVEAWAY row highlight -->
-        <div class="content-stagger meta-screenshot-wrapper">
-          <span class="screenshot-label">META ADS — DATE REALE · FEB–MAR 2026</span>
-          <div class="meta-screenshot-scroll" id="metaScroll">
-            <div class="meta-inner">
-              <img src="assets/meta-ads-results.jpg" alt="Meta Ads rezultate reale" draggable="false" />
-              <div class="row-highlight" style="top: 110px; height: 35px;"></div>
-            </div>
-          </div>
-          <p class="screenshot-hint">← trage pentru a vedea tot →</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 03 Web Design ── -->
-    <div class="service-pane" id="pane-nose">
-      <div class="pane-content pane-content-vp">
-        <span class="content-stagger pane-eyebrow panel-label">03 — WEB DESIGN + SITE-URI</span>
-        <h2 class="content-stagger pane-h2 panel-title">Site-uri care<br>vând.</h2>
-        <h3 class="content-stagger panel-subtitle">Design. Hipnotic.</h3>
-
-        <!-- 2 site previews — clicking either opens the live site in a new tab -->
-        <div class="content-stagger sites-grid">
-          <a href="https://realestate1233.vercel.app/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Frealestate1233.vercel.app%2F?w=900&amp;h=600"
-                alt="RealEstate — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">realestate1233.vercel.app</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-          <a href="https://www.nordisk-grup.ro/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.nordisk-grup.ro%2F?w=900&amp;h=600"
-                alt="Nordisk Grup — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">nordisk-grup.ro</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-          <a href="https://leadhunt.tech/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fleadhunt.tech%2F?w=900&amp;h=600"
-                alt="LeadHunt — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">leadhunt.tech</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-        </div>
-
-        <!-- Portfolio CTA: small label + 2 buttons to full agency portfolios -->
-        <div class="content-stagger portfolio-cta">
-          <span class="portfolio-cta-label">Verifică portofoliu</span>
-          <div class="portfolio-cta-buttons">
-            <a href="https://www.agentieseo.net/web-design/" target="_blank" rel="noopener noreferrer" class="portfolio-btn">
-              agentieseo.net
-              <span class="portfolio-btn-arrow">→</span>
-            </a>
-            <a href="https://cstportfolio.xyz/portfolio" target="_blank" rel="noopener noreferrer" class="portfolio-btn">
-              cstportfolio.xyz
-              <span class="portfolio-btn-arrow">→</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 04 SEO & Vizibilitate ── -->
-    <div class="service-pane" id="pane-left-mouth">
-      <div class="pane-content">
-        <span class="content-stagger pane-eyebrow panel-label">04 — SEO &amp; VIZIBILITATE</span>
-        <h2 class="content-stagger pane-h2 panel-title">Apari acolo unde<br>contează.</h2>
-        <!-- Single site card for agentieseo.net (same style as pane 03) -->
-        <div class="content-stagger single-site">
-          <a href="https://www.agentieseo.net/" target="_blank" rel="noopener noreferrer" class="site-card">
-            <div class="site-card-thumb">
-              <img
-                src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.agentieseo.net%2F?w=900&amp;h=600"
-                alt="AgentieSEO — preview" loading="lazy" />
-            </div>
-            <div class="site-card-info">
-              <span class="site-card-domain">agentieseo.net</span>
-              <span class="site-card-arrow">→</span>
-            </div>
-          </a>
-        </div>
-        <h3 class="content-stagger panel-subtitle">Trafic. Real.</h3>
-        <p class="content-stagger panel-description">Avem acces la advertoriale în <strong>Forbes</strong>, <strong>ProTV</strong>, <strong>Antena 3</strong>, <strong>Antena Stars</strong> și zeci de alte publicații premium. Un singur articol în locul potrivit face mai mult decât 6 luni de postări.</p>
-        <!-- Infinite horizontal marquee of Romanian news sites where
-             we can place client advertoriale. Items duplicated twice
-             for seamless loop (CSS translateX 0 → -50%). -->
-        <div class="content-stagger media-marquee">
-          <div class="media-marquee-track">
-            <span class="media-marquee-item">protv.ro</span>
-            <span class="media-marquee-item">stirileprotv.ro</span>
-            <span class="media-marquee-item">a1.ro</span>
-            <span class="media-marquee-item">observatornews.ro</span>
-            <span class="media-marquee-item">antena3.ro</span>
-            <span class="media-marquee-item">kanald.ro</span>
-            <span class="media-marquee-item">digi24.ro</span>
-            <span class="media-marquee-item">prosport.ro</span>
-            <span class="media-marquee-item">sport.ro</span>
-            <span class="media-marquee-item">adevarul.ro</span>
-            <span class="media-marquee-item">libertatea.ro</span>
-            <span class="media-marquee-item">gandul.ro</span>
-            <!-- Duplicate for seamless loop -->
-            <span class="media-marquee-item" aria-hidden="true">protv.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">stirileprotv.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">a1.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">observatornews.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">antena3.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">kanald.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">digi24.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">prosport.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">sport.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">adevarul.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">libertatea.ro</span>
-            <span class="media-marquee-item" aria-hidden="true">gandul.ro</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 05 Automatizări Business ── -->
-    <div class="service-pane" id="pane-right-mouth">
-      <div class="pane-content">
-        <span class="content-stagger pane-eyebrow panel-label">05 — AUTOMATIZĂRI BUSINESS</span>
-        <h2 class="content-stagger pane-h2 panel-title">Sisteme care<br>lucrează pentru tine.</h2>
-        <h3 class="content-stagger panel-subtitle">Procese. Smart.</h3>
-        <p class="content-stagger panel-description">Conectăm <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>, <strong>CRM</strong> și <strong>Google Sheets</strong> într-un singur sistem care lucrează 24/7. Un lead venit la 3 dimineața primește răspuns în <strong>30 de secunde</strong> — fără să miști un deget.</p>
-        <p class="content-stagger panel-description">Plus <strong>agent vocal AI</strong> care sună leadurile, răspunde la apeluri, califică clienții și transferă doar întâlnirile serioase în calendarul tău. Conversație naturală, voce umană, 24/7 — ca și cum ai avea un call center fără să plătești unul.</p>
-      </div>
-    </div>
-
-  </div><!-- /#service-overlay -->
-
-  <!-- CONTACT ANIMATION SECTION -->
-  <div id="contact" class="contact-scroll-area">
-    <div id="contact-stage">
-      <canvas id="contact-canvas"></canvas>
-      <div class="contact-label" id="contact-clipLabel"><span>Click pentru a ne contacta</span></div>
-      <div class="contact-label" id="contact-waLabel"><span>WhatsApp</span></div>
+    <div class="header-right">
+      <button class="btn-contact" onclick="openContactForm()">Contact</button>
+      <button class="btn-hamburger" id="hamburger" type="button" aria-label="Meniu">
+        <span></span><span></span>
+      </button>
     </div>
   </div>
+</header>
 
-  <!-- Phone zoom overlay — opened by clicking any iPhone mockup in pane 01 -->
-  <div id="phone-zoom-overlay" aria-hidden="true">
-    <button class="zoom-close" id="phoneZoomClose" aria-label="Închide">&times;</button>
-    <div class="zoom-phone">
-      <div class="iphone-frame zoom-iphone-frame">
-        <div class="iphone-screen">
-          <iframe id="zoom-iframe" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#videoclipuri" onclick="closeMenu()">Videoclipuri</a>
+  <a href="#ads"          onclick="closeMenu()">Performance Ads</a>
+  <a href="#webdesign"    onclick="closeMenu()">Web Design</a>
+  <a href="#seo"          onclick="closeMenu()">SEO</a>
+  <a href="#automatizari" onclick="closeMenu()">Automatizări</a>
+  <a onclick="closeMenu(); openContactForm();" class="mobile-cta" style="cursor:pointer">Contact</a>
+</div>
+
+<!-- ══ HERO ════════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-video-wrap">
+    <video class="hero-video" src="video-site-final.mp4" autoplay muted loop playsinline></video>
+    <div class="hero-gradient"></div>
+    <div class="hero-content">
+      <p class="hero-tag">All In Media · Agenție de Marketing</p>
+      <h1>Creștem.<br>Scalăm.<br>Dominăm.</h1>
+      <p class="hero-desc">Marketing digital care transformă branduri în lideri de piață.</p>
+      <div class="hero-cta">
+        <a class="btn-primary" href="#videoclipuri">Descoperă serviciile</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 01 VIDEOCLIPURI PREMIUM ═════════════════════════════════ -->
+<div class="section-sep"></div>
+
+<section class="mask-section mask-left" id="videoclipuri">
+
+  <!-- Ghost mask — absolutely on the LEFT edge -->
+  <div class="s-mask-abs">
+    <img src="frag-ochi-stang.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="frag-ochi-stang.webp" class="s-frag-sharp" aria-hidden="true" />
+  </div>
+
+  <!-- Centered content -->
+  <div class="s-content-wrap">
+    <span class="s-eyebrow reveal" style="--d:60ms">01 — VIDEOCLIPURI PREMIUM</span>
+    <h2 class="s-title reveal" style="--d:120ms">Editare care opreşte<br>thumb-ul.</h2>
+    <p class="s-subtitle reveal" style="--d:180ms">Conţinut. Pur.</p>
+
+    <div class="vp-iphone-carousel reveal" style="--d:260ms">
+      <div class="vp-iphone-track">
+        <div class="vp-iphone-mockup" data-yt-id="6QoeHnucqUs">
+          <div class="vp-iphone-frame"><div class="vp-iphone-screen">
+            <img class="vp-phone-thumb" src="https://i.ytimg.com/vi/6QoeHnucqUs/hqdefault.jpg" alt="Short" loading="lazy" draggable="false" />
+            <span class="vp-phone-play"></span>
+          </div></div>
+        </div>
+        <div class="vp-iphone-mockup" data-yt-id="hW5BLJl37Qs">
+          <div class="vp-iphone-frame"><div class="vp-iphone-screen">
+            <img class="vp-phone-thumb" src="https://i.ytimg.com/vi/hW5BLJl37Qs/hqdefault.jpg" alt="Short" loading="lazy" draggable="false" />
+            <span class="vp-phone-play"></span>
+          </div></div>
+        </div>
+        <div class="vp-iphone-mockup" data-yt-id="9EshKr4zksI">
+          <div class="vp-iphone-frame"><div class="vp-iphone-screen">
+            <img class="vp-phone-thumb" src="https://i.ytimg.com/vi/9EshKr4zksI/hqdefault.jpg" alt="Short" loading="lazy" draggable="false" />
+            <span class="vp-phone-play"></span>
+          </div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Image lightbox — opened by clicking any result screenshot -->
-  <div id="image-lightbox" aria-hidden="true">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Închide">&times;</button>
-    <img id="lightbox-img" src="" alt="" />
-  </div>
-
-  <!-- Contact form overlay -->
-  <div class="contact-form-overlay" id="contactFormOverlay">
-    <div class="contact-form-box">
-      <button class="cf-close" id="cfCloseBtn">&times;</button>
-      <h2>Contacteaza-ne</h2>
-      <form id="cfForm">
-        <input type="hidden" name="_subject" value="Cerere noua serviciu - ALL IN MEDIA" />
-        <input name="nume" placeholder="Numele tau" required />
-        <input name="email" type="email" placeholder="Email" required />
-        <input name="telefon" type="tel" placeholder="Telefon (optional)" />
-        <select name="serviciu">
-          <option value="" disabled selected>Alege serviciul dorit</option>
-          <option>Content Video</option>
-          <option>Meta ADS</option>
-          <option>Web Design + Site-uri</option>
-          <option>SEO + Google</option>
-          <option>Automatizari Business</option>
-        </select>
-        <textarea name="mesaj" placeholder="Mesajul tau (optional)" rows="3"></textarea>
-        <button type="submit" class="cf-submit">Trimite</button>
-      </form>
+  <!-- Results grid — in flow below content -->
+  <div class="vp-results">
+    <span class="vp-results-label reveal">REZULTATELE NOASTRE</span>
+    <div class="vp-results-grid">
+      <div class="vp-result-card reveal" style="--d:60ms">
+        <img src="assets/rezultat-1.png" alt="Rezultat 1" loading="lazy" />
+      </div>
+      <div class="vp-result-card reveal" style="--d:160ms">
+        <img src="assets/rezultat-2.png" alt="Rezultat 2" loading="lazy" />
+      </div>
+      <div class="vp-result-card reveal" style="--d:260ms">
+        <img src="assets/rezultat-3.png" alt="Rezultat 3" loading="lazy" />
+      </div>
     </div>
   </div>
+</section>
+
+<!-- ══ 02 PERFORMANCE ADS ══════════════════════════════════════ -->
+<div class="section-sep"></div>
+
+<section class="mask-section mask-right" id="ads" style="content-visibility:auto;contain-intrinsic-size:0 900px;">
+
+  <!-- Ghost mask — absolutely on the RIGHT edge -->
+  <div class="s-mask-abs">
+    <img src="frag-ochi-drept.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="frag-ochi-drept.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-2.3s;" />
+  </div>
+
+  <div class="s-content-wrap">
+    <span class="s-eyebrow reveal" style="--d:60ms">02 — PERFORMANCE ADS</span>
+    <h2 class="s-title reveal" style="--d:120ms">Ieși pe profit<br>din prima lună.</h2>
+    <p class="s-subtitle reveal" style="--d:180ms">Profit. Brutal.</p>
+
+    <div class="stats-row reveal" style="--d:260ms">
+      <div class="stat-block">
+        <div class="stat-number">
+          <span class="stat-digit">3</span><span class="stat-sep">-</span><span class="stat-digit">5</span>
+        </div>
+        <span class="stat-unit">lei / lead</span>
+        <p class="stat-desc">cost per lead — campanii Meta &amp; Google</p>
+      </div>
+      <div class="stat-block stat-block--highlight">
+        <div class="stat-number">0.05</div>
+        <span class="stat-unit">lei / interacțiune</span>
+        <p class="stat-desc">marcat „High Performing" de Meta Ads</p>
+      </div>
+    </div>
+
+    <div class="meta-screenshot-wrapper reveal" style="--d:340ms">
+      <span class="screenshot-label">META ADS — DATE REALE · FEB–MAR 2026</span>
+      <div class="meta-screenshot-scroll" id="metaScroll">
+        <div class="meta-inner">
+          <img src="assets/meta-ads-results.jpg" alt="Meta Ads rezultate reale" loading="lazy" draggable="false" />
+          <div class="row-highlight" style="top:110px;height:35px;"></div>
+        </div>
+      </div>
+      <p class="screenshot-hint">← trage pentru a vedea tot →</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 03 WEB DESIGN ═══════════════════════════════════════════ -->
+<div class="section-sep"></div>
+
+<section class="mask-section mask-top" id="webdesign" style="content-visibility:auto;contain-intrinsic-size:0 900px;">
+
+  <!-- Ghost mask — absolutely at the TOP center -->
+  <div class="s-mask-abs">
+    <img src="frag-nas.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="frag-nas.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-4.1s;" />
+  </div>
+
+  <div class="s-content-wrap">
+    <span class="s-eyebrow reveal" style="--d:80ms">03 — WEB DESIGN + SITE-URI</span>
+    <h2 class="s-title reveal" style="--d:140ms">Site-uri care<br>vând.</h2>
+    <p class="s-subtitle reveal" style="--d:200ms">Design. Hipnotic.</p>
+
+    <div class="sites-grid reveal" style="--d:280ms">
+      <a href="https://realestate1233.vercel.app/" target="_blank" rel="noopener" class="site-card">
+        <div class="site-card-thumb">
+          <img src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Frealestate1233.vercel.app%2F?w=900&h=600" alt="RealEstate" loading="lazy" />
+        </div>
+        <div class="site-card-info">
+          <span class="site-card-domain">realestate1233.vercel.app</span>
+          <span class="site-card-arrow">→</span>
+        </div>
+      </a>
+      <a href="https://www.nordisk-grup.ro/" target="_blank" rel="noopener" class="site-card">
+        <div class="site-card-thumb">
+          <img src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.nordisk-grup.ro%2F?w=900&h=600" alt="Nordisk Grup" loading="lazy" />
+        </div>
+        <div class="site-card-info">
+          <span class="site-card-domain">nordisk-grup.ro</span>
+          <span class="site-card-arrow">→</span>
+        </div>
+      </a>
+      <a href="https://leadhunt.tech/" target="_blank" rel="noopener" class="site-card">
+        <div class="site-card-thumb">
+          <img src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fleadhunt.tech%2F?w=900&h=600" alt="LeadHunt" loading="lazy" />
+        </div>
+        <div class="site-card-info">
+          <span class="site-card-domain">leadhunt.tech</span>
+          <span class="site-card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="portfolio-cta reveal" style="--d:380ms">
+      <span class="portfolio-cta-label">Verifică portofoliu complet</span>
+      <div class="portfolio-cta-buttons">
+        <a href="https://www.agentieseo.net/web-design/" target="_blank" rel="noopener" class="portfolio-btn">
+          agentieseo.net <span class="portfolio-btn-arrow">→</span>
+        </a>
+        <a href="https://cstportfolio.xyz/portfolio" target="_blank" rel="noopener" class="portfolio-btn">
+          cstportfolio.xyz <span class="portfolio-btn-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 04 SEO ══════════════════════════════════════════════════ -->
+<div class="section-sep"></div>
+
+<section class="mask-section mask-left" id="seo" style="content-visibility:auto;contain-intrinsic-size:0 900px;">
+
+  <!-- Ghost mask — absolutely on the LEFT edge -->
+  <div class="s-mask-abs">
+    <img src="frag-gura-stanga.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="frag-gura-stanga.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-1.7s;" />
+  </div>
+
+  <div class="s-content-wrap">
+    <span class="s-eyebrow reveal" style="--d:60ms">04 — SEO &amp; VIZIBILITATE</span>
+    <h2 class="s-title reveal" style="--d:120ms">Apari acolo unde<br>contează.</h2>
+    <p class="s-subtitle reveal" style="--d:180ms">Trafic. Real.</p>
+
+    <div class="single-site reveal" style="--d:240ms">
+      <a href="https://www.agentieseo.net/" target="_blank" rel="noopener" class="site-card">
+        <div class="site-card-thumb">
+          <img src="https://s.wordpress.com/mshots/v1/https%3A%2F%2Fwww.agentieseo.net%2F?w=900&h=600" alt="AgentieSEO" loading="lazy" />
+        </div>
+        <div class="site-card-info">
+          <span class="site-card-domain">agentieseo.net</span>
+          <span class="site-card-arrow">→</span>
+        </div>
+      </a>
+    </div>
+
+    <p class="s-desc reveal" style="--d:310ms">
+      Avem acces la advertoriale în <strong>Forbes</strong>, <strong>ProTV</strong>,
+      <strong>Antena 3</strong>, <strong>Antena Stars</strong> și zeci de publicații premium.
+      Un singur articol în locul potrivit face mai mult decât 6 luni de postări.
+    </p>
+
+    <div class="media-marquee reveal" style="--d:380ms">
+      <div class="media-marquee-track">
+        <span class="media-marquee-item">protv.ro</span>
+        <span class="media-marquee-item">stirileprotv.ro</span>
+        <span class="media-marquee-item">a1.ro</span>
+        <span class="media-marquee-item">observatornews.ro</span>
+        <span class="media-marquee-item">antena3.ro</span>
+        <span class="media-marquee-item">kanald.ro</span>
+        <span class="media-marquee-item">digi24.ro</span>
+        <span class="media-marquee-item">prosport.ro</span>
+        <span class="media-marquee-item">adevarul.ro</span>
+        <span class="media-marquee-item">libertatea.ro</span>
+        <span class="media-marquee-item">gandul.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">protv.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">stirileprotv.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">a1.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">observatornews.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">antena3.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">kanald.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">digi24.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">prosport.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">adevarul.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">libertatea.ro</span>
+        <span class="media-marquee-item" aria-hidden="true">gandul.ro</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 05 AUTOMATIZĂRI ════════════════════════════════════════ -->
+<div class="section-sep"></div>
+
+<section class="mask-section mask-right" id="automatizari" style="content-visibility:auto;contain-intrinsic-size:0 900px;">
+
+  <!-- Ghost mask — absolutely on the RIGHT edge -->
+  <div class="s-mask-abs">
+    <img src="frag-gura-dreapta.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="frag-gura-dreapta.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-3.2s;" />
+  </div>
+
+  <div class="s-content-wrap">
+    <span class="s-eyebrow reveal" style="--d:60ms">05 — AUTOMATIZĂRI BUSINESS</span>
+    <h2 class="s-title reveal" style="--d:120ms">Sisteme care<br>lucrează pentru tine.</h2>
+    <p class="s-subtitle reveal" style="--d:180ms">Procese. Smart.</p>
+    <div class="auto-descs">
+      <p class="s-desc reveal" style="--d:260ms">
+        Conectăm <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>,
+        <strong>CRM</strong> și <strong>Google Sheets</strong> într-un singur sistem care lucrează 24/7.
+        Un lead venit la 3 dimineața primește răspuns în <strong>30 de secunde</strong> — fără să miști un deget.
+      </p>
+      <p class="s-desc reveal" style="--d:360ms">
+        Plus <strong>agent vocal AI</strong> care sună leadurile, răspunde la apeluri, califică clienții
+        și transferă doar întâlnirile serioase în calendarul tău. Conversație naturală, voce umană, 24/7.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══════════════════════════════════════════════════ -->
+<section class="bottom-cta" id="contact">
+  <div class="bottom-cta-inner">
+    <p class="bottom-cta-eyebrow reveal">Hai să construim ceva extraordinar</p>
+    <h2 class="bottom-cta-title reveal" style="--d:100ms">Gata să creștem<br>împreună?</h2>
+    <div class="cta-icons-row reveal" style="--d:200ms">
+      <button class="cta-icon-btn cta-icon-btn--contact" onclick="openContactForm()">
+        <img src="clipboard-t.webp" alt="Trimite-ne un mesaj" class="cta-icon-img" />
+        <span class="cta-icon-label">Trimite-ne un mesaj</span>
+      </button>
+      <a class="cta-icon-btn cta-icon-btn--wa" href="https://wa.me/40743391581" target="_blank" rel="noopener">
+        <img src="whatsapp-t.webp" alt="WhatsApp" class="cta-icon-img" />
+        <span class="cta-icon-label">WhatsApp</span>
+      </a>
+    </div>
+  </div>
+</section>
 
 
+<!-- ══ PHONE ZOOM OVERLAY ══════════════════════════════════════ -->
+<div id="phone-zoom-overlay" aria-modal="true" role="dialog" aria-hidden="true">
+  <button class="overlay-close" id="phoneZoomClose" aria-label="Închide">&times;</button>
+  <div class="zoom-phone">
+    <div class="zoom-iphone-frame">
+      <div class="zoom-iphone-screen" id="zoom-screen"></div>
+    </div>
+  </div>
+</div>
 
-  <!-- SCRIPTS -->
-  <script src="js/scroll-scrub-and-fragments.js"></script>
+<!-- ══ IMAGE LIGHTBOX ══════════════════════════════════════════ -->
+<div id="image-lightbox" aria-modal="true" role="dialog" aria-hidden="true">
+  <button class="overlay-close" id="lightboxClose" aria-label="Închide">&times;</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<!-- ══ CONTACT FORM OVERLAY ════════════════════════════════════ -->
+<div class="cf-overlay" id="cfOverlay">
+  <div class="cf-box">
+    <button class="cf-close" id="cfClose">&times;</button>
+    <h2 class="cf-title">Contactează-ne</h2>
+    <form class="cf-form" id="cfForm"
+          action="https://formsubmit.co/cstwebexperience@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="Cerere nouă — All In Media" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_template" value="table" />
+      <input name="nume"    placeholder="Numele tău"    required />
+      <input name="email"   type="email" placeholder="Email" required />
+      <input name="telefon" type="tel"   placeholder="Telefon (opțional)" />
+      <select name="serviciu">
+        <option value="" disabled selected>Alege serviciul dorit</option>
+        <option>Videoclipuri Premium</option>
+        <option>Performance Ads</option>
+        <option>Web Design + Site-uri</option>
+        <option>SEO + Google</option>
+        <option>Automatizări Business</option>
+      </select>
+      <textarea name="mesaj" placeholder="Mesajul tău (opțional)" rows="3"></textarea>
+      <button type="submit" class="cf-submit">Trimite mesajul</button>
+    </form>
+  </div>
+</div>
+
+<!-- ══ SCRIPTS ══════════════════════════════════════════════════ -->
+<script>
+/* ── HEADER SCROLL ── */
+const header = document.getElementById('header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('is-scrolled', window.scrollY > 20);
+}, { passive: true });
+
+/* ── HAMBURGER ── */
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  const open = mobileMenu.classList.toggle('open');
+  hamburger.classList.toggle('open', open);
+});
+function closeMenu() {
+  mobileMenu.classList.remove('open');
+  hamburger.classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (mobileMenu.classList.contains('open') &&
+      !mobileMenu.contains(e.target) && !hamburger.contains(e.target)) closeMenu();
+});
+
+/* ── ACTIVE NAV ON SCROLL ── */
+(function () {
+  const sections = ['videoclipuri','ads','webdesign','seo','automatizari','contact'];
+  const links    = document.querySelectorAll('.nav a[data-nav]');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting)
+        links.forEach(l => l.classList.toggle('active', l.dataset.nav === e.target.id));
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(id => { const el = document.getElementById(id); if (el) io.observe(el); });
+})();
+
+/* ── SCROLL REVEAL ── */
+(function () {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.10, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => io.observe(el));
+})();
+
+/* ── PHONE ZOOM ── */
+(function () {
+  const phoneZoom  = document.getElementById('phone-zoom-overlay');
+  const zoomScreen = document.getElementById('zoom-screen');
+  const zoomClose  = document.getElementById('phoneZoomClose');
+  let ytPlayer = null;
+
+  const IS_MOBILE = window.matchMedia('(max-width:900px),(hover:none) and (pointer:coarse)').matches;
+
+  function pushHQ(player) {
+    try {
+      const lvls = player.getAvailableQualityLevels && player.getAvailableQualityLevels();
+      const t = (lvls && lvls.length) ? lvls[0] : 'hd1080';
+      if (player.setPlaybackQualityRange) player.setPlaybackQualityRange(t, t);
+      if (player.setPlaybackQuality)      player.setPlaybackQuality(t);
+    } catch(e) {}
+  }
+
+  function buildIframe() {
+    const old = zoomScreen.querySelector('iframe');
+    if (old) old.remove();
+    const f = document.createElement('iframe');
+    f.id = 'zoom-iframe'; f.frameBorder = '0';
+    f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    f.setAttribute('allowfullscreen', '');
+    f.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;';
+    zoomScreen.appendChild(f);
+    return f;
+  }
+
+  function openZoom(src) {
+    if (!src) return;
+    if (!IS_MOBILE && !/enablejsapi/.test(src)) src += '&enablejsapi=1';
+    src += !/vq=/.test(src)        ? '&vq=hd1080'    : '';
+    src += !/autoplay=/.test(src)  ? '&autoplay=1'   : '';
+    src += !/playsinline=/.test(src) ? '&playsinline=1' : '';
+
+    if (ytPlayer && ytPlayer.destroy) { try { ytPlayer.destroy(); } catch(e) {} ytPlayer = null; }
+    const stale = zoomScreen.querySelector('iframe');
+    if (stale) { try { stale.src = 'about:blank'; } catch(e) {} stale.remove(); }
+    void zoomScreen.offsetHeight;
+
+    const iframe = buildIframe();
+    iframe.src = src;
+    phoneZoom.setAttribute('aria-hidden','false');
+    phoneZoom.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    if (!IS_MOBILE) {
+      if (!window._ytApi) {
+        window._ytApi = true;
+        const s = document.createElement('script');
+        s.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(s);
+      }
+      iframe.onload = function () {
+        if (!window.YT || !window.YT.Player) return;
+        try {
+          ytPlayer = new window.YT.Player('zoom-iframe', {
+            events: { onReady: e => pushHQ(e.target), onPlaybackQualityChange: e => pushHQ(e.target) }
+          });
+        } catch(e) {}
+      };
+    }
+  }
+
+  function closeZoom() {
+    phoneZoom.classList.remove('open');
+    phoneZoom.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      if (ytPlayer && ytPlayer.destroy) { try { ytPlayer.destroy(); } catch(e) {} ytPlayer = null; }
+      const f = zoomScreen.querySelector('iframe');
+      if (f) { try { f.src = 'about:blank'; } catch(e) {} f.remove(); }
+    }, 450);
+  }
+
+  document.addEventListener('click', e => {
+    const mockup = e.target.closest('.vp-iphone-mockup');
+    if (!mockup) return;
+    e.preventDefault();
+    const ytId = mockup.dataset.ytId;
+    if (!ytId) return;
+    if (IS_MOBILE) { window.open('https://www.youtube.com/watch?v=' + ytId, '_blank', 'noopener'); return; }
+    openZoom('https://www.youtube-nocookie.com/embed/' + ytId + '?rel=0&modestbranding=1');
+  });
+
+  zoomClose.addEventListener('click', closeZoom);
+  phoneZoom.addEventListener('click', e => { if (e.target === phoneZoom) closeZoom(); });
+
+  /* ── IMAGE LIGHTBOX ── */
+  const lightbox      = document.getElementById('image-lightbox');
+  const lightboxImg   = document.getElementById('lightbox-img');
+  const lightboxClose = document.getElementById('lightboxClose');
+
+  function openLightbox(src, alt) {
+    lightboxImg.src = src; lightboxImg.alt = alt || '';
+    lightbox.setAttribute('aria-hidden','false');
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.vp-result-card').forEach(c => {
+    c.addEventListener('click', () => {
+      const img = c.querySelector('img');
+      if (img) openLightbox(img.src, img.alt);
+    });
+  });
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (lightbox.classList.contains('open'))  { closeLightbox(); return; }
+    if (phoneZoom.classList.contains('open')) { closeZoom();     return; }
+    if (document.getElementById('cfOverlay').classList.contains('open')) closeContactForm();
+  });
+})();
+
+/* ── CONTACT FORM ── */
+function openContactForm() {
+  document.getElementById('cfOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeContactForm() {
+  document.getElementById('cfOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('cfClose').addEventListener('click', closeContactForm);
+document.getElementById('cfOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('cfOverlay')) closeContactForm();
+});
 
 
-<script type="module" src="js/hero-sphere.js"></script>
+/* ── META ADS SCREENSHOT DRAG-TO-SCROLL ── */
+(function () {
+  const el = document.getElementById('metaScroll');
+  if (!el) return;
+  let isDown = false, startX, scrollLeft;
+  el.addEventListener('mousedown',  e => { isDown = true; el.classList.add('dragging'); startX = e.pageX - el.offsetLeft; scrollLeft = el.scrollLeft; });
+  el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mouseup',    () => { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mousemove',  e => { if (!isDown) return; e.preventDefault(); el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX) * 1.5; });
+})();
 
 
-<script type="module" src="js/contact-scene.js"></script>
-
-
-<script src="js/init.js"></script>
-
-<script src="js/particles.js"></script>
-
-<script src="js/scroll-blur.js"></script>
+/* ── MASK ANIMATION: only animate visible sections ── */
+(function () {
+  if (!('IntersectionObserver' in window)) {
+    // Fallback: just run all animations if IO not supported
+    document.querySelectorAll('.s-frag-sharp').forEach(el => el.classList.add('anim-active'));
+    return;
+  }
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      e.target.querySelectorAll('.s-frag-sharp').forEach(el => {
+        el.classList.toggle('anim-active', e.isIntersecting);
+      });
+    });
+  }, { threshold: 0, rootMargin: '100px 0px 100px 0px' });
+  document.querySelectorAll('.mask-section').forEach(s => obs.observe(s));
+})();
+</script>
 
 </body>
-
 </html>

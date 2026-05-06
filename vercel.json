@@ -16,19 +16,19 @@
       ]
     },
     {
-      "source": "/frames/(.*)",
+      "source": "/(.*).webp",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
     {
-      "source": "/frag-(.*).png",
+      "source": "/(.*).png",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
     {
-      "source": "/(masca-despicata|clipboard-t|whatsapp-t).png",
+      "source": "/(.*).mp4",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
