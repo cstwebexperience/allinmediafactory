@@ -874,6 +874,74 @@
         border-radius: 22px;
       }
     }
+    /* ══ MOBILE PATCH — override-uri complete ══════════════════ */
+    @media screen and (max-width: 768px) {
+      /* Grid rezultate: 2 coloane (nu 3) */
+      .vp-results-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
+
+      /* Stat numbers mai mici ca sa nu overflow */
+      .stat-number { font-size: clamp(28px,7.5vw,38px) !important; }
+      .stat-desc { font-size: .68rem; }
+
+      /* Meta screenshot: inaltime redusa pe mobil */
+      .meta-screenshot-scroll img { height: 140px; }
+
+      /* Section separator mai scurt pe mobile */
+      .section-sep { height: 44px; }
+
+      /* Mask fragment: ramane subtil pe mobile */
+      .s-frag-sharp { opacity: .12 !important; }
+      .s-frag-blur  { display: none !important; }
+
+      /* Vp-section padding top ca sa nu bage sub header */
+      .vp-section { padding-top: 80px; }
+
+      /* Stats row: sigur 2 coloane */
+      .stats-row { grid-template-columns: 1fr 1fr !important; gap: 10px; }
+
+      /* Bottom CTA: mai compact pe mobile */
+      .bottom-cta { padding: 64px 24px 80px; min-height: auto; }
+      .bottom-cta-title { margin-bottom: 28px; }
+
+      /* CTA icons: dimensiune potrivita */
+      .cta-icon-img { width: clamp(88px,24vw,120px) !important; }
+      .cta-icons-row { gap: clamp(20px,10vw,48px) !important; }
+      .cta-icon-label { font-size: 9px; letter-spacing: .22em; }
+
+      /* Mobile menu: mai vizibil */
+      .mobile-menu {
+        top: 76px;
+        border-radius: 16px;
+        border: 1px solid rgba(124,58,237,.25);
+        box-shadow: 0 8px 32px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
+      }
+
+      /* Eyebrow label: mai mare pe mobile */
+      .s-eyebrow { font-size: 10px; letter-spacing: .22em; }
+
+      /* S-title: scaling curat */
+      .s-title { font-size: clamp(28px,8vw,44px) !important; }
+
+      /* Site cards pe mobile: shadow mai vizibil */
+      .site-card { border-radius: 16px; }
+      .site-card-thumb { height: 160px; }
+
+      /* Portfolio CTA buttons: wrap frumos */
+      .portfolio-cta-buttons { flex-wrap: wrap; justify-content: center; gap: 8px; }
+      .portfolio-btn { padding: 9px 16px; font-size: 12px; }
+
+      /* Automations section: padding simetric */
+      .s-content-wrap { padding-bottom: 32px; }
+
+      /* Hero content: text mai mic pe telefon foarte ingust */
+      .hero-title { font-size: clamp(36px,10vw,56px); }
+    }
+    @media screen and (max-width: 420px) {
+      /* Pe telefoane foarte mici: 2 coloane inca pentru grid */
+      .vp-results-grid { grid-template-columns: 1fr 1fr !important; gap: 6px; }
+      /* Stat number si mai mic */
+      .stat-number { font-size: clamp(24px,6.5vw,32px) !important; }
+    }
     /* ── SMOKE CANVAS ─────────────────────────────────────── */
     #smoke-bg {
       position: fixed; inset: 0; z-index: 1990;
