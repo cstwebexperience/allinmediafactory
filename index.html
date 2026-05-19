@@ -884,10 +884,18 @@
     }
     @keyframes smokeIn { to { opacity: .72; } }
 
+    /* ── INTRO BLACK BG (sub smoke, deasupra paginii) ─────── */
+    #intro-black-bg {
+      position: fixed; inset: 0; z-index: 1985;
+      background: #0a0a0f; pointer-events: none;
+      transition: opacity .85s cubic-bezier(.4,0,.2,1);
+    }
+    #intro-black-bg.out { opacity: 0; }
+
     /* ── INTRO SPLASH ─────────────────────────────────────── */
     #intro-splash {
       position: fixed; inset: 0; z-index: 2000;
-      background: rgba(5,5,15,0.82);
+      background: transparent;
       display: flex; align-items: center; justify-content: center;
       transition: opacity .85s cubic-bezier(.4,0,.2,1),
                   transform .85s cubic-bezier(.4,0,.2,1);
@@ -921,6 +929,7 @@
 </head>
 <body class="intro-active">
 
+<div id="intro-black-bg" aria-hidden="true"></div>
 <canvas id="smoke-bg" aria-hidden="true"></canvas>
 
 <!-- ══ INTRO SPLASH ════════════════════════════════════════════ -->
@@ -1652,9 +1661,11 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
     done = true;
     document.body.classList.remove('intro-active');
     splash.classList.add('out');
+    const blackBg = document.getElementById('intro-black-bg');
+    if (blackBg) blackBg.classList.add('out');
     const smokeCv = document.getElementById('smoke-bg');
     if (smokeCv) smokeCv.style.zIndex = '-1';
-    setTimeout(() => splash.remove(), 900);
+    setTimeout(() => { splash.remove(); if (blackBg) blackBg.remove(); }, 900);
   }
 
   function tick(now) {
@@ -1675,9 +1686,11 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
           setTimeout(() => {
             document.body.classList.remove('intro-active');
             splash.classList.add('out');
+            const blackBg = document.getElementById('intro-black-bg');
+            if (blackBg) blackBg.classList.add('out');
             const smokeCv = document.getElementById('smoke-bg');
             if (smokeCv) smokeCv.style.zIndex = '-1';
-            setTimeout(() => splash.remove(), 900);
+            setTimeout(() => { splash.remove(); if (blackBg) blackBg.remove(); }, 900);
           }, 700);
           return;
         }
