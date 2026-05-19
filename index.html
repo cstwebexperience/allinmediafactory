@@ -876,7 +876,7 @@
     }
     /* ── SMOKE CANVAS ─────────────────────────────────────── */
     #smoke-bg {
-      position: fixed; inset: 0; z-index: -1;
+      position: fixed; inset: 0; z-index: 1990;
       width: 100%; height: 100%;
       pointer-events: none;
       opacity: 0;
@@ -887,7 +887,7 @@
     /* ── INTRO SPLASH ─────────────────────────────────────── */
     #intro-splash {
       position: fixed; inset: 0; z-index: 2000;
-      background: rgba(0,0,0,0.18);
+      background: rgba(5,5,15,0.82);
       display: flex; align-items: center; justify-content: center;
       transition: opacity .85s cubic-bezier(.4,0,.2,1),
                   transform .85s cubic-bezier(.4,0,.2,1);
@@ -1652,6 +1652,8 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
     done = true;
     document.body.classList.remove('intro-active');
     splash.classList.add('out');
+    const smokeCv = document.getElementById('smoke-bg');
+    if (smokeCv) smokeCv.style.zIndex = '-1';
     setTimeout(() => splash.remove(), 900);
   }
 
@@ -1667,12 +1669,14 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
       if (wasCool) {
         count++;
         if (count >= words.length) {
-          done = true; // opreste loop-ul imediat, fara cuvinte extra
+          done = true;
           t2.style.filter = ''; t2.style.opacity = '100%';
           t1.style.filter = ''; t1.style.opacity = '0%';
           setTimeout(() => {
             document.body.classList.remove('intro-active');
             splash.classList.add('out');
+            const smokeCv = document.getElementById('smoke-bg');
+            if (smokeCv) smokeCv.style.zIndex = '-1';
             setTimeout(() => splash.remove(), 900);
           }, 700);
           return;
