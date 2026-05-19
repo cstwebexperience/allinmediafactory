@@ -533,8 +533,8 @@
       box-shadow: 0 0 10px rgba(124,58,237,.15), inset 0 0 8px rgba(167,130,255,.06);
     }
     @keyframes marqueeScroll {
-      0%   { transform: translate3d(calc(-50% - 7px),0,0); }
-      100% { transform: translate3d(0,0,0); }
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
 
     /* ── AUTO DESCS (section 05) ──────────────────────────── */
@@ -664,7 +664,7 @@
     /* ── PHONE ZOOM OVERLAY ────────────────────────────────── */
     #phone-zoom-overlay {
       position: fixed; inset: 0; z-index: 300;
-      background: rgba(3,3,5,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      background: rgba(5,3,18,.68); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity .4s cubic-bezier(.65,0,.35,1);
     }
@@ -714,14 +714,22 @@
 
     /* ── SHARED CLOSE BUTTON ───────────────────────────────── */
     .overlay-close {
-      position: absolute; top: 1.8rem; right: 2.2rem;
-      width: 46px; height: 46px; border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.7); font-size: 22px;
+      position: absolute; top: 1.4rem; right: 1.4rem;
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 1.5px solid rgba(167,139,250,.55);
+      background: rgba(124,58,237,.28);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 0 22px rgba(124,58,237,.35), inset 0 0 10px rgba(167,139,250,.1);
+      color: rgba(210,185,255,.9); font-size: 18px;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; z-index: 5; transition: all .3s;
     }
-    .overlay-close:hover { color: #fff; border-color: rgba(180,130,255,.55); background: rgba(180,130,255,.12); transform: rotate(90deg); }
+    .overlay-close:hover {
+      background: rgba(124,58,237,.55);
+      border-color: rgba(200,170,255,.85);
+      box-shadow: 0 0 30px rgba(124,58,237,.6);
+      transform: rotate(90deg) scale(1.08);
+    }
 
 
     /* ── SCROLL REVEAL ─────────────────────────────────────── */
@@ -1472,10 +1480,14 @@ document.addEventListener('click', e => {
 
   function openZoom(src) {
     if (!src) return;
-    if (!IS_MOBILE && !/enablejsapi/.test(src)) src += '&enablejsapi=1';
-    src += !/vq=/.test(src)        ? '&vq=hd1080&hd=1' : '';
-    src += !/autoplay=/.test(src)  ? '&autoplay=1'   : '';
-    src += !/playsinline=/.test(src) ? '&playsinline=1' : '';
+    if (!/enablejsapi/.test(src)) src += '&enablejsapi=1';
+    src += !/vq=/.test(src)         ? '&vq=hd1080&hd=1'  : '';
+    src += !/autoplay=/.test(src)   ? '&autoplay=1'       : '';
+    src += !/mute=/.test(src)       ? '&mute=1'           : '';
+    src += !/playsinline=/.test(src) ? '&playsinline=1'   : '';
+    // Ridica smoke-ul deasupra paginii ca sa se vada prin overlay
+    const smk = document.getElementById('smoke-bg');
+    if (smk) smk.style.zIndex = '299';
 
     if (ytPlayer && ytPlayer.destroy) { try { ytPlayer.destroy(); } catch(e) {} ytPlayer = null; }
     const stale = zoomScreen.querySelector('iframe');
@@ -1514,6 +1526,9 @@ document.addEventListener('click', e => {
       if (ytPlayer && ytPlayer.destroy) { try { ytPlayer.destroy(); } catch(e) {} ytPlayer = null; }
       const f = zoomScreen.querySelector('iframe');
       if (f) { try { f.src = 'about:blank'; } catch(e) {} f.remove(); }
+      // Retrimite smoke-ul în spate
+      const smk = document.getElementById('smoke-bg');
+      if (smk) smk.style.zIndex = '-1';
     }, 450);
   }
 
