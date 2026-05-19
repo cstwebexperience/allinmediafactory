@@ -219,9 +219,9 @@
     .s-frag-blur {
       position: absolute; inset: 0;
       width: 100%; height: auto; object-fit: contain;
-      filter: blur(16px) brightness(.4) saturate(1.3);
+      filter: blur(16px) brightness(.55) saturate(1.4);
       transform: scale(1.08);
-      opacity: .45;
+      opacity: .72;
       user-select: none; -webkit-user-drag: none;
       contain: layout style;
     }
@@ -229,8 +229,8 @@
     .s-frag-sharp {
       position: relative; width: 100%; height: auto; object-fit: contain;
       animation: maskFloat 14s ease-in-out infinite paused;
-      filter: drop-shadow(0 0 20px rgba(124,58,237,.35));
-      opacity: .18;
+      filter: drop-shadow(0 0 28px rgba(124,58,237,.55));
+      opacity: .42;
       user-select: none; -webkit-user-drag: none;
       contain: layout style;
     }
@@ -880,14 +880,14 @@
       width: 100%; height: 100%;
       pointer-events: none;
       opacity: 0;
-      animation: smokeIn 5s ease 2.5s forwards;
+      animation: smokeIn 3s ease 0s forwards;
     }
     @keyframes smokeIn { to { opacity: .72; } }
 
     /* ── INTRO SPLASH ─────────────────────────────────────── */
     #intro-splash {
       position: fixed; inset: 0; z-index: 2000;
-      background: #0a0a0f;
+      background: rgba(0,0,0,0.18);
       display: flex; align-items: center; justify-content: center;
       transition: opacity .85s cubic-bezier(.4,0,.2,1),
                   transform .85s cubic-bezier(.4,0,.2,1);
@@ -1562,7 +1562,7 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
     '  col.g-=fbm(uv*1.003+vec2(0.,T*.015)+n+.003);',
     '  col.b-=fbm(uv*1.006+vec2(0.,T*.015)+n+.006);',
     '  col=mix(col,u_color,dot(col,vec3(.21,.71,.07)));',
-    '  col=mix(vec3(.08),col,min(time*.14,1.));',
+    '  col=mix(vec3(.08),col,min(time*.4,1.));',
     '  col=clamp(col,.08,1.);',
     '  O=vec4(col,1);',
     '}'
@@ -1635,6 +1635,9 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
 
   t1.textContent = words[idx];
   t2.textContent = words[(idx + 1) % words.length];
+  // Prevent flash of t1 before first frame
+  t1.style.opacity = '0%';
+  t2.style.opacity = '100%';
 
   function blend(f) {
     t2.style.filter  = `blur(${Math.min(8 / f - 8, 100)}px)`;
@@ -1663,7 +1666,17 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
     if (cooldown <= 0) {
       if (wasCool) {
         count++;
-        if (count >= words.length) { setTimeout(exit, 550); return; }
+        if (count >= words.length) {
+          done = true; // opreste loop-ul imediat, fara cuvinte extra
+          t2.style.filter = ''; t2.style.opacity = '100%';
+          t1.style.filter = ''; t1.style.opacity = '0%';
+          setTimeout(() => {
+            document.body.classList.remove('intro-active');
+            splash.classList.add('out');
+            setTimeout(() => splash.remove(), 900);
+          }, 700);
+          return;
+        }
         idx = (idx + 1) % words.length;
         t1.textContent = words[idx];
         t2.textContent = words[(idx + 1) % words.length];
