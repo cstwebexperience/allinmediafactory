@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ro">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>All In Media – Agenție de Marketing Digital</title>
+  <title>All In Media – Digital Marketing Agency</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1071,7 +1071,7 @@
 
 <!-- ══ LANG PICKER ════════════════════════════════════════════ -->
 <div id="lang-picker" role="dialog" aria-modal="true" aria-label="Alege limba">
-  <img src="logo-crop.png" alt="All In Media" class="lp-logo" onerror="this.style.display='none'">
+  <img src="../logo-crop.png" alt="All In Media" class="lp-logo" onerror="this.style.display='none'">
   <div class="lp-head">
     <div class="lp-title">All In Media</div>
     <p class="lp-sub">Alege Limba / Select Language</p>
@@ -1115,7 +1115,7 @@
 <header class="header" id="header">
   <a class="logo" href="#" aria-label="All In Media">
     <div class="logo-crop">
-      <img src="logo.png" alt="All In Media" class="logo-img" />
+      <img src="../logo.png" alt="All In Media" class="logo-img" />
     </div>
   </a>
 
@@ -1123,25 +1123,22 @@
     <div class="logo-spacer"></div>
 
     <nav class="nav" aria-label="Main">
-      <a href="#videoclipuri" data-nav="videoclipuri">Videoclipuri</a>
+      <a href="#videoclipuri" data-nav="videoclipuri">Videos</a>
       <a href="#ads"          data-nav="ads">Ads</a>
       <a href="#webdesign"    data-nav="webdesign">Web Design</a>
       <a href="#seo"          data-nav="seo">SEO</a>
-      <a href="#automatizari" data-nav="automatizari">Automatizări</a>
+      <a href="#automatizari" data-nav="automatizari">Automation</a>
     </nav>
 
     <div class="header-right">
-      <button class="btn-lang" onclick="switchLang()" title="Switch language">
-        <span class="lang-flag lang-flag--ro">
+      <button class="btn-lang" onclick="switchLang()" title="Switch to Romanian">
+        <span class="lang-flag">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002B7F"/><rect x="1" width="1" height="2" fill="#FCD116"/><rect x="2" width="1" height="2" fill="#CE1126"/></svg>
-        </span>
-        <span class="lang-flag lang-flag--en" style="display:none">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4"/><path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/></svg>
         </span>
         <span class="lang-label">RO</span>
       </button>
       <button class="btn-contact" onclick="openContactForm()">Contact</button>
-      <button class="btn-hamburger" id="hamburger" type="button" aria-label="Meniu">
+      <button class="btn-hamburger" id="hamburger" type="button" aria-label="Menu">
         <span></span><span></span>
       </button>
     </div>
@@ -1149,25 +1146,25 @@
 </header>
 
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#videoclipuri" onclick="closeMenu()">Videoclipuri</a>
+  <a href="#videoclipuri" onclick="closeMenu()">Videos</a>
   <a href="#ads"          onclick="closeMenu()">Performance Ads</a>
   <a href="#webdesign"    onclick="closeMenu()">Web Design</a>
   <a href="#seo"          onclick="closeMenu()">SEO</a>
-  <a href="#automatizari" onclick="closeMenu()">Automatizări</a>
+  <a href="#automatizari" onclick="closeMenu()">Automation</a>
   <a onclick="closeMenu(); openContactForm();" class="mobile-cta" style="cursor:pointer">Contact</a>
 </div>
 
 <!-- ══ HERO ════════════════════════════════════════════════════ -->
 <section class="hero" id="hero">
   <div class="hero-video-wrap">
-    <video class="hero-video" src="video-site-final.mp4" autoplay muted loop playsinline></video>
+    <video class="hero-video" src="../video-site-final.mp4" autoplay muted loop playsinline></video>
     <div class="hero-gradient"></div>
     <div class="hero-content">
-      <p class="hero-tag">All In Media · Agenție de Marketing</p>
-      <h1>Creștem.<br>Scalăm.<br>Dominăm.</h1>
-      <p class="hero-desc">Marketing digital care transformă branduri în lideri de piață.</p>
+      <p class="hero-tag">All In Media · Marketing Agency</p>
+      <h1>We Grow.<br>We Scale.<br>We Dominate.</h1>
+      <p class="hero-desc">Digital marketing that transforms brands into market leaders.</p>
       <div class="hero-cta">
-        <a class="btn-primary" href="#videoclipuri">Lansează-ți brandul <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn-primary" href="#videoclipuri">Launch Your Brand <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
     </div>
   </div>
@@ -1180,15 +1177,15 @@
 
   <!-- Ghost mask — absolutely on the LEFT edge -->
   <div class="s-mask-abs">
-    <img src="frag-ochi-stang.webp" class="s-frag-blur" aria-hidden="true" />
-    <img src="frag-ochi-stang.webp" class="s-frag-sharp" aria-hidden="true" />
+    <img src="../frag-ochi-stang.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="../frag-ochi-stang.webp" class="s-frag-sharp" aria-hidden="true" />
   </div>
 
   <!-- Centered content -->
   <div class="s-content-wrap">
-    <span class="s-eyebrow reveal" style="--d:60ms">01 — VIDEOCLIPURI PREMIUM</span>
-    <h2 class="s-title reveal" style="--d:120ms">Editare care opreşte<br>thumb-ul.</h2>
-    <p class="s-subtitle reveal" style="--d:180ms">Conţinut. Pur.</p>
+    <span class="s-eyebrow reveal" style="--d:60ms">01 — PREMIUM VIDEO CONTENT</span>
+    <h2 class="s-title reveal" style="--d:120ms">Editing that stops<br>the scroll.</h2>
+    <p class="s-subtitle reveal" style="--d:180ms">Content. Pure.</p>
 
     <div class="vp-iphone-carousel reveal" style="--d:260ms">
       <div class="vp-iphone-track">
@@ -1216,16 +1213,16 @@
 
   <!-- Results grid — in flow below content -->
   <div class="vp-results">
-    <span class="vp-results-label reveal">REZULTATELE NOASTRE</span>
+    <span class="vp-results-label reveal">OUR RESULTS</span>
     <div class="vp-results-grid">
       <div class="vp-result-card reveal" style="--d:60ms">
-        <img src="assets/rezultat-1.png" alt="Rezultat 1" loading="lazy" />
+        <img src="../assets/rezultat-1.png" alt="Rezultat 1" loading="lazy" />
       </div>
       <div class="vp-result-card reveal" style="--d:160ms">
-        <img src="assets/rezultat-2.png" alt="Rezultat 2" loading="lazy" />
+        <img src="../assets/rezultat-2.png" alt="Rezultat 2" loading="lazy" />
       </div>
       <div class="vp-result-card reveal" style="--d:260ms">
-        <img src="assets/rezultat-3.png" alt="Rezultat 3" loading="lazy" />
+        <img src="../assets/rezultat-3.png" alt="Rezultat 3" loading="lazy" />
       </div>
     </div>
   </div>
@@ -1238,39 +1235,39 @@
 
   <!-- Ghost mask — absolutely on the RIGHT edge -->
   <div class="s-mask-abs">
-    <img src="frag-ochi-drept.webp" class="s-frag-blur" aria-hidden="true" />
-    <img src="frag-ochi-drept.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-2.3s;" />
+    <img src="../frag-ochi-drept.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="../frag-ochi-drept.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-2.3s;" />
   </div>
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:60ms">02 — PERFORMANCE ADS</span>
-    <h2 class="s-title reveal" style="--d:120ms">Ieși pe profit<br>din prima lună.</h2>
-    <p class="s-subtitle reveal" style="--d:180ms">Profit. Brutal.</p>
+    <h2 class="s-title reveal" style="--d:120ms">Turn profitable<br>from month one.</h2>
+    <p class="s-subtitle reveal" style="--d:180ms">Profit. Ruthless.</p>
 
     <div class="stats-row reveal" style="--d:260ms">
       <div class="stat-block">
         <div class="stat-number">
           <span class="stat-digit">3</span><span class="stat-sep">-</span><span class="stat-digit">5</span>
         </div>
-        <span class="stat-unit">lei / lead</span>
-        <p class="stat-desc">cost per lead — campanii Meta &amp; Google</p>
+        <span class="stat-unit">RON / lead</span>
+        <p class="stat-desc">cost per lead — Meta &amp; Google campaigns</p>
       </div>
       <div class="stat-block stat-block--highlight">
         <div class="stat-number">0.05</div>
-        <span class="stat-unit">lei / interacțiune</span>
-        <p class="stat-desc">marcat „High Performing" de Meta Ads</p>
+        <span class="stat-unit">RON / interaction</span>
+        <p class="stat-desc">marked "High Performing" by Meta Ads</p>
       </div>
     </div>
 
     <div class="meta-screenshot-wrapper reveal" style="--d:340ms">
-      <span class="screenshot-label">META ADS — DATE REALE · FEB–MAR 2026</span>
+      <span class="screenshot-label">META ADS — REAL DATA · FEB–MAR 2026</span>
       <div class="meta-screenshot-scroll" id="metaScroll">
         <div class="meta-inner">
-          <img src="assets/meta-ads-results.jpg" alt="Meta Ads rezultate reale" loading="lazy" draggable="false" />
+          <img src="../assets/meta-ads-results.jpg" alt="Meta Ads rezultate reale" loading="lazy" draggable="false" />
           <div class="row-highlight" style="top:110px;height:35px;"></div>
         </div>
       </div>
-      <p class="screenshot-hint">← trage pentru a vedea tot →</p>
+      <p class="screenshot-hint">← drag to see more →</p>
     </div>
   </div>
 </section>
@@ -1282,14 +1279,14 @@
 
   <!-- Ghost mask — absolutely at the TOP center -->
   <div class="s-mask-abs">
-    <img src="frag-nas.webp" class="s-frag-blur" aria-hidden="true" />
-    <img src="frag-nas.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-4.1s;" />
+    <img src="../frag-nas.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="../frag-nas.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-4.1s;" />
   </div>
 
   <div class="s-content-wrap">
-    <span class="s-eyebrow reveal" style="--d:80ms">03 — WEB DESIGN + SITE-URI</span>
-    <h2 class="s-title reveal" style="--d:140ms">Site-uri care<br>vând.</h2>
-    <p class="s-subtitle reveal" style="--d:200ms">Design. Hipnotic.</p>
+    <span class="s-eyebrow reveal" style="--d:80ms">03 — WEB DESIGN + WEBSITES</span>
+    <h2 class="s-title reveal" style="--d:140ms">Websites that<br>sell.</h2>
+    <p class="s-subtitle reveal" style="--d:200ms">Design. Hypnotic.</p>
 
     <div class="sites-grid reveal" style="--d:280ms">
       <a href="https://realestate1233.vercel.app/" target="_blank" rel="noopener" class="site-card">
@@ -1322,7 +1319,7 @@
     </div>
 
     <div class="portfolio-cta reveal" style="--d:380ms">
-      <span class="portfolio-cta-label">Verifică portofoliu complet</span>
+      <span class="portfolio-cta-label">View full portfolio</span>
       <div class="portfolio-cta-buttons">
         <a href="https://www.agentieseo.net/web-design/" target="_blank" rel="noopener" class="portfolio-btn">
           agentieseo.net <span class="portfolio-btn-arrow">→</span>
@@ -1342,19 +1339,19 @@
 
   <!-- Ghost mask — absolutely on the LEFT edge -->
   <div class="s-mask-abs">
-    <img src="frag-gura-stanga.webp" class="s-frag-blur" aria-hidden="true" />
-    <img src="frag-gura-stanga.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-1.7s;" />
+    <img src="../frag-gura-stanga.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="../frag-gura-stanga.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-1.7s;" />
   </div>
 
   <div class="s-content-wrap">
-    <span class="s-eyebrow reveal" style="--d:60ms">04 — SEO &amp; VIZIBILITATE</span>
-    <h2 class="s-title reveal" style="--d:120ms">Apari acolo unde<br>contează.</h2>
-    <p class="s-subtitle reveal" style="--d:180ms">Trafic. Real.</p>
+    <span class="s-eyebrow reveal" style="--d:60ms">04 — SEO &amp; VISIBILITY</span>
+    <h2 class="s-title reveal" style="--d:120ms">Appear where<br>it matters.</h2>
+    <p class="s-subtitle reveal" style="--d:180ms">Traffic. Real.</p>
 
     <div class="single-site reveal" style="--d:240ms">
       <a href="https://www.agentieseo.net/" target="_blank" rel="noopener" class="site-card">
         <div class="site-card-thumb">
-          <img src="assets/agentieseo-thumb.jpg" alt="AgentieSEO" loading="lazy" />
+          <img src="../assets/agentieseo-thumb.jpg" alt="AgentieSEO" loading="lazy" />
         </div>
         <div class="site-card-info">
           <span class="site-card-domain">agentieseo.net</span>
@@ -1364,9 +1361,9 @@
     </div>
 
     <p class="s-desc reveal" style="--d:310ms">
-      Avem acces la advertoriale în <strong>Forbes</strong>, <strong>ProTV</strong>,
-      <strong>Antena 3</strong>, <strong>Antena Stars</strong> și zeci de publicații premium.
-      Un singur articol în locul potrivit face mai mult decât 6 luni de postări.
+      We have access to advertorials in <strong>Forbes</strong>, <strong>ProTV</strong>,
+      <strong>Antena 3</strong>, <strong>Antena Stars</strong> and dozens of premium publications.
+      One article in the right place does more than 6 months of posts.
     </p>
 
     <div class="media-marquee reveal" style="--d:380ms">
@@ -1405,23 +1402,23 @@
 
   <!-- Ghost mask — absolutely on the RIGHT edge -->
   <div class="s-mask-abs">
-    <img src="frag-gura-dreapta.webp" class="s-frag-blur" aria-hidden="true" />
-    <img src="frag-gura-dreapta.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-3.2s;" />
+    <img src="../frag-gura-dreapta.webp" class="s-frag-blur" aria-hidden="true" />
+    <img src="../frag-gura-dreapta.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-3.2s;" />
   </div>
 
   <div class="s-content-wrap">
-    <span class="s-eyebrow reveal" style="--d:60ms">05 — AUTOMATIZĂRI BUSINESS</span>
-    <h2 class="s-title reveal" style="--d:120ms">Sisteme care<br>lucrează pentru tine.</h2>
-    <p class="s-subtitle reveal" style="--d:180ms">Procese. Smart.</p>
+    <span class="s-eyebrow reveal" style="--d:60ms">05 — BUSINESS AUTOMATION</span>
+    <h2 class="s-title reveal" style="--d:120ms">Systems that<br>work for you.</h2>
+    <p class="s-subtitle reveal" style="--d:180ms">Processes. Smart.</p>
     <div class="auto-descs">
       <p class="s-desc reveal" style="--d:260ms">
-        Conectăm <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>,
-        <strong>CRM</strong> și <strong>Google Sheets</strong> într-un singur sistem care lucrează 24/7.
-        Un lead venit la 3 dimineața primește răspuns în <strong>30 de secunde</strong> — fără să miști un deget.
+        We connect <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>,
+        <strong>CRM</strong> and <strong>Google Sheets</strong> into one system that works 24/7.
+        A lead arriving at 3am gets a response in <strong>30 seconds</strong> — without lifting a finger.
       </p>
       <p class="s-desc reveal" style="--d:360ms">
-        Plus <strong>agent vocal AI</strong> care sună leadurile, răspunde la apeluri, califică clienții
-        și transferă doar întâlnirile serioase în calendarul tău. Conversație naturală, voce umană, 24/7.
+        Plus an <strong>AI voice agent</strong> that calls leads, answers calls, qualifies clients
+        and transfers only serious appointments to your calendar. Natural conversation, human voice, 24/7.
       </p>
     </div>
   </div>
@@ -1430,15 +1427,15 @@
 <!-- ══ CONTACT ══════════════════════════════════════════════════ -->
 <section class="bottom-cta" id="contact">
   <div class="bottom-cta-inner">
-    <p class="bottom-cta-eyebrow reveal">Hai să construim ceva extraordinar</p>
-    <h2 class="bottom-cta-title reveal" style="--d:100ms">Gata să creștem<br>împreună?</h2>
+    <p class="bottom-cta-eyebrow reveal">Let's build something extraordinary</p>
+    <h2 class="bottom-cta-title reveal" style="--d:100ms">Ready to grow<br>together?</h2>
     <div class="cta-icons-row reveal" style="--d:200ms">
       <button class="cta-icon-btn cta-icon-btn--contact" onclick="openContactForm()">
-        <img src="clipboard-t.webp" alt="Trimite-ne un mesaj" class="cta-icon-img" />
-        <span class="cta-icon-label">Trimite-ne un mesaj</span>
+        <img src="../clipboard-t.webp" alt="Send us a message" class="cta-icon-img" />
+        <span class="cta-icon-label">Send us a message</span>
       </button>
       <a class="cta-icon-btn cta-icon-btn--wa" href="https://wa.me/40743391581" target="_blank" rel="noopener">
-        <img src="whatsapp-t.webp" alt="WhatsApp" class="cta-icon-img" />
+        <img src="../whatsapp-t.webp" alt="WhatsApp" class="cta-icon-img" />
         <span class="cta-icon-label">WhatsApp</span>
       </a>
     </div>
@@ -1448,7 +1445,7 @@
 
 <!-- ══ PHONE ZOOM OVERLAY ══════════════════════════════════════ -->
 <div id="phone-zoom-overlay" aria-modal="true" role="dialog" aria-hidden="true">
-  <button class="overlay-close" id="phoneZoomClose" aria-label="Închide">&times;</button>
+  <button class="overlay-close" id="phoneZoomClose" aria-label="Close">&times;</button>
   <div class="zoom-phone">
     <div class="zoom-iphone-frame">
       <div class="zoom-iphone-screen" id="zoom-screen"></div>
@@ -1458,7 +1455,7 @@
 
 <!-- ══ IMAGE LIGHTBOX ══════════════════════════════════════════ -->
 <div id="image-lightbox" aria-modal="true" role="dialog" aria-hidden="true">
-  <button class="overlay-close" id="lightboxClose" aria-label="Închide">&times;</button>
+  <button class="overlay-close" id="lightboxClose" aria-label="Close">&times;</button>
   <img id="lightbox-img" src="" alt="" />
 </div>
 
@@ -1466,25 +1463,25 @@
 <div class="cf-overlay" id="cfOverlay">
   <div class="cf-box">
     <button class="cf-close" id="cfClose">&times;</button>
-    <h2 class="cf-title">Contactează-ne</h2>
+    <h2 class="cf-title">Contact Us</h2>
     <form class="cf-form" id="cfForm"
           action="https://formsubmit.co/cstwebexperience@gmail.com" method="POST">
-      <input type="hidden" name="_subject" value="Cerere nouă — All In Media" />
+      <input type="hidden" name="_subject" value="New Inquiry — All In Media" />
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_template" value="table" />
-      <input name="nume"    placeholder="Numele tău"    required />
+      <input name="nume"    placeholder="Your name"    required />
       <input name="email"   type="email" placeholder="Email" required />
-      <input name="telefon" type="tel"   placeholder="Telefon (opțional)" />
+      <input name="telefon" type="tel"   placeholder="Phone (optional)" />
       <select name="serviciu">
-        <option value="" disabled selected>Alege serviciul dorit</option>
-        <option>Videoclipuri Premium</option>
+        <option value="" disabled selected>Choose desired service</option>
+        <option>Premium Video Content</option>
         <option>Performance Ads</option>
-        <option>Web Design + Site-uri</option>
+        <option>Web Design + Websites</option>
         <option>SEO + Google</option>
-        <option>Automatizări Business</option>
+        <option>Business Automation</option>
       </select>
-      <textarea name="mesaj" placeholder="Mesajul tău (opțional)" rows="3"></textarea>
-      <button type="submit" class="cf-submit">Trimite mesajul</button>
+      <textarea name="mesaj" placeholder="Your message (optional)" rows="3"></textarea>
+      <button type="submit" class="cf-submit">Send message</button>
     </form>
   </div>
 </div>
@@ -1501,16 +1498,14 @@ function selectLang(lang) {
   localStorage.setItem('aim-lang', lang);
   const picker = document.getElementById('lang-picker');
   picker.classList.add('hide');
-  if (lang === 'en') {
-    setTimeout(() => window.location.href = '/en/', 600);
+  if (lang === 'ro') {
+    setTimeout(() => window.location.href = '/', 600);
   } else {
     setTimeout(() => { picker.style.display = 'none'; document.body.style.overflow = ''; }, 600);
   }
 }
 function switchLang() {
-  const cur = localStorage.getItem('aim-lang') || 'ro';
-  if (cur === 'ro') { localStorage.setItem('aim-lang','en'); window.location.href = '/en/'; }
-  else { localStorage.setItem('aim-lang','ro'); window.location.href = '/'; }
+  localStorage.setItem('aim-lang','ro'); window.location.href = '/';
 }
 
 /* ── HEADER SCROLL ── */
