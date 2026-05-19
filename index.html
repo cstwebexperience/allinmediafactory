@@ -1483,7 +1483,6 @@ document.addEventListener('click', e => {
     if (!/enablejsapi/.test(src)) src += '&enablejsapi=1';
     src += !/vq=/.test(src)         ? '&vq=hd1080&hd=1'  : '';
     src += !/autoplay=/.test(src)   ? '&autoplay=1'       : '';
-    src += !/mute=/.test(src)       ? '&mute=1'           : '';
     src += !/playsinline=/.test(src) ? '&playsinline=1'   : '';
     // Ridica smoke-ul deasupra paginii ca sa se vada prin overlay
     const smk = document.getElementById('smoke-bg');
@@ -1538,6 +1537,7 @@ document.addEventListener('click', e => {
     e.preventDefault();
     const ytId = mockup.dataset.ytId;
     if (!ytId) return;
+    if (IS_MOBILE) { window.location.href = 'https://www.youtube.com/watch?v=' + ytId; return; }
     openZoom('https://www.youtube-nocookie.com/embed/' + ytId + '?rel=0&modestbranding=1');
   });
 
