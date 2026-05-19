@@ -873,9 +873,58 @@
         border-radius: 22px;
       }
     }
+    /* ── INTRO SPLASH ─────────────────────────────────────── */
+    #intro-splash {
+      position: fixed; inset: 0; z-index: 2000;
+      background: #0a0a0f;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity .85s cubic-bezier(.4,0,.2,1),
+                  transform .85s cubic-bezier(.4,0,.2,1);
+    }
+    #intro-splash.out {
+      opacity: 0;
+      transform: scale(1.05);
+      pointer-events: none;
+    }
+    #intro-morph {
+      position: relative;
+      width: 100%;
+      height: clamp(72px, 20vw, 160px);
+      display: flex; align-items: center; justify-content: center;
+      filter: url(#ig);
+    }
+    #intro-t1, #intro-t2 {
+      position: absolute;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(48px, 15vw, 112px);
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+      text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body.intro-active { overflow: hidden; }
   </style>
 </head>
-<body>
+<body class="intro-active">
+
+<!-- ══ INTRO SPLASH ════════════════════════════════════════════ -->
+<div id="intro-splash">
+  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <defs>
+      <filter id="ig">
+        <feColorMatrix in="SourceGraphic" type="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"/>
+      </filter>
+    </defs>
+  </svg>
+  <div id="intro-morph">
+    <span id="intro-t1"></span>
+    <span id="intro-t2"></span>
+  </div>
+</div>
 
 <!-- ══ HEADER ══════════════════════════════════════════════════ -->
 <header class="header" id="header">
@@ -1460,6 +1509,74 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
     });
   }, { threshold: 0, rootMargin: '100px 0px 100px 0px' });
   document.querySelectorAll('.mask-section').forEach(s => obs.observe(s));
+})();
+
+/* ── INTRO GOOEY MORPH ── */
+(function () {
+  const splash = document.getElementById('intro-splash');
+  if (!splash) return;
+
+  const words = ['All', 'In', 'Media', 'Factory'];
+  const MORPH = 0.9, COOL = 0.22;
+  const t1 = document.getElementById('intro-t1');
+  const t2 = document.getElementById('intro-t2');
+
+  let idx = words.length - 1;
+  let morph = 0, cooldown = COOL;
+  let prev = performance.now();
+  let count = 0, done = false;
+
+  t1.textContent = words[idx];
+  t2.textContent = words[(idx + 1) % words.length];
+
+  function blend(f) {
+    t2.style.filter  = `blur(${Math.min(8 / f - 8, 100)}px)`;
+    t2.style.opacity = `${Math.pow(f, 0.4) * 100}%`;
+    const g = 1 - f;
+    t1.style.filter  = `blur(${Math.min(8 / g - 8, 100)}px)`;
+    t1.style.opacity = `${Math.pow(g, 0.4) * 100}%`;
+  }
+
+  function exit() {
+    if (done) return;
+    done = true;
+    document.body.classList.remove('intro-active');
+    splash.classList.add('out');
+    setTimeout(() => splash.remove(), 900);
+  }
+
+  function tick(now) {
+    if (done) return;
+    requestAnimationFrame(tick);
+    const dt = Math.min((now - prev) / 1000, 0.1);
+    prev = now;
+    const wasCool = cooldown > 0;
+    cooldown -= dt;
+
+    if (cooldown <= 0) {
+      if (wasCool) {
+        count++;
+        if (count >= words.length) { setTimeout(exit, 550); return; }
+        idx = (idx + 1) % words.length;
+        t1.textContent = words[idx];
+        t2.textContent = words[(idx + 1) % words.length];
+      }
+      morph -= cooldown;
+      cooldown = 0;
+      let f = morph / MORPH;
+      if (f > 1) { cooldown = COOL; f = 1; morph = 0; }
+      blend(f);
+    } else {
+      morph = 0;
+      t2.style.filter = ''; t2.style.opacity = '100%';
+      t1.style.filter = ''; t1.style.opacity = '0%';
+    }
+  }
+
+  requestAnimationFrame(tick);
+
+  // Tap/click to skip
+  splash.addEventListener('pointerdown', exit, { once: true });
 })();
 </script>
 
