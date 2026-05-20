@@ -6,7 +6,7 @@
   <title>All In Media – Agenție de Marketing Digital</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
   <style>
     /* ── RESET & BASE ──────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,9 +43,7 @@
     .header.is-scrolled { padding: 10px 24px; }
 
     .logo {
-      position: absolute; left: 44px; top: 50%;
-      transform: translateY(-50%); z-index: 1;
-      display: flex; align-items: center;
+      display: flex; align-items: center; flex-shrink: 0;
     }
     .logo-crop {
       width: 50px; height: 50px; border-radius: 50%; overflow: hidden;
@@ -278,9 +276,9 @@
     }
     .s-title { display: none; }
     .s-subtitle {
-      font-family: 'DM Sans', 'Inter', sans-serif; font-weight: 700;
-      font-size: clamp(42px,5.5vw,80px); line-height: 1.05;
-      letter-spacing: -.03em; color: #fff; margin-top: 8px; margin-bottom: 4px;
+      font-family: 'DM Sans', 'Inter', sans-serif; font-weight: 300;
+      font-size: clamp(40px,5.2vw,76px); line-height: 1.08;
+      letter-spacing: .01em; color: #fff; margin-top: 28px; margin-bottom: 4px;
     }
     .s-desc {
       font-size: clamp(14px,1vw,16px); color: rgba(255,255,255,.52);
@@ -1049,14 +1047,12 @@
 
 <!-- ══ HEADER ══════════════════════════════════════════════════ -->
 <header class="header" id="header">
-  <a class="logo" href="#" aria-label="All In Media">
-    <div class="logo-crop">
-      <img src="logo.png" alt="All In Media" class="logo-img" />
-    </div>
-  </a>
-
   <div class="header-inner">
-    <div class="logo-spacer"></div>
+    <a class="logo" href="#" aria-label="All In Media">
+      <div class="logo-crop">
+        <img src="logo.png" alt="All In Media" class="logo-img" />
+      </div>
+    </a>
 
     <nav class="nav" aria-label="Main">
       <a href="#videoclipuri" data-nav="videoclipuri">Videoclipuri</a>
@@ -1071,10 +1067,7 @@
         <span class="lang-flag lang-flag--ro">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002B7F"/><rect x="1" width="1" height="2" fill="#FCD116"/><rect x="2" width="1" height="2" fill="#CE1126"/></svg>
         </span>
-        <span class="lang-flag lang-flag--en" style="display:none">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4"/><path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/></svg>
-        </span>
-        <span class="lang-label">RO</span>
+        <span class="lang-label">RO / EN</span>
       </button>
       <button class="btn-contact" onclick="openContactForm()">Contact</button>
       <button class="btn-hamburger" id="hamburger" type="button" aria-label="Meniu">
@@ -1342,6 +1335,17 @@
     <span class="s-eyebrow reveal" style="--d:60ms">05 — AUTOMATIZĂRI BUSINESS</span>
     <h2 class="s-title reveal" style="--d:120ms">Sisteme care<br>lucrează pentru tine.</h2>
     <p class="s-subtitle reveal" style="--d:180ms">Procese. Smart.</p>
+    <div class="auto-descs">
+      <p class="s-desc reveal" style="--d:260ms">
+        Conectăm <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>,
+        <strong>CRM</strong> și <strong>Google Sheets</strong> într-un singur sistem care lucrează 24/7.
+        Un lead venit la 3 dimineața primește răspuns în <strong>30 de secunde</strong> — fără să miști un deget.
+      </p>
+      <p class="s-desc reveal" style="--d:360ms">
+        Plus <strong>agent vocal AI</strong> care sună leadurile, răspunde la apeluri, califică clienții
+        și transferă doar întâlnirile serioase în calendarul tău. Conversație naturală, voce umană, 24/7.
+      </p>
+    </div>
   </div>
 </section>
 
