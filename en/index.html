@@ -1,12 +1,12 @@
-﻿<!DOCTYPE html>
-<html lang="ro">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>All In Media – Digital Marketing Agency</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
   <style>
     /* ── RESET & BASE ──────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,12 +30,7 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       overflow-x: hidden;
     }
-    body::before {
-      content: ''; position: fixed; inset: 0; z-index: 9999;
-      pointer-events: none; opacity: .028;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 128px 128px;
-    }
+    body::before { display: none; }
 
     a { text-decoration: none; color: inherit; }
     [id] { scroll-margin-top: 88px; }
@@ -48,9 +43,7 @@
     .header.is-scrolled { padding: 10px 24px; }
 
     .logo {
-      position: absolute; left: 44px; top: 50%;
-      transform: translateY(-50%); z-index: 1;
-      display: flex; align-items: center;
+      display: flex; align-items: center; flex-shrink: 0;
     }
     .logo-crop {
       width: 50px; height: 50px; border-radius: 50%; overflow: hidden;
@@ -129,7 +122,7 @@
 
     .mobile-menu {
       display: none; position: fixed; top: 88px; inset-inline: 16px;
-      background: rgba(10,10,10,.97); backdrop-filter: blur(24px);
+      background: rgba(10,10,10,.97);
       border: 1px solid var(--border); border-radius: 20px;
       flex-direction: column; padding: 12px; gap: 2px; z-index: 99;
     }
@@ -216,7 +209,6 @@
       align-items: center; justify-content: center;
       padding: clamp(88px,11vh,140px) clamp(24px,5vw,80px) clamp(72px,9vh,110px);
       overflow: hidden;
-      /* perf: contain painting to this element */
       contain: layout style;
     }
 
@@ -235,7 +227,7 @@
       top: -6%; left: 50%; transform: translateX(-50%);
     }
 
-    /* Blurred ghost — blur 16px (cheaper than 30px, still atmospheric) */
+    /* Blurred ghost */
     .s-frag-blur {
       position: absolute; inset: 0;
       width: 100%; height: auto; object-fit: contain;
@@ -245,7 +237,7 @@
       user-select: none; -webkit-user-drag: none;
       contain: layout style;
     }
-    /* Sharp fragment — animation starts paused, JS resumes when in viewport */
+    /* Sharp fragment */
     .s-frag-sharp {
       position: relative; width: 100%; height: auto; object-fit: contain;
       animation: maskFloat 14s ease-in-out infinite paused;
@@ -276,22 +268,15 @@
       width: 100%; max-width: 1100px; gap: 10px;
     }
 
-    /* Typography — Inter throughout (lighter, more refined than Syne) */
     .s-eyebrow {
       font-size: 11px; font-weight: 600; letter-spacing: .38em;
       text-transform: uppercase; color: rgba(167,139,250,.75);
     }
-    .s-title {
-      font-family: 'Inter', sans-serif; font-weight: 800;
-      font-size: clamp(30px,4vw,58px); line-height: 1.06;
-      letter-spacing: -.03em; margin-top: 8px;
-      background: linear-gradient(135deg, #d8b4fe 0%, #a855f7 50%, #7c3aed 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
+    .s-title { display: none; }
     .s-subtitle {
-      font-family: 'Inter', sans-serif; font-weight: 500;
-      font-size: clamp(14px,1.5vw,20px); letter-spacing: .06em;
-      color: rgba(255,255,255,.28); margin-bottom: 4px;
+      font-family: 'DM Sans', 'Inter', sans-serif; font-weight: 300;
+      font-size: clamp(40px,5.2vw,76px); line-height: 1.08;
+      letter-spacing: .01em; color: #fff; margin-top: 28px; margin-bottom: 4px;
     }
     .s-desc {
       font-size: clamp(14px,1vw,16px); color: rgba(255,255,255,.52);
@@ -308,7 +293,6 @@
       display: flex; gap: clamp(20px,2.8vw,44px);
       justify-content: center; align-items: flex-end;
     }
-    /* Middle phone slightly larger for depth */
     .vp-iphone-mockup:nth-child(2) .vp-iphone-frame {
       width: clamp(148px, 15.5vw, 210px);
     }
@@ -576,11 +560,7 @@
       width: 1px; height: clamp(60px,8vw,100px);
       background: linear-gradient(to bottom,transparent,rgba(124,58,237,.5));
     }
-    .bottom-cta::after {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse 70% 60% at 50% 50%,rgba(124,58,237,.10) 0%,transparent 70%);
-      pointer-events: none;
-    }
+    .bottom-cta::after { display: none; }
     .bottom-cta-inner { position: relative; z-index: 1; width: 100%; }
     .bottom-cta-eyebrow {
       font-size: 11px; font-weight: 600; letter-spacing: .35em;
@@ -783,7 +763,7 @@
     @media (min-width: 1600px) {
       .hero-content h1 { font-size: 92px; max-width: 820px; }
       .hero-desc { font-size: 22px; }
-      .s-title { font-size: 74px; }
+      .s-subtitle { font-size: 74px; }
       .s-eyebrow { font-size: 21px; }
       .s-desc { font-size: 18px; max-width: 640px; }
       .s-content-wrap { max-width: 1320px; }
@@ -825,27 +805,22 @@
       }
       .hero-content { padding: 24px; }
 
-      /* Mobile sections: shorter, no huge viewport height */
       .mask-section {
         min-height: auto;
         padding: 72px 20px 56px;
         contain: layout style;
       }
 
-      /* Mobile mask: small, top-center, low opacity — just a hint */
       .s-mask-abs {
         width: 70vw !important;
         left: 50% !important; right: auto !important;
         top: -2% !important;
         transform: translateX(-50%) !important;
       }
-      /* On mobile: hide blur layer entirely (prevents doubling artifact) */
       .s-frag-blur { display: none; }
       .s-frag-sharp { filter: none; opacity: .12; }
-      /* Hide hero badge — redundant on small screens */
       .hero-tag { display: none; }
 
-      /* ── IPHONE MOBIL — 3 in rand, no scroll ── */
       .vp-iphone-track {
         gap: 10px;
         justify-content: center;
@@ -860,7 +835,6 @@
       }
       .vp-iphone-frame::before { width: 44px; height: 13px; top: 7px; }
       .vp-iphone-screen { border-radius: 20px; }
-      /* Home indicator */
       .vp-iphone-screen::after {
         content: '';
         position: absolute;
@@ -871,7 +845,6 @@
         border-radius: 3px;
         z-index: 10;
       }
-      /* Butoane stanga vol */
       .vp-iphone-mockup::before {
         content: '';
         position: absolute;
@@ -885,7 +858,6 @@
           #2e2e32 74%, #2e2e32 100%);
         border-radius: 2px 0 0 2px; z-index: 4;
       }
-      /* Buton power */
       .vp-iphone-mockup::after {
         content: '';
         position: absolute;
@@ -895,7 +867,7 @@
         border-radius: 0 2px 2px 0; z-index: 4;
       }
 
-      .s-title { font-size: clamp(26px, 7.5vw, 40px); }
+      .s-subtitle { font-size: clamp(26px, 7.5vw, 40px); }
       .s-desc { max-width: 100%; }
       .stats-row { max-width: 100%; }
       .vp-results-grid { grid-template-columns: 1fr 1fr; }
@@ -918,43 +890,32 @@
         border-radius: 22px;
       }
     }
-    /* ══ MOBILE PATCH — override-uri complete ══════════════════ */
+    /* ══ MOBILE PATCH ══════════════════════════════════════════ */
     @media screen and (max-width: 768px) {
-      /* Arata doar 2 telefoane pe mobil */
       .vp-iphone-mockup:nth-child(3) { display: none !important; }
-      /* Grid rezultate: 2 coloane (nu 3) */
       .vp-results-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
 
-      /* Stat numbers mai mici ca sa nu overflow */
       .stat-number { font-size: clamp(28px,7.5vw,38px) !important; }
       .stat-desc { font-size: .68rem; }
 
-      /* Meta screenshot: inaltime redusa pe mobil */
       .meta-screenshot-scroll img { height: 140px; }
 
-      /* Section separator mai scurt pe mobile */
       .section-sep { height: 44px; }
 
-      /* Mask fragment: ramane subtil pe mobile */
       .s-frag-sharp { opacity: .12 !important; }
       .s-frag-blur  { display: none !important; }
 
-      /* Vp-section padding top ca sa nu bage sub header */
       .vp-section { padding-top: 80px; }
 
-      /* Stats row: sigur 2 coloane */
       .stats-row { grid-template-columns: 1fr 1fr !important; gap: 10px; }
 
-      /* Bottom CTA: mai compact pe mobile */
       .bottom-cta { padding: 64px 24px 80px; min-height: auto; }
       .bottom-cta-title { margin-bottom: 28px; }
 
-      /* CTA icons: dimensiune potrivita */
       .cta-icon-img { width: clamp(88px,24vw,120px) !important; }
       .cta-icons-row { gap: clamp(20px,10vw,48px) !important; }
       .cta-icon-label { font-size: 9px; letter-spacing: .22em; }
 
-      /* Mobile menu: mai vizibil */
       .mobile-menu {
         top: 76px;
         border-radius: 16px;
@@ -962,58 +923,24 @@
         box-shadow: 0 8px 32px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
       }
 
-      /* Eyebrow label: mai mare pe mobile */
       .s-eyebrow { font-size: 10px; letter-spacing: .22em; }
 
-      /* S-title: scaling curat */
-      .s-title { font-size: clamp(28px,8vw,44px) !important; }
+      .s-subtitle { font-size: clamp(32px,10vw,56px); }
 
-      /* Site cards pe mobile: shadow mai vizibil */
       .site-card { border-radius: 16px; }
       .site-card-thumb { height: 160px; }
 
-      /* Portfolio CTA buttons: wrap frumos */
       .portfolio-cta-buttons { flex-wrap: wrap; justify-content: center; gap: 8px; }
       .portfolio-btn { padding: 9px 16px; font-size: 12px; }
 
-      /* Automations section: padding simetric */
       .s-content-wrap { padding-bottom: 32px; }
 
-      /* Hero content: text mai mic pe telefon foarte ingust */
       .hero-title { font-size: clamp(36px,10vw,56px); }
     }
     @media screen and (max-width: 420px) {
-      /* Pe telefoane foarte mici: 2 coloane inca pentru grid */
       .vp-results-grid { grid-template-columns: 1fr 1fr !important; gap: 6px; }
-      /* Stat number si mai mic */
       .stat-number { font-size: clamp(24px,6.5vw,32px) !important; }
     }
-    /* ── LANG PICKER ─────────────────────────────────────── */
-    #lang-picker {
-      position: fixed; inset: 0; z-index: 99999;
-      background: #08060f;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px;
-      transition: opacity .6s ease, transform .6s ease;
-    }
-    #lang-picker.hide { opacity: 0; pointer-events: none; transform: scale(1.04); }
-    .lp-logo { height: 60px; border-radius: 12px; filter: drop-shadow(0 0 20px rgba(124,58,237,.5)); }
-    .lp-head { text-align: center; }
-    .lp-title { font-family: 'Inter', sans-serif; font-size: clamp(1.5rem,4vw,2.2rem); font-weight: 800; letter-spacing: -.02em; color: #fff; margin-bottom: 8px; }
-    .lp-sub { font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.4); }
-    .lp-cards { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-    .lp-card {
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
-      padding: 32px 48px; border-radius: 20px; cursor: pointer;
-      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.09);
-      color: #fff; transition: all .3s ease;
-    }
-    .lp-card:hover { border-color: rgba(124,58,237,.55); background: rgba(124,58,237,.1); transform: translateY(-6px); box-shadow: 0 20px 50px rgba(124,58,237,.2); }
-    .lp-card:focus { outline: 2px solid #8b5cf6; outline-offset: 4px; }
-    .lp-flag { width: 72px; height: 48px; border-radius: 6px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,.6); flex-shrink: 0; }
-    .lp-flag svg { width: 100%; height: 100%; display: block; }
-    .lp-lang { font-size: 1rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.85); }
-    @media (max-width: 480px) { .lp-card { padding: 24px 32px; } .lp-cards { gap: 14px; } }
-
     /* ── SMOKE CANVAS ─────────────────────────────────────── */
     #smoke-bg {
       position: fixed; inset: 0; z-index: 1990;
@@ -1024,7 +951,7 @@
     }
     @keyframes smokeIn { to { opacity: .72; } }
 
-    /* ── INTRO BLACK BG (sub smoke, deasupra paginii) ─────── */
+    /* ── INTRO BLACK BG ─────── */
     #intro-black-bg {
       position: fixed; inset: 0; z-index: 1985;
       background: #0a0a0f; pointer-events: none;
@@ -1069,29 +996,6 @@
 </head>
 <body class="intro-active">
 
-<!-- ══ LANG PICKER ════════════════════════════════════════════ -->
-<div id="lang-picker" role="dialog" aria-modal="true" aria-label="Alege limba">
-  <img src="../logo-crop.png" alt="All In Media" class="lp-logo" onerror="this.style.display='none'">
-  <div class="lp-head">
-    <div class="lp-title">All In Media</div>
-    <p class="lp-sub">Alege Limba / Select Language</p>
-  </div>
-  <div class="lp-cards">
-    <div class="lp-card" onclick="selectLang('ro')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')selectLang('ro')">
-      <div class="lp-flag">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002B7F"/><rect x="1" width="1" height="2" fill="#FCD116"/><rect x="2" width="1" height="2" fill="#CE1126"/></svg>
-      </div>
-      <span class="lp-lang">Română</span>
-    </div>
-    <div class="lp-card" onclick="selectLang('en')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')selectLang('en')">
-      <div class="lp-flag">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4"/><path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/></svg>
-      </div>
-      <span class="lp-lang">English</span>
-    </div>
-  </div>
-</div>
-
 <div id="intro-black-bg" aria-hidden="true"></div>
 <canvas id="smoke-bg" aria-hidden="true"></canvas>
 
@@ -1113,14 +1017,12 @@
 
 <!-- ══ HEADER ══════════════════════════════════════════════════ -->
 <header class="header" id="header">
-  <a class="logo" href="#" aria-label="All In Media">
-    <div class="logo-crop">
-      <img src="../logo.png" alt="All In Media" class="logo-img" />
-    </div>
-  </a>
-
   <div class="header-inner">
-    <div class="logo-spacer"></div>
+    <a class="logo" href="#" aria-label="All In Media">
+      <div class="logo-crop">
+        <img src="../logo.png" alt="All In Media" class="logo-img" />
+      </div>
+    </a>
 
     <nav class="nav" aria-label="Main">
       <a href="#videoclipuri" data-nav="videoclipuri">Videos</a>
@@ -1131,11 +1033,17 @@
     </nav>
 
     <div class="header-right">
-      <button class="btn-lang" onclick="switchLang()" title="Switch to Romanian">
-        <span class="lang-flag">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><rect width="1" height="2" fill="#002B7F"/><rect x="1" width="1" height="2" fill="#FCD116"/><rect x="2" width="1" height="2" fill="#CE1126"/></svg>
+      <button class="btn-lang" onclick="switchLang()" title="Switch language">
+        <span class="lang-flag lang-flag--en">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+            <rect width="60" height="30" fill="#012169"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4"/>
+            <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/>
+            <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/>
+          </svg>
         </span>
-        <span class="lang-label">RO</span>
+        <span class="lang-label">EN / RO</span>
       </button>
       <button class="btn-contact" onclick="openContactForm()">Contact</button>
       <button class="btn-hamburger" id="hamburger" type="button" aria-label="Menu">
@@ -1160,31 +1068,28 @@
     <video class="hero-video" src="../video-site-final.mp4" autoplay muted loop playsinline></video>
     <div class="hero-gradient"></div>
     <div class="hero-content">
-      <p class="hero-tag">All In Media · Marketing Agency</p>
-      <h1>We Grow.<br>We Scale.<br>We Dominate.</h1>
+      <h1>We grow.<br>We scale.<br>We dominate.</h1>
       <p class="hero-desc">Digital marketing that transforms brands into market leaders.</p>
       <div class="hero-cta">
-        <a class="btn-primary" href="#videoclipuri">Launch Your Brand <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn-primary" href="#videoclipuri">Launch your brand <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ 01 VIDEOCLIPURI PREMIUM ═════════════════════════════════ -->
+<!-- ══ 01 PREMIUM VIDEOS ════════════════════════════════════════ -->
 <div class="section-sep"></div>
 
 <section class="mask-section mask-left" id="videoclipuri">
 
-  <!-- Ghost mask — absolutely on the LEFT edge -->
   <div class="s-mask-abs">
     <img src="../frag-ochi-stang.webp" class="s-frag-blur" aria-hidden="true" />
     <img src="../frag-ochi-stang.webp" class="s-frag-sharp" aria-hidden="true" />
   </div>
 
-  <!-- Centered content -->
   <div class="s-content-wrap">
-    <span class="s-eyebrow reveal" style="--d:60ms">01 — PREMIUM VIDEO CONTENT</span>
-    <h2 class="s-title reveal" style="--d:120ms">Editing that stops<br>the scroll.</h2>
+    <span class="s-eyebrow reveal" style="--d:60ms">01 — PREMIUM VIDEOS</span>
+    <h2 class="s-title reveal" style="--d:120ms">Editing that stops the thumb.</h2>
     <p class="s-subtitle reveal" style="--d:180ms">Content. Pure.</p>
 
     <div class="vp-iphone-carousel reveal" style="--d:260ms">
@@ -1211,29 +1116,27 @@
     </div>
   </div>
 
-  <!-- Results grid — in flow below content -->
   <div class="vp-results">
     <span class="vp-results-label reveal">OUR RESULTS</span>
     <div class="vp-results-grid">
       <div class="vp-result-card reveal" style="--d:60ms">
-        <img src="../assets/rezultat-1.png" alt="Rezultat 1" loading="lazy" />
+        <img src="../assets/rezultat-1.png" alt="Result 1" loading="lazy" />
       </div>
       <div class="vp-result-card reveal" style="--d:160ms">
-        <img src="../assets/rezultat-2.png" alt="Rezultat 2" loading="lazy" />
+        <img src="../assets/rezultat-2.png" alt="Result 2" loading="lazy" />
       </div>
       <div class="vp-result-card reveal" style="--d:260ms">
-        <img src="../assets/rezultat-3.png" alt="Rezultat 3" loading="lazy" />
+        <img src="../assets/rezultat-3.png" alt="Result 3" loading="lazy" />
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ 02 PERFORMANCE ADS ══════════════════════════════════════ -->
+<!-- ══ 02 PERFORMANCE ADS ═══════════════════════════════════════ -->
 <div class="section-sep"></div>
 
 <section class="mask-section mask-right" id="ads" style="content-visibility:auto;contain-intrinsic-size:0 900px;">
 
-  <!-- Ghost mask — absolutely on the RIGHT edge -->
   <div class="s-mask-abs">
     <img src="../frag-ochi-drept.webp" class="s-frag-blur" aria-hidden="true" />
     <img src="../frag-ochi-drept.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-2.3s;" />
@@ -1241,7 +1144,7 @@
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:60ms">02 — PERFORMANCE ADS</span>
-    <h2 class="s-title reveal" style="--d:120ms">Turn profitable<br>from month one.</h2>
+    <h2 class="s-title reveal" style="--d:120ms">Profitable from the first month.</h2>
     <p class="s-subtitle reveal" style="--d:180ms">Profit. Ruthless.</p>
 
     <div class="stats-row reveal" style="--d:260ms">
@@ -1249,12 +1152,12 @@
         <div class="stat-number">
           <span class="stat-digit">3</span><span class="stat-sep">-</span><span class="stat-digit">5</span>
         </div>
-        <span class="stat-unit">RON / lead</span>
+        <span class="stat-unit">lei / lead</span>
         <p class="stat-desc">cost per lead — Meta &amp; Google campaigns</p>
       </div>
       <div class="stat-block stat-block--highlight">
         <div class="stat-number">0.05</div>
-        <span class="stat-unit">RON / interaction</span>
+        <span class="stat-unit">lei / interaction</span>
         <p class="stat-desc">marked "High Performing" by Meta Ads</p>
       </div>
     </div>
@@ -1263,7 +1166,7 @@
       <span class="screenshot-label">META ADS — REAL DATA · FEB–MAR 2026</span>
       <div class="meta-screenshot-scroll" id="metaScroll">
         <div class="meta-inner">
-          <img src="../assets/meta-ads-results.jpg" alt="Meta Ads rezultate reale" loading="lazy" draggable="false" />
+          <img src="../assets/meta-ads-results.jpg" alt="Meta Ads real results" loading="lazy" draggable="false" />
           <div class="row-highlight" style="top:110px;height:35px;"></div>
         </div>
       </div>
@@ -1272,12 +1175,11 @@
   </div>
 </section>
 
-<!-- ══ 03 WEB DESIGN ═══════════════════════════════════════════ -->
+<!-- ══ 03 WEB DESIGN ════════════════════════════════════════════ -->
 <div class="section-sep"></div>
 
 <section class="mask-section mask-top" id="webdesign" style="content-visibility:auto;contain-intrinsic-size:0 900px;">
 
-  <!-- Ghost mask — absolutely at the TOP center -->
   <div class="s-mask-abs">
     <img src="../frag-nas.webp" class="s-frag-blur" aria-hidden="true" />
     <img src="../frag-nas.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-4.1s;" />
@@ -1285,7 +1187,7 @@
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:80ms">03 — WEB DESIGN + WEBSITES</span>
-    <h2 class="s-title reveal" style="--d:140ms">Websites that<br>sell.</h2>
+    <h2 class="s-title reveal" style="--d:140ms">Websites that sell.</h2>
     <p class="s-subtitle reveal" style="--d:200ms">Design. Hypnotic.</p>
 
     <div class="sites-grid reveal" style="--d:280ms">
@@ -1319,7 +1221,7 @@
     </div>
 
     <div class="portfolio-cta reveal" style="--d:380ms">
-      <span class="portfolio-cta-label">View full portfolio</span>
+      <span class="portfolio-cta-label">Check full portfolio</span>
       <div class="portfolio-cta-buttons">
         <a href="https://www.agentieseo.net/web-design/" target="_blank" rel="noopener" class="portfolio-btn">
           agentieseo.net <span class="portfolio-btn-arrow">→</span>
@@ -1332,12 +1234,11 @@
   </div>
 </section>
 
-<!-- ══ 04 SEO ══════════════════════════════════════════════════ -->
+<!-- ══ 04 SEO ════════════════════════════════════════════════════ -->
 <div class="section-sep"></div>
 
 <section class="mask-section mask-left" id="seo" style="content-visibility:auto;contain-intrinsic-size:0 900px;">
 
-  <!-- Ghost mask — absolutely on the LEFT edge -->
   <div class="s-mask-abs">
     <img src="../frag-gura-stanga.webp" class="s-frag-blur" aria-hidden="true" />
     <img src="../frag-gura-stanga.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-1.7s;" />
@@ -1345,7 +1246,7 @@
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:60ms">04 — SEO &amp; VISIBILITY</span>
-    <h2 class="s-title reveal" style="--d:120ms">Appear where<br>it matters.</h2>
+    <h2 class="s-title reveal" style="--d:120ms">Show up where it matters.</h2>
     <p class="s-subtitle reveal" style="--d:180ms">Traffic. Real.</p>
 
     <div class="single-site reveal" style="--d:240ms">
@@ -1359,12 +1260,6 @@
         </div>
       </a>
     </div>
-
-    <p class="s-desc reveal" style="--d:310ms">
-      We have access to advertorials in <strong>Forbes</strong>, <strong>ProTV</strong>,
-      <strong>Antena 3</strong>, <strong>Antena Stars</strong> and dozens of premium publications.
-      One article in the right place does more than 6 months of posts.
-    </p>
 
     <div class="media-marquee reveal" style="--d:380ms">
       <div class="media-marquee-track">
@@ -1395,12 +1290,11 @@
   </div>
 </section>
 
-<!-- ══ 05 AUTOMATIZĂRI ════════════════════════════════════════ -->
+<!-- ══ 05 BUSINESS AUTOMATION ══════════════════════════════════ -->
 <div class="section-sep"></div>
 
 <section class="mask-section mask-right" id="automatizari" style="content-visibility:auto;contain-intrinsic-size:0 900px;">
 
-  <!-- Ghost mask — absolutely on the RIGHT edge -->
   <div class="s-mask-abs">
     <img src="../frag-gura-dreapta.webp" class="s-frag-blur" aria-hidden="true" />
     <img src="../frag-gura-dreapta.webp" class="s-frag-sharp" aria-hidden="true" style="animation-delay:-3.2s;" />
@@ -1408,17 +1302,17 @@
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:60ms">05 — BUSINESS AUTOMATION</span>
-    <h2 class="s-title reveal" style="--d:120ms">Systems that<br>work for you.</h2>
+    <h2 class="s-title reveal" style="--d:120ms">Systems that work for you.</h2>
     <p class="s-subtitle reveal" style="--d:180ms">Processes. Smart.</p>
     <div class="auto-descs">
       <p class="s-desc reveal" style="--d:260ms">
         We connect <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>,
-        <strong>CRM</strong> and <strong>Google Sheets</strong> into one system that works 24/7.
-        A lead arriving at 3am gets a response in <strong>30 seconds</strong> — without lifting a finger.
+        <strong>CRM</strong> and <strong>Google Sheets</strong> into a single system that works 24/7.
+        A lead that comes in at 3 AM gets a reply in <strong>30 seconds</strong> — without you lifting a finger.
       </p>
       <p class="s-desc reveal" style="--d:360ms">
         Plus an <strong>AI voice agent</strong> that calls leads, answers calls, qualifies clients
-        and transfers only serious appointments to your calendar. Natural conversation, human voice, 24/7.
+        and transfers only serious meetings to your calendar. Natural conversation, human voice, 24/7.
       </p>
     </div>
   </div>
@@ -1466,21 +1360,21 @@
     <h2 class="cf-title">Contact Us</h2>
     <form class="cf-form" id="cfForm"
           action="https://formsubmit.co/cstwebexperience@gmail.com" method="POST">
-      <input type="hidden" name="_subject" value="New Inquiry — All In Media" />
+      <input type="hidden" name="_subject" value="New inquiry — All In Media" />
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_template" value="table" />
-      <input name="nume"    placeholder="Your name"    required />
+      <input name="name"    placeholder="Your name"    required />
       <input name="email"   type="email" placeholder="Email" required />
-      <input name="telefon" type="tel"   placeholder="Phone (optional)" />
-      <select name="serviciu">
-        <option value="" disabled selected>Choose desired service</option>
-        <option>Premium Video Content</option>
+      <input name="phone" type="tel"   placeholder="Phone (optional)" />
+      <select name="service">
+        <option value="" disabled selected>Choose a service</option>
+        <option>Premium Videos</option>
         <option>Performance Ads</option>
         <option>Web Design + Websites</option>
         <option>SEO + Google</option>
         <option>Business Automation</option>
       </select>
-      <textarea name="mesaj" placeholder="Your message (optional)" rows="3"></textarea>
+      <textarea name="message" placeholder="Your message (optional)" rows="3"></textarea>
       <button type="submit" class="cf-submit">Send message</button>
     </form>
   </div>
@@ -1488,24 +1382,12 @@
 
 <!-- ══ SCRIPTS ══════════════════════════════════════════════════ -->
 <script>
-/* ── LANG PICKER ── */
-(function(){
-  const picker = document.getElementById('lang-picker');
-  if (localStorage.getItem('aim-lang')) { picker.style.display = 'none'; return; }
-  document.body.style.overflow = 'hidden';
-})();
-function selectLang(lang) {
-  localStorage.setItem('aim-lang', lang);
-  const picker = document.getElementById('lang-picker');
-  picker.classList.add('hide');
-  if (lang === 'ro') {
-    setTimeout(() => window.location.href = '/', 600);
-  } else {
-    setTimeout(() => { picker.style.display = 'none'; document.body.style.overflow = ''; }, 600);
-  }
-}
+localStorage.setItem('aim-lang', 'en');
+
+/* ── LANG SWITCH ── */
 function switchLang() {
-  localStorage.setItem('aim-lang','ro'); window.location.href = '/';
+  localStorage.setItem('aim-lang', 'ro');
+  window.location.href = '/';
 }
 
 /* ── HEADER SCROLL ── */
@@ -1590,7 +1472,6 @@ document.addEventListener('click', e => {
     src += !/vq=/.test(src)         ? '&vq=hd1080&hd=1'  : '';
     src += !/autoplay=/.test(src)   ? '&autoplay=1'       : '';
     src += !/playsinline=/.test(src) ? '&playsinline=1'   : '';
-    // Ridica smoke-ul deasupra paginii ca sa se vada prin overlay
     const smk = document.getElementById('smoke-bg');
     if (smk) smk.style.zIndex = '299';
 
@@ -1631,7 +1512,6 @@ document.addEventListener('click', e => {
       if (ytPlayer && ytPlayer.destroy) { try { ytPlayer.destroy(); } catch(e) {} ytPlayer = null; }
       const f = zoomScreen.querySelector('iframe');
       if (f) { try { f.src = 'about:blank'; } catch(e) {} f.remove(); }
-      // Retrimite smoke-ul în spate
       const smk = document.getElementById('smoke-bg');
       if (smk) smk.style.zIndex = '-1';
     }, 450);
@@ -1714,7 +1594,6 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
 /* ── MASK ANIMATION: only animate visible sections ── */
 (function () {
   if (!('IntersectionObserver' in window)) {
-    // Fallback: just run all animations if IO not supported
     document.querySelectorAll('.s-frag-sharp').forEach(el => el.classList.add('anim-active'));
     return;
   }
@@ -1799,7 +1678,6 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
-  // Recuperare context WebGL pierdut (tab switch pe mobile)
   canvas.addEventListener('webglcontextlost', e => {
     e.preventDefault();
     if (raf) { cancelAnimationFrame(raf); raf = null; }
@@ -1812,7 +1690,7 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
     if (document.hidden) {
       if (raf) { cancelAnimationFrame(raf); raf = null; }
     } else if (!raf) {
-      if (gl && gl.isContextLost()) return; // asteapta webglcontextrestored
+      if (gl && gl.isContextLost()) return;
       requestAnimationFrame(render);
     }
   });
@@ -1841,7 +1719,6 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
 
   t1.textContent = words[idx];
   t2.textContent = words[(idx + 1) % words.length];
-  // Prevent flash of t1 before first frame
   t1.style.opacity = '0%';
   t2.style.opacity = '100%';
 
@@ -1909,7 +1786,6 @@ document.getElementById('cfOverlay').addEventListener('click', e => {
 
   requestAnimationFrame(tick);
 
-  // Tap/click to skip
   splash.addEventListener('pointerdown', exit, { once: true });
 })();
 </script>
