@@ -1477,20 +1477,21 @@ document.addEventListener('click', e => {
 });
 
 /* ── NAV SLIDE INDICATOR ── */
-var navSlide = document.getElementById('navSlide');
-var navEl    = document.querySelector('.nav');
-function moveSlide(el) {
-  if (!navSlide || !navEl || !el) return;
-  var nr = navEl.getBoundingClientRect(), er = el.getBoundingClientRect();
-  navSlide.style.left    = (er.left - nr.left) + 'px';
-  navSlide.style.width   = er.width + 'px';
-  navSlide.style.opacity = '1';
-}
-function restoreSlide() {
-  var active = navEl && navEl.querySelector('a.active');
-  if (active) moveSlide(active);
-  else if (navSlide) navSlide.style.opacity = '0';
-}
+(function () {
+  var slide = document.getElementById('navSlide');
+  var nav   = document.querySelector('.nav');
+  if (!slide || !nav) return;
+  function moveSlide(el) {
+    var nr = nav.getBoundingClientRect(), er = el.getBoundingClientRect();
+    slide.style.left    = (er.left - nr.left) + 'px';
+    slide.style.width   = er.width + 'px';
+    slide.style.opacity = '1';
+  }
+  nav.querySelectorAll('a[data-nav]').forEach(a => {
+    a.addEventListener('mouseenter', () => moveSlide(a));
+  });
+  nav.addEventListener('mouseleave', () => { slide.style.opacity = '0'; });
+})();
 
 /* ── ACTIVE NAV ON SCROLL ── */
 (function () {
@@ -1498,17 +1499,11 @@ function restoreSlide() {
   const links    = document.querySelectorAll('.nav a[data-nav]');
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
+      if (e.isIntersecting)
         links.forEach(l => l.classList.toggle('active', l.dataset.nav === e.target.id));
-        restoreSlide();
-      }
     });
   }, { threshold: 0.3 });
   sections.forEach(id => { const el = document.getElementById(id); if (el) io.observe(el); });
-  links.forEach(a => {
-    a.addEventListener('mouseenter', () => moveSlide(a));
-    a.addEventListener('mouseleave', restoreSlide);
-  });
 })();
 
 /* ── SCROLL REVEAL ── */
