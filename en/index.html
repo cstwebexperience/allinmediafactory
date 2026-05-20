@@ -123,15 +123,38 @@
 
     .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-    .btn-lang {
-      display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 12px;
-      border-radius: 100px; border: 1px solid var(--border); background: transparent;
-      font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;
-      transition: all 200ms;
+    .lang-switcher {
+      position: relative; display: inline-flex; align-items: center;
+      height: 36px; padding: 3px; border-radius: 100px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,10,.55);
+      backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      box-shadow: inset 0 0 10px rgba(0,0,0,.18),
+                  inset 0 1px 0 rgba(255,255,255,.06),
+                  0 4px 16px rgba(0,0,0,.28),
+                  0 0 0 0.5px rgba(255,255,255,.04);
+      overflow: hidden;
     }
-    .btn-lang:hover { border-color: var(--border-h); color: var(--text); background: rgba(255,255,255,.05); }
-    .btn-lang .lang-flag { width: 18px; height: 12px; border-radius: 2px; overflow: hidden; flex-shrink: 0; }
-    .btn-lang .lang-flag svg { width: 100%; height: 100%; display: block; }
+    .lang-indicator {
+      position: absolute; top: 3px; left: 3px;
+      width: 36px; height: 30px; border-radius: 100px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      border: 1px solid rgba(167,139,250,.35);
+      box-shadow: 0 0 18px rgba(124,58,237,.5), inset 0 1px 0 rgba(255,255,255,.18);
+      transition: transform 420ms cubic-bezier(.16,1,.3,1);
+      pointer-events: none;
+    }
+    .lang-switcher[data-active="en"] .lang-indicator { transform: translateX(36px); }
+    .lang-opt {
+      position: relative; z-index: 1; width: 36px; height: 30px;
+      border: none; background: transparent; cursor: pointer;
+      font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+      color: rgba(255,255,255,.38); transition: color 250ms; border-radius: 100px; padding: 0;
+    }
+    .lang-switcher[data-active="ro"] #langOptRO,
+    .lang-switcher[data-active="en"] #langOptEN { color: #fff; }
+    .lang-opt:hover { color: rgba(255,255,255,.75); }
 
     .btn-contact {
       display: inline-flex; align-items: center; height: 36px; padding: 0 18px;
@@ -1081,18 +1104,11 @@
     </nav>
 
     <div class="header-right">
-      <button class="btn-lang" onclick="switchLang()" title="Switch language">
-        <span class="lang-flag lang-flag--en">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-            <rect width="60" height="30" fill="#012169"/>
-            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4"/>
-            <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/>
-            <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/>
-          </svg>
-        </span>
-        <span class="lang-label">EN / RO</span>
-      </button>
+      <div class="lang-switcher" data-active="en">
+        <div class="lang-indicator"></div>
+        <button class="lang-opt" id="langOptRO" onclick="setLang('ro')">RO</button>
+        <button class="lang-opt" id="langOptEN" onclick="setLang('en')">EN</button>
+      </div>
       <button class="btn-contact" onclick="openContactForm()">Contact</button>
       <button class="btn-hamburger" id="hamburger" type="button" aria-label="Menu">
         <span></span><span></span>
@@ -1433,7 +1449,8 @@
 localStorage.setItem('aim-lang', 'en');
 
 /* ── LANG SWITCH ── */
-function switchLang() {
+function setLang(lang) {
+  if (lang === 'en') return;
   localStorage.setItem('aim-lang', 'ro');
   window.location.href = '/';
 }
