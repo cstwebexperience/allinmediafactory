@@ -861,7 +861,7 @@
     @media (min-width: 1920px) {
       .hero { padding: 100px 24px 24px; }
       .hero-video-wrap { max-width: min(94vw, 2400px); max-height: 90vh; border-radius: 44px; }
-      .s-content-wrap { max-width: 1560px; }
+      .s-content-wrap { max-width: 1560px; }
       .header-inner { max-width: 1560px; }
     }
     @media (min-width: 1600px) {
@@ -870,7 +870,7 @@
       .s-subtitle { font-size: 74px; }
       .s-eyebrow { font-size: 21px; }
       .s-desc { font-size: 18px; max-width: 640px; }
-      .s-content-wrap { max-width: 1320px; }
+      .s-content-wrap { max-width: 1320px; }
       .bottom-cta-title { font-size: 92px; }
       .bottom-cta-eyebrow { font-size: 13px; }
       .stat-number { font-size: 78px; }
@@ -889,7 +889,7 @@
 
     /* ── RESPONSIVE ────────────────────────────────────────── */
     @media (max-width: 1024px) {
-      .sites-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
+      .sites-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
     }
     @media (max-width: 900px) {
       .nav { display: none; }
@@ -1058,7 +1058,7 @@
       .vp-results-grid { grid-template-columns: 1fr 1fr !important; gap: 6px; }
       /* Stat number si mai mic */
       .stat-number { font-size: clamp(24px,6.5vw,32px) !important; }
-    }
+    }
 
     .skip-nav{position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;}.skip-nav:focus{position:fixed;top:0;left:0;width:auto;height:auto;padding:8px 16px;background:var(--purple);color:#fff;font-weight:700;font-size:14px;z-index:9999;border-radius:0 0 8px 0;text-decoration:none;outline:none;}
 
@@ -1066,6 +1066,34 @@
       .header-inner { backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(8,8,10,.97) !important; }
       .lang-switcher { backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(10,10,10,.97); }
     }
+    .site-footer { background:#060608; border-top:1px solid rgba(255,255,255,.07); padding:56px clamp(20px,5vw,72px) 0; }
+    .footer-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:48px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,.06); }
+    .footer-logo-img { height:24px; width:auto; margin-bottom:14px; display:block; filter:brightness(.9); }
+    .footer-tagline { font-size:12px; color:rgba(245,240,235,.38); line-height:1.6; margin-bottom:20px; }
+    .footer-contact a { display:block; font-size:13px; color:rgba(245,240,235,.55); margin-bottom:6px; transition:color .2s; }
+    .footer-contact a:hover { color:var(--text); }
+    .footer-col-title { font-size:10px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:rgba(167,139,250,.6); margin-bottom:16px; }
+    .footer-legal-data p { font-size:12px; color:rgba(245,240,235,.4); line-height:1.8; }
+    .footer-nav-links { display:flex; flex-direction:column; gap:10px; }
+    .footer-nav-links a { font-size:13px; color:rgba(245,240,235,.5); transition:color .2s; }
+    .footer-nav-links a:hover { color:var(--text); }
+    .footer-bottom { max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding:20px 0 24px; }
+    .footer-copy { font-size:11px; color:rgba(245,240,235,.28); }
+    .footer-anpc { display:flex; align-items:center; gap:16px; }
+    .footer-anpc a { font-size:11px; color:rgba(245,240,235,.28); transition:color .2s; }
+    .footer-anpc a:hover { color:rgba(245,240,235,.6); }
+    @media (max-width:860px) { .footer-inner { grid-template-columns:1fr 1fr; } .footer-brand { grid-column:1 / -1; } }
+    @media (max-width:540px) { .footer-inner { grid-template-columns:1fr; gap:32px; } .footer-bottom { flex-direction:column; align-items:flex-start; gap:8px; } }
+    #cookie-banner { position:fixed; bottom:0; left:0; right:0; z-index:500; background:rgba(12,10,18,.97); border-top:1px solid rgba(124,58,237,.25); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); padding:20px clamp(20px,5vw,72px); display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; transform:translateY(100%); transition:transform .4s cubic-bezier(.65,0,.35,1); }
+    #cookie-banner.visible { transform:translateY(0); }
+    .cookie-text { font-size:13px; color:rgba(245,240,235,.65); line-height:1.6; max-width:640px; }
+    .cookie-text a { color:rgba(167,139,250,.8); text-decoration:underline; text-underline-offset:3px; }
+    .cookie-btns { display:flex; gap:10px; flex-shrink:0; }
+    .cookie-btn-accept { background:var(--purple); color:#fff; border:none; cursor:pointer; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:600; font-family:inherit; transition:background .2s; }
+    .cookie-btn-accept:hover { background:var(--purple-h); }
+    .cookie-btn-decline { background:transparent; color:rgba(245,240,235,.5); border:1px solid rgba(255,255,255,.12); cursor:pointer; padding:10px 18px; border-radius:8px; font-size:13px; font-family:inherit; transition:border-color .2s,color .2s; }
+    .cookie-btn-decline:hover { border-color:rgba(255,255,255,.28); color:var(--text); }
+    @media (max-width:600px) { #cookie-banner { padding:16px 20px; } .cookie-btns { width:100%; } .cookie-btn-accept,.cookie-btn-decline { flex:1; text-align:center; } }
   </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"MarketingAgency","name":"All In Media","url":"https://allinmediafactory.com/ro/","logo":{"@type":"ImageObject","url":"https://allinmediafactory.com/logo.webp"},"description":"Agentie web design, SEO, reclame si automatizari business.","telephone":"+40743391581","contactPoint":{"@type":"ContactPoint","telephone":"+40743391581","contactType":"customer service","availableLanguage":["English","Romanian"]},"sameAs":["https://allinmediafactory.com"]}</script>
 </head>
@@ -1077,7 +1105,10 @@
 <header class="header" id="header">
   <div class="header-inner">
     <a class="logo" href="/ro/" aria-label="All In Media">
-      <img src="../logo-crop.png" alt="All In Media" class="logo-img" fetchpriority="high" width="1771" height="260" />
+      <picture>
+        <source srcset="../logo-crop.webp" type="image/webp" />
+        <img src="../logo-crop.png" alt="All In Media" class="logo-img" fetchpriority="high" width="1771" height="260" />
+      </picture>
     </a>
 
     <nav class="nav" aria-label="Main">
@@ -1115,7 +1146,7 @@
 <!-- ══ HERO ════════════════════════════════════════════════════ -->
 <section class="hero" id="main" aria-label="Hero section">
   <div class="hero-video-wrap">
-    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="../video-poster.jpg" src="../video-opt.mp4" width="1920" height="1080" aria-hidden="true"></video>
+    <video class="hero-video" id="heroVideo" muted loop playsinline preload="none" poster="../video-poster.jpg" width="1920" height="1080" aria-hidden="true"></video>
     <div class="hero-gradient"></div>
     <div class="hero-content">
       <h1>Creștem.<br>Scalăm.<br>Dominăm.</h1>
@@ -1355,17 +1386,72 @@
     <h2 class="bottom-cta-title reveal" style="--d:50ms">Gata să creștem<br>împreună?</h2>
     <div class="cta-icons-row reveal" style="--d:100ms">
       <button class="cta-icon-btn cta-icon-btn--contact" onclick="openContactForm()">
-        <img src="../clipboard-t.webp" alt="Trimite-ne un mesaj" aria-hidden="true" class="cta-icon-img" />
+        <img src="../clipboard-t.webp" alt="Trimite-ne un mesaj" aria-hidden="true" class="cta-icon-img" loading="lazy" decoding="async" />
         <span class="cta-icon-label">Trimite-ne un mesaj</span>
       </button>
       <a class="cta-icon-btn cta-icon-btn--wa" href="https://wa.me/40743391581" target="_blank" rel="noopener">
-        <img src="../whatsapp-t.webp" alt="WhatsApp" aria-hidden="true" class="cta-icon-img" />
+        <img src="../whatsapp-t.webp" alt="WhatsApp" aria-hidden="true" class="cta-icon-img" loading="lazy" decoding="async" />
         <span class="cta-icon-label">WhatsApp</span>
       </a>
     </div>
   </div>
 </section>
 
+
+<!-- ══ FOOTER ════════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <picture>
+        <source srcset="../logo-crop.webp" type="image/webp" />
+        <img src="../logo-crop.png" alt="All In Media" class="footer-logo-img" width="200" height="29" loading="lazy" />
+      </picture>
+      <p class="footer-tagline">Websites premium · SEO · Reclame · Automatizări</p>
+      <div class="footer-contact">
+        <a href="tel:+40743391581">+40 743 391 581</a>
+        <a href="mailto:contact@allinmediafactory.com">contact@allinmediafactory.com</a>
+        <a href="https://allinmediafactory.com">allinmediafactory.com</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Date legale</p>
+      <div class="footer-legal-data">
+        <p>ALL IN MEDIA FACTORY SRL</p>
+        <p>CUI: 52601410</p>
+        <p>J2025074552006</p>
+        <p>Bdul. Libertății Bl. 12B Sc. A<br>Et. 4 Ap. 19, Pitești, Argeș</p>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Legal</p>
+      <nav class="footer-nav-links" aria-label="Linkuri legale">
+        <a href="/privacy/">Politică de Confidențialitate</a>
+        <a href="/cookies/">Politică de Cookie-uri</a>
+        <a href="/terms/">Termeni și Condiții</a>
+        <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener">ANPC – SAL</a>
+        <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">Platforma SOL</a>
+      </nav>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025 ALL IN MEDIA FACTORY SRL. Toate drepturile rezervate.</p>
+    <div class="footer-anpc">
+      <a href="/privacy/">Politică de confidențialitate</a>
+      <a href="/cookies/">Politică cookies</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ COOKIE BANNER ═════════════════════════════════════════════ -->
+<div id="cookie-banner" role="region" aria-label="Consimțământ cookie-uri">
+  <p class="cookie-text">
+    Folosim cookie-uri strict necesare pentru funcționarea site-ului (preferința de limbă). Trimițând formularul de contact, acceptați prelucrarea datelor conform <a href="/privacy/">Politicii de Confidențialitate</a> și <a href="/cookies/">Politicii de Cookie-uri</a>.
+  </p>
+  <div class="cookie-btns">
+    <button class="cookie-btn-accept" id="cookieAccept">Accept</button>
+    <button class="cookie-btn-decline" id="cookieDecline">Închide</button>
+  </div>
+</div>
 
 <!-- ══ PHONE ZOOM OVERLAY ══════════════════════════════════════ -->
 <div id="phone-zoom-overlay" aria-modal="true" role="dialog" aria-hidden="true">
@@ -1422,6 +1508,37 @@
       (e.ctrlKey && 'uUsS'.includes(e.key))
     ) { e.preventDefault(); e.stopPropagation(); return false; }
   });
+})();
+
+/* ── HERO VIDEO DEFERRED LOAD ── */
+(function () {
+  function loadHeroVideo() {
+    var v = document.getElementById('heroVideo');
+    if (!v) return;
+    v.src = '../video-opt.mp4';
+    v.play().catch(function () {});
+  }
+  if (document.readyState === 'complete') {
+    loadHeroVideo();
+  } else {
+    window.addEventListener('load', loadHeroVideo, { once: true });
+  }
+})();
+
+/* ── COOKIE BANNER ── */
+(function () {
+  var consent = localStorage.getItem('aim-cookie-consent');
+  if (consent) return;
+  var banner = document.getElementById('cookie-banner');
+  if (!banner) return;
+  setTimeout(function () { banner.classList.add('visible'); }, 800);
+  function dismiss(val) {
+    localStorage.setItem('aim-cookie-consent', val);
+    banner.classList.remove('visible');
+    setTimeout(function () { banner.remove(); }, 450);
+  }
+  document.getElementById('cookieAccept').addEventListener('click', function () { dismiss('accepted'); });
+  document.getElementById('cookieDecline').addEventListener('click', function () { dismiss('declined'); });
 })();
 
 /* ── LANG SWITCH ── */

@@ -4,7 +4,10 @@
   "framework": null,
   "redirects": [
     { "source": "/en", "destination": "/", "permanent": true },
-    { "source": "/en/", "destination": "/", "permanent": true }
+    { "source": "/en/", "destination": "/", "permanent": true },
+    { "source": "/privacy", "destination": "/privacy/", "permanent": true },
+    { "source": "/cookies", "destination": "/cookies/", "permanent": true },
+    { "source": "/terms", "destination": "/terms/", "permanent": true }
   ],
   "headers": [
     {
