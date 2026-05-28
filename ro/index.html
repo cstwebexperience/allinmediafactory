@@ -20,6 +20,9 @@
   <meta name="twitter:title" content="All In Media – Agentie Web Design & SEO" />
   <meta name="twitter:description" content="Web design premium, SEO si marketing digital care transforma branduri in lideri de piata." />
   <meta name="twitter:image" content="https://allinmediafactory.com/logo.webp" />
+  <link rel="dns-prefetch" href="https://formsubmit.co" />
+  <link rel="dns-prefetch" href="https://s.wordpress.com" />
+  <link rel="dns-prefetch" href="https://i.ytimg.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -206,13 +209,6 @@
     .hero-content {
       position: absolute; bottom: 0; left: 0; right: 0;
       padding: clamp(28px,5vw,56px); z-index: 2;
-    }
-    .hero-tag {
-      display: inline-flex; align-items: center; gap: 8px;
-      margin-bottom: 16px; padding: 6px 14px; border-radius: 999px;
-      background: rgba(255,255,255,.10); backdrop-filter: blur(12px);
-      color: rgba(196,165,255,.85); font-size: 12px; font-weight: 600;
-      letter-spacing: .05em; text-transform: uppercase;
     }
     .hero-content h1 {
       font-size: clamp(38px,6.2vw,80px); font-weight: 900;
@@ -662,7 +658,6 @@
       width: 1px; height: clamp(60px,8vw,100px);
       background: linear-gradient(to bottom,transparent,rgba(124,58,237,.5));
     }
-    .bottom-cta::after { display: none; }
     .bottom-cta-inner { position: relative; z-index: 1; width: 100%; }
     .bottom-cta-eyebrow {
       font-size: 11px; font-weight: 600; letter-spacing: .35em;
@@ -900,7 +895,6 @@
     @media (max-width: 768px) {
       .header { padding: 10px 12px; }
       .header.is-scrolled { padding: 8px 12px; }
-      .logo { left: 0; }
       .logo-img { height: 26px; }
       .btn-contact { display: none; }
 
@@ -917,9 +911,6 @@
         padding: 72px 20px 56px;
         contain: layout style;
       }
-      /* Hide hero badge — redundant on small screens */
-      .hero-tag { display: none; }
-
       /* ── IPHONE MOBIL — 3 in rand, no scroll ── */
       .vp-iphone-track {
         gap: 10px;
@@ -1010,8 +1001,6 @@
       .section-sep { height: 44px; }
 
       /* Vp-section padding top ca sa nu bage sub header */
-      .vp-section { padding-top: 80px; }
-
       /* Stats row: sigur 2 coloane */
       .stats-row { grid-template-columns: 1fr 1fr !important; gap: 10px; }
 
@@ -1052,8 +1041,9 @@
       .s-content-wrap { padding-bottom: 32px; }
       .siri-voice-btn { width: 160px; height: 160px; }
 
-      /* Hero content: text mai mic pe telefon foarte ingust */
-      .hero-title { font-size: clamp(36px,10vw,56px); }
+      /* Stop GPU animations — cel mai mare castig de performanta pe mobile */
+      .siri-orb-el::before, .siri-orb-el { animation: none !important; will-change: auto; }
+      .media-marquee-track { will-change: auto; }
     }
     @media screen and (max-width: 420px) {
       /* Pe telefoane foarte mici: 2 coloane inca pentru grid */
@@ -1110,7 +1100,7 @@
     <a class="logo" href="/ro/" aria-label="All In Media">
       <picture>
         <source srcset="../logo-crop.webp" type="image/webp" />
-        <img src="../logo-crop.png" alt="All In Media" class="logo-img" fetchpriority="high" width="1771" height="260" />
+        <img src="../logo-crop.png" alt="All In Media" class="logo-img" fetchpriority="high" decoding="async" width="1771" height="260" />
       </picture>
     </a>
 
