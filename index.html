@@ -1047,7 +1047,7 @@
     #warp-bg {
       position: fixed; inset: 0; z-index: -1;
       width: 100%; height: 100%;
-      pointer-events: none;
+      pointer-events: none; opacity: .85;
     }
   </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"MarketingAgency","name":"All In Media","url":"https://allinmediafactory.com/","logo":{"@type":"ImageObject","url":"https://allinmediafactory.com/logo.webp"},"description":"Web design, SEO, performance ads and business automation agency.","telephone":"+40743391581","contactPoint":{"@type":"ContactPoint","telephone":"+40743391581","contactType":"customer service","availableLanguage":["English","Romanian"]},"sameAs":["https://allinmediafactory.com"]}</script>
@@ -1644,44 +1644,145 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   audio.addEventListener('pause', setStopped);
   audio.addEventListener('ended', setStopped);
 })();
-</script>
 
-<script type="module">
-(async function() {
-  try {
-    const { Warp } = await import('https://esm.sh/@paper-design/shaders@latest');
-    const canvas = document.getElementById('warp-bg');
-    if (!canvas) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const warp = new Warp({
-      canvas,
-      proportion: 0.45,
-      softness: 1,
-      distortion: 0.22,
-      swirl: 0.75,
-      swirlIterations: 10,
-      shape: 'checks',
-      shapeScale: 0.11,
-      scale: 1,
-      rotation: 0,
-      speed: 0.6,
-      colors: [
-        'hsl(263, 62%, 8%)',
-        'hsl(263, 72%, 32%)',
-        'hsl(263, 80%, 52%)',
-        'hsl(272, 68%, 72%)'
-      ],
-      pixelRatio: dpr
-    });
-    warp.play();
-    window.addEventListener('resize', () => {
-      if (warp.setSize) warp.setSize(window.innerWidth, window.innerHeight);
-    }, { passive: true });
-    document.addEventListener('visibilitychange', () => {
-      document.hidden ? warp.pause() : warp.play();
-    });
-  } catch(e) { console.warn('Warp shader:', e); }
+/* ── WARP SHADER BACKGROUND ── */
+(function () {
+  var canvas = document.getElementById('warp-bg');
+  if (!canvas) return;
+
+  var VERT = [
+    '#version 300 es',
+    'precision highp float;',
+    'in vec4 position;',
+    'void main(){gl_Position=position;}'
+  ].join('
+');
+
+  var FRAG = [
+    '#version 300 es',
+    'precision highp float;',
+    'out vec4 O;',
+    'uniform float time;',
+    'uniform vec2 res;',
+    'uniform vec3 c1,c2,c3,c4;',
+    '#define T time',
+    '#define R res',
+    'float hash(vec2 p){p=fract(p*vec2(127.1,311.7));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
+    'float smooth_check(vec2 p,float sc){',
+    '  vec2 g=floor(p*sc);',
+    '  float chk=mod(g.x+g.y,2.0);',
+    '  vec2 f=fract(p*sc);',
+    '  float soft=min(min(f.x,1.-f.x),min(f.y,1.-f.y));',
+    '  return mix(chk,1.-chk,smoothstep(0.45,0.55,soft));',
+    '}',
+    'void main(){',
+    '  vec2 uv=gl_FragCoord.xy/R;',
+    '  float asp=R.x/R.y;',
+    '  vec2 p=(uv*2.-1.)*vec2(asp,1.);',
+    '  float t=T*0.5;',
+    '  vec2 q=p;',
+    '  for(int i=0;i<5;i++){',
+    '    float fi=float(i)+1.;',
+    '    q+=0.28/fi*vec2(',
+    '      sin(fi*1.9+t*0.7+q.y*2.1+q.x*0.8),',
+    '      cos(fi*1.4+t*0.6+q.x*2.1-q.y*0.7)',
+    '    );',
+    '  }',
+    '  float sc=7.0;',
+    '  float chk=smooth_check(q,sc);',
+    '  float r=length(p);',
+    '  float b1=sin(r*2.5-t*1.1)*0.5+0.5;',
+    '  float b2=cos(q.x*1.8+t*0.8)*0.5+0.5;',
+    '  float b3=sin(q.y*2.2-t*0.6)*0.5+0.5;',
+    '  vec3 col=mix(c1,c2,chk);',
+    '  col=mix(col,c3,b1*0.55);',
+    '  col=mix(col,c4,b2*0.35);',
+    '  col=mix(col,c1,b3*0.25);',
+    '  col=mix(col,vec3(0.04,0.02,0.08),smoothstep(0.6,1.4,r));',
+    '  O=vec4(clamp(col,0.,1.),1.);',
+    '}'
+  ].join('
+');
+
+  // Purple brand colors: dark → medium → brand purple → lavender
+  var C = {
+    c1: [0.05, 0.02, 0.12],   // hsl(270,72%,8%)  very dark purple
+    c2: [0.30, 0.10, 0.60],   // hsl(270,72%,35%) medium purple
+    c3: [0.49, 0.23, 0.93],   // hsl(263,80%,58%) brand #7c3aed
+    c4: [0.65, 0.52, 0.98]    // hsl(265,70%,75%) lavender
+  };
+
+  var gl, prog, uRes, uTime, uC1, uC2, uC3, uC4, raf = null;
+
+  function setup() {
+    gl = canvas.getContext('webgl2', { powerPreference: 'low-power', antialias: false, alpha: false });
+    if (!gl) { canvas.remove(); return false; }
+    function mk(t, s) {
+      var sh = gl.createShader(t);
+      gl.shaderSource(sh, s); gl.compileShader(sh); return sh;
+    }
+    prog = gl.createProgram();
+    gl.attachShader(prog, mk(gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, mk(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.warn('Warp shader error:', gl.getProgramInfoLog(prog));
+      canvas.remove(); return false;
+    }
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,1,-1,-1,1,1,1,-1]), gl.STATIC_DRAW);
+    var pos = gl.getAttribLocation(prog, 'position');
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+    uRes  = gl.getUniformLocation(prog, 'res');
+    uTime = gl.getUniformLocation(prog, 'time');
+    uC1   = gl.getUniformLocation(prog, 'c1');
+    uC2   = gl.getUniformLocation(prog, 'c2');
+    uC3   = gl.getUniformLocation(prog, 'c3');
+    uC4   = gl.getUniformLocation(prog, 'c4');
+    return true;
+  }
+
+  function resize() {
+    if (!gl) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width  = Math.round(window.innerWidth  * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+
+  function render(now) {
+    if (document.hidden || !gl || gl.isContextLost()) { raf = null; return; }
+    raf = requestAnimationFrame(render);
+    gl.useProgram(prog);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, now * 1e-3);
+    gl.uniform3fv(uC1, C.c1);
+    gl.uniform3fv(uC2, C.c2);
+    gl.uniform3fv(uC3, C.c3);
+    gl.uniform3fv(uC4, C.c4);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  canvas.addEventListener('webglcontextlost', function(e) {
+    e.preventDefault();
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+  }, false);
+  canvas.addEventListener('webglcontextrestored', function() {
+    if (setup()) { resize(); if (!document.hidden) requestAnimationFrame(render); }
+  }, false);
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+    else if (!raf) { if (!gl || gl.isContextLost()) return; requestAnimationFrame(render); }
+  });
+  window.addEventListener('resize', resize, { passive: true });
+
+  if (!setup()) return;
+  resize();
+  requestAnimationFrame(render);
 })();
 </script>
+
 </body>
 </html>
