@@ -77,9 +77,12 @@
     .logo {
       display: flex; align-items: center; flex-shrink: 0;
     }
-    .logo-img {
-      height: 140px; width: auto; display: block;
-      margin-top: 12px;
+    .logo-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 19px; font-weight: 900;
+      color: #fff; letter-spacing: .06em;
+      text-transform: uppercase; white-space: nowrap;
+      line-height: 1; text-decoration: none;
     }
 
     .header-inner {
@@ -909,7 +912,6 @@
       .header { padding: 10px 12px; }
       .header.is-scrolled { padding: 8px 12px; }
       .logo { left: 0; }
-      .logo-img { height: 84px; margin-top: 4px; }
       .btn-contact { display: none; }
 
       .hero { padding: 72px 10px 10px; }
@@ -982,7 +984,6 @@
       .single-site { max-width: 100%; }
     }
     @media (max-width: 480px) {
-      .logo-crop { width: 36px; height: 36px; }
       .hero-video-wrap { border-radius: 18px; }
       .vp-results-grid { grid-template-columns: 1fr; }
       .overlay-close { top: 1rem; right: 1rem; width: 40px; height: 40px; }
@@ -1073,7 +1074,7 @@
 <header class="header" id="header">
   <div class="header-inner">
     <a class="logo" href="/" aria-label="All In Media">
-      <img src="logo.webp" alt="All In Media" class="logo-img" fetchpriority="high" width="140" height="140" />
+      <span class="logo-text">ALL IN MEDIA</span>
     </a>
 
     <nav class="nav" aria-label="Main">
