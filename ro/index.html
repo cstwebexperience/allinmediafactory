@@ -1089,7 +1089,7 @@
 <!-- ══ HERO ════════════════════════════════════════════════════ -->
 <section class="hero" id="hero">
   <div class="hero-video-wrap">
-    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="none" poster="../video-poster.jpg" width="1920" height="1080"></video>
+    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="../video-poster.jpg" src="../video-opt.mp4" width="1920" height="1080"></video>
     <div class="hero-gradient"></div>
     <div class="hero-content">
       <h1>Creștem.<br>Scalăm.<br>Dominăm.</h1>
@@ -1656,11 +1656,7 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   el.addEventListener('mousemove',  e => { if (!isDown) return; e.preventDefault(); el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX) * 1.5; });
 })();
 
-/* ── VIDEO LAZY LOAD ── */
-window.addEventListener('load', () => {
-  const v = document.getElementById('heroVideo');
-  if (v) { v.src = '../video-opt.mp4'; v.load(); }
-});
+
 
 /* ── AI VOICE ORB ── */
 (function () {
