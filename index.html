@@ -4,6 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>All In Media – Web Design & SEO Agency</title>
+  <meta name="description" content="All In Media – Web Design & SEO Agency. Premium websites, SEO strategies, performance ads and automation that turn visitors into clients." />
+  <link rel="canonical" href="https://allinmediafactory.com/" />
+  <link rel="alternate" hreflang="en" href="https://allinmediafactory.com/" />
+  <link rel="alternate" hreflang="ro" href="https://allinmediafactory.com/ro/" />
+  <link rel="alternate" hreflang="x-default" href="https://allinmediafactory.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://allinmediafactory.com/" />
+  <meta property="og:title" content="All In Media – Web Design & SEO Agency" />
+  <meta property="og:description" content="Premium websites and SEO strategies that turn visitors into clients." />
+  <meta property="og:image" content="https://allinmediafactory.com/logo.webp" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="All In Media" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="All In Media – Web Design & SEO Agency" />
+  <meta name="twitter:description" content="Premium websites and SEO strategies that turn visitors into clients." />
+  <meta name="twitter:image" content="https://allinmediafactory.com/logo.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -128,7 +144,7 @@
       position: relative; z-index: 1; width: 36px; height: 30px;
       border: none; background: transparent; cursor: pointer;
       font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
-      color: rgba(255,255,255,.38); transition: color 250ms; border-radius: 100px; padding: 0;
+      color: rgba(255,255,255,.52); transition: color 250ms; border-radius: 100px; padding: 0;
     }
     .lang-switcher[data-active="ro"] #langOptRO,
     .lang-switcher[data-active="en"] #langOptEN { color: #fff; }
@@ -399,7 +415,7 @@
       font-size: .8rem; color: rgba(180,130,255,.92); font-weight: 800;
       text-transform: uppercase; letter-spacing: .14em; margin-top: 8px; display: block;
     }
-    .stat-desc { font-size: .72rem; color: #6a5f82; line-height: 1.5; margin-top: -6px; }
+    .stat-desc { font-size: .72rem; color: #9388a8; line-height: 1.5; margin-top: -6px; }
 
     .meta-screenshot-wrapper { width: 100%; max-width: 580px; margin-top: 16px; }
     .screenshot-label {
@@ -1017,15 +1033,19 @@
       .vp-results-grid { grid-template-columns: 1fr 1fr !important; gap: 6px; }
       .stat-number { font-size: clamp(24px,6.5vw,32px) !important; }
     }
+
+    .skip-nav{position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;}.skip-nav:focus{position:fixed;top:0;left:0;width:auto;height:auto;padding:8px 16px;background:var(--purple);color:#fff;font-weight:700;font-size:14px;z-index:9999;border-radius:0 0 8px 0;text-decoration:none;outline:none;}
   </style>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"MarketingAgency","name":"All In Media","url":"https://allinmediafactory.com/","logo":{"@type":"ImageObject","url":"https://allinmediafactory.com/logo.webp"},"description":"Web design, SEO, performance ads and business automation agency.","telephone":"+40743391581","contactPoint":{"@type":"ContactPoint","telephone":"+40743391581","contactType":"customer service","availableLanguage":["English","Romanian"]},"sameAs":["https://allinmediafactory.com"]}</script>
 </head>
 <body>
+<a class="skip-nav" href="#main">Skip to main content</a>
 
 
 <!-- ══ HEADER ══════════════════════════════════════════════════ -->
 <header class="header" id="header">
   <div class="header-inner">
-    <a class="logo" href="#" aria-label="All In Media">
+    <a class="logo" href="/" aria-label="All In Media">
       <img src="logo.webp" alt="All In Media" class="logo-img" fetchpriority="high" width="140" height="140" />
     </a>
 
@@ -1060,9 +1080,9 @@
 </div>
 
 <!-- ══ HERO ════════════════════════════════════════════════════ -->
-<section class="hero" id="hero">
+<section class="hero" id="main" aria-label="Hero section">
   <div class="hero-video-wrap">
-    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="video-poster.jpg" src="video-opt.mp4" width="1920" height="1080"></video>
+    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="video-poster.jpg" src="video-opt.mp4" width="1920" height="1080" aria-hidden="true"></video>
     <div class="hero-gradient"></div>
     <div class="hero-content">
       <h1>We build.<br>We rank.<br>We deliver.</h1>
@@ -1081,7 +1101,7 @@
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:40ms">01 — WEB DESIGN + WEBSITES</span>
-    <p class="s-subtitle reveal" style="--d:100ms">Design. Hypnotic.</p>
+    <h2 class="s-subtitle reveal" style="--d:100ms">Design. Hypnotic.</h2>
     <p class="s-desc reveal" style="--d:130ms">Fast, modern websites that make your brand impossible to ignore. From landing pages to full e-commerce platforms — <strong>designed to convert</strong> and built to scale.</p>
 
     <div class="sites-grid reveal" style="--d:160ms">
@@ -1135,7 +1155,7 @@
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:30ms">02 — SEO &amp; VISIBILITY</span>
-    <p class="s-subtitle reveal" style="--d:90ms">Traffic. Real.</p>
+    <h2 class="s-subtitle reveal" style="--d:90ms">Traffic. Real.</h2>
     <p class="s-desc reveal" style="--d:110ms">We put your business on <strong>page 1 of Google</strong> and keep it there. Keyword strategy, technical SEO and link building that compounds over time.</p>
 
     <div class="single-site reveal" style="--d:140ms">
@@ -1186,7 +1206,7 @@
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:30ms">03 — PERFORMANCE ADS</span>
-    <p class="s-subtitle reveal" style="--d:90ms">Profit. Ruthless.</p>
+    <h2 class="s-subtitle reveal" style="--d:90ms">Profit. Ruthless.</h2>
 
     <div class="stats-row reveal" style="--d:130ms">
       <div class="stat-block">
@@ -1223,7 +1243,7 @@
 
   <div class="s-content-wrap">
     <span class="s-eyebrow reveal" style="--d:30ms">04 — BUSINESS AUTOMATION</span>
-    <p class="s-subtitle reveal" style="--d:90ms">Processes. Smart.</p>
+    <h2 class="s-subtitle reveal" style="--d:90ms">Processes. Smart.</h2>
     <div class="auto-descs">
       <p class="s-desc reveal" style="--d:130ms">
         We connect <strong>Gmail</strong>, <strong>WhatsApp</strong>, <strong>Meta Ads</strong>,
@@ -1253,11 +1273,11 @@
     <h2 class="bottom-cta-title reveal" style="--d:50ms">Ready to grow<br>together?</h2>
     <div class="cta-icons-row reveal" style="--d:100ms">
       <button class="cta-icon-btn cta-icon-btn--contact" onclick="openContactForm()">
-        <img src="clipboard-t.webp" alt="Send us a message" class="cta-icon-img" />
+        <img src="clipboard-t.webp" alt="Send us a message" aria-hidden="true" class="cta-icon-img" />
         <span class="cta-icon-label">Send us a message</span>
       </button>
       <a class="cta-icon-btn cta-icon-btn--wa" href="https://wa.me/40743391581" target="_blank" rel="noopener">
-        <img src="whatsapp-t.webp" alt="WhatsApp" class="cta-icon-img" />
+        <img src="whatsapp-t.webp" alt="WhatsApp" aria-hidden="true" class="cta-icon-img" />
         <span class="cta-icon-label">WhatsApp</span>
       </a>
     </div>
@@ -1291,17 +1311,17 @@
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_template" value="table" />
       <input type="hidden" name="_cc" value="contact@allinmediafactory.com" />
-      <input name="name"    placeholder="Your name"    required />
-      <input name="email"   type="email" placeholder="Email" required />
-      <input name="phone" type="tel"   placeholder="Phone (optional)" />
-      <select name="service">
+      <input name="name"    placeholder="Your name"    required aria-label="Your name" />
+      <input name="email"   type="email" placeholder="Email" required aria-label="Email address" />
+      <input name="phone" type="tel"   placeholder="Phone (optional)" aria-label="Phone number" />
+      <select name="service" aria-label="Choose a service">
         <option value="" disabled selected>Choose a service</option>
         <option>Web Design + Websites</option>
         <option>SEO + Google</option>
         <option>Performance Ads</option>
         <option>Business Automation</option>
       </select>
-      <textarea name="message" placeholder="Your message (optional)" rows="3"></textarea>
+      <textarea name="message" placeholder="Your message (optional)" rows="3" aria-label="Message"></textarea>
       <button type="submit" class="cf-submit">Send message</button>
     </form>
   </div>
