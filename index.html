@@ -65,14 +65,8 @@
     .logo {
       display: flex; align-items: center; flex-shrink: 0;
     }
-    .logo-text {
-      font-family: 'Inter', sans-serif;
-      font-size: 21px; font-weight: 900;
-      letter-spacing: .08em; text-transform: uppercase;
-      white-space: nowrap; line-height: 1;
-      background: linear-gradient(135deg, #f3e8ff 0%, #d8b4fe 40%, #a855f7 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .logo-img {
+      height: 40px; width: auto; display: block;
     }
 
     .header-inner {
@@ -902,6 +896,7 @@
       .header { padding: 10px 12px; }
       .header.is-scrolled { padding: 8px 12px; }
       .logo { left: 0; }
+      .logo-img { height: 34px; }
       
       .btn-contact { display: none; }
 
@@ -1060,7 +1055,7 @@
 <header class="header" id="header">
   <div class="header-inner">
     <a class="logo" href="/" aria-label="All In Media">
-      <span class="logo-text">ALL IN MEDIA</span>
+      <img src="logo-crop.png" alt="All In Media" class="logo-img" fetchpriority="high" width="1771" height="260" />
     </a>
 
     <nav class="nav" aria-label="Main">
