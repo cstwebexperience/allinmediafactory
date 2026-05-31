@@ -164,6 +164,32 @@
     }
     .btn-contact:hover { background: var(--purple); border-color: var(--purple); box-shadow: 0 0 20px var(--purple-g); color: #fff; }
 
+    .btn-phone-header {
+      display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px;
+      border-radius: 100px; border: 1px solid rgba(124,58,237,.4);
+      font-size: 13px; font-weight: 700; color: rgba(196,165,255,.9); text-decoration: none;
+      transition: all 200ms; white-space: nowrap; letter-spacing: .02em;
+    }
+    .btn-phone-header:hover { background: var(--purple); border-color: var(--purple); color: #fff; box-shadow: 0 0 20px var(--purple-g); }
+    .btn-phone-header svg { flex-shrink: 0; }
+
+    /* ── FLOATING PHONE BUTTON ─────────────────────────────── */
+    .float-phone {
+      position: fixed; bottom: 28px; left: 28px; z-index: 200;
+      display: flex; align-items: center; gap: 9px;
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: #fff; padding: 12px 20px 12px 16px; border-radius: 999px;
+      font-size: 14px; font-weight: 700; letter-spacing: .02em; text-decoration: none;
+      box-shadow: 0 4px 24px rgba(124,58,237,.55), 0 0 0 1px rgba(255,255,255,.08) inset;
+      transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s;
+      will-change: transform;
+    }
+    .float-phone:hover { transform: translateY(-3px); box-shadow: 0 8px 36px rgba(124,58,237,.7), 0 0 0 1px rgba(255,255,255,.12) inset; }
+    .float-phone svg { flex-shrink: 0; }
+    @media (max-width: 600px) {
+      .float-phone { bottom: 20px; left: 16px; padding: 11px 16px 11px 13px; font-size: 13px; }
+    }
+
     .btn-hamburger {
       display: none; width: 40px; height: 40px; flex-direction: column;
       align-items: center; justify-content: center; gap: 5px;
@@ -892,6 +918,7 @@
       .header.is-scrolled { padding: 8px 12px; }
       .logo-img { height: 26px; }
       .btn-contact { display: none; }
+      .btn-phone-header { display: none; }
 
       .hero { padding: 72px 10px 10px; }
       .hero-video-wrap {
@@ -1142,6 +1169,10 @@
         <button class="lang-opt" id="langOptRO" onclick="setLang('ro')">RO</button>
         <button class="lang-opt" id="langOptEN" onclick="setLang('en')">EN</button>
       </div>
+      <a class="btn-phone-header" href="tel:+40758802020">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.22 2 2 0 012 .04h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        0758 80 20 20
+      </a>
       <button class="btn-contact" onclick="openContactForm()">Contact</button>
       <button class="btn-hamburger" id="hamburger" type="button" aria-label="Menu">
         <span></span><span></span>
@@ -1156,6 +1187,10 @@
   <a href="#ads"          onclick="closeMenu()">Performance Ads</a>
   <a href="#automatizari" onclick="closeMenu()">Automation</a>
   <a href="#contact" onclick="closeMenu(); openContactForm();" class="mobile-cta">Contact</a>
+  <a href="tel:+40758802020" onclick="closeMenu()" style="display:flex;align-items:center;gap:8px;padding:13px 16px;border-radius:10px;font-size:15px;font-weight:700;color:rgba(196,165,255,.95);letter-spacing:.02em;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.22 2 2 0 012 .04h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+    0758 80 20 20
+  </a>
 </div>
 
 <!-- ══ HERO ════════════════════════════════════════════════════ -->
@@ -1373,6 +1408,7 @@
     </picture>
     <p class="footer-tagline">Web Design · SEO · Performance Ads · Business Automation</p>
     <p class="footer-email"><a href="mailto:contact@allinmediafactory.com">contact@allinmediafactory.com</a></p>
+    <p class="footer-email" style="margin-top:6px"><a href="tel:+40758802020">0758 80 20 20</a></p>
   </div>
   <div class="footer-inner">
     <div>
@@ -1405,6 +1441,12 @@
     </div>
   </div>
 </footer>
+
+<!-- ══ FLOATING PHONE ════════════════════════════════════════════ -->
+<a class="float-phone" href="tel:+40758802020" aria-label="Sună-ne: 0758 80 20 20">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.22 2 2 0 012 .04h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+  0758 80 20 20
+</a>
 
 <!-- ══ COOKIE BANNER ═════════════════════════════════════════════ -->
 <div id="cookie-banner" role="region" aria-label="Cookie consent">
