@@ -225,6 +225,15 @@
     }
     .hero-desc { margin-top: 14px; font-size: clamp(15px,1.6vw,19px); color: rgba(255,255,255,.55); max-width: 480px; line-height: 1.6; }
     .hero-cta { margin-top: 32px; display: flex; gap: 12px; align-items: center; }
+
+    .hero-mobile-cta { display: none; }
+    @media (max-width: 768px) {
+      .hero-mobile-cta { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+      .hero-mobile-contact { display:inline-flex;align-items:center;height:44px;padding:0 22px;border-radius:12px;border:1px solid rgba(255,255,255,.2);font-size:14px;font-weight:700;color:#fff;background:rgba(255,255,255,.1);transition:background .2s; }
+      .hero-mobile-contact:hover { background:rgba(255,255,255,.18); }
+      .hero-mobile-phone { display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 18px;border-radius:12px;border:1px solid rgba(124,58,237,.5);font-size:14px;font-weight:700;color:rgba(196,165,255,.95);text-decoration:none;background:rgba(124,58,237,.15);letter-spacing:.02em;transition:background .2s; }
+      .hero-mobile-phone:hover { background:rgba(124,58,237,.28); }
+    }
     .btn-primary {
       display: inline-flex; align-items: center; gap: 8px; justify-content: center;
       height: 50px; padding: 0 28px; border: none; border-radius: 14px;
@@ -1162,6 +1171,13 @@
       <p class="hero-desc">Marketing digital care transformă branduri în lideri de piață.</p>
       <div class="hero-cta">
         <a class="btn-primary" href="#videoclipuri">Lansează-ți brandul <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="hero-mobile-cta">
+        <a class="hero-mobile-contact" href="#contact">Contact</a>
+        <a class="hero-mobile-phone" href="tel:+40758802020">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.01 2.22 2 2 0 012 .04h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          0758 80 20 20
+        </a>
       </div>
     </div>
   </div>
