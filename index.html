@@ -1084,6 +1084,19 @@
       .lang-switcher { backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(10,10,10,.97); }
     }
 
+    /* ── FLOATING WHATSAPP ─────────────────────────────────── */
+    .float-wa {
+      position: fixed; bottom: 28px; right: 28px; z-index: 200;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,.45), 0 2px 8px rgba(0,0,0,.3);
+      transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s;
+      will-change: transform;
+    }
+    .float-wa:hover { transform: scale(1.1); box-shadow: 0 8px 32px rgba(37,211,102,.6), 0 2px 8px rgba(0,0,0,.3); }
+    @media (max-width: 600px) { .float-wa { bottom: 20px; right: 16px; width: 52px; height: 52px; } }
+
     /* ── FOOTER ────────────────────────────────────────────── */
     .site-footer {
       background: #060608;
@@ -1419,10 +1432,6 @@
         <img src="clipboard-t.webp" alt="Send us a message" aria-hidden="true" class="cta-icon-img" loading="lazy" decoding="async" />
         <span class="cta-icon-label">Send us a message</span>
       </button>
-      <a class="cta-icon-btn cta-icon-btn--wa" href="https://wa.me/40743391581" target="_blank" rel="noopener">
-        <img src="whatsapp-t.webp" alt="WhatsApp" aria-hidden="true" class="cta-icon-img" loading="lazy" decoding="async" />
-        <span class="cta-icon-label">WhatsApp</span>
-      </a>
     </div>
   </div>
 </section>
@@ -1470,6 +1479,14 @@
     </div>
   </div>
 </footer>
+
+<!-- ══ FLOATING WHATSAPP ═════════════════════════════════════════ -->
+<a class="float-wa" href="https://wa.me/40743391581" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M16 3C9.373 3 4 8.373 4 15c0 2.385.668 4.61 1.83 6.5L4 29l7.75-1.813A11.94 11.94 0 0016 28c6.627 0 12-5.373 12-12S22.627 3 16 3z" fill="#fff"/>
+    <path d="M21.5 18.5c-.3-.15-1.767-.872-2.04-.97-.273-.1-.472-.15-.67.15-.2.3-.77.97-.943 1.17-.173.2-.346.22-.646.07-.3-.15-1.267-.467-2.413-1.49-.892-.796-1.494-1.78-1.67-2.08-.176-.3-.018-.462.133-.61.136-.135.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.67-1.613-.917-2.21-.24-.577-.487-.5-.67-.51-.172-.008-.37-.01-.57-.01-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.115 3.23 5.125 4.53.716.31 1.275.495 1.711.633.72.228 1.374.196 1.89.119.577-.086 1.767-.722 2.017-1.42.25-.698.25-1.296.175-1.42-.075-.125-.275-.2-.575-.35z" fill="#25D366"/>
+  </svg>
+</a>
 
 <!-- ══ COOKIE BANNER ═════════════════════════════════════════════ -->
 <div id="cookie-banner" role="region" aria-label="Cookie consent">
