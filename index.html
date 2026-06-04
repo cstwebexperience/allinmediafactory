@@ -1847,6 +1847,8 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
     });
     const json = await res.json();
     if (json.success === 'true' || json.success === true) {
+      if (typeof fbq === 'function') fbq('track', 'Lead');
+      if (typeof gtag === 'function') gtag('event', 'generate_lead');
       btn.textContent = '✓ Message sent!';
       btn.style.background = '#16a34a';
       setTimeout(() => {
