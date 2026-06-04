@@ -70,7 +70,7 @@
     :focus { outline: none; }
     :focus-visible { outline: 2px solid rgba(139,92,246,.85); outline-offset: 3px; border-radius: 4px; }
     input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid rgba(124,58,237,.7); outline-offset: 0; }
-    html { background: var(--bg); }
+    html { background: #0a0513; }
     body {
       background: transparent;
       color: var(--text);
@@ -242,9 +242,8 @@
 
     /* ── WARP SHADER ───────────────────────────────────────── */
     #warp-bg {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      display: block; pointer-events: none; z-index: 0;
-      background: radial-gradient(ellipse 120% 90% at 40% 55%, #2a0e55 0%, #150629 45%, #0a0413 100%);
+      position: fixed; inset: 0; width: 100vw; height: 100vh;
+      display: block; pointer-events: none; z-index: -1;
     }
 
     /* ── HERO ──────────────────────────────────────────────── */
@@ -1216,6 +1215,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"MarketingAgency","name":"All In Media","url":"https://allinmediafactory.com/","logo":{"@type":"ImageObject","url":"https://allinmediafactory.com/logo.webp"},"description":"Web design, SEO, performance ads and business automation agency.","telephone":"+40743391581","contactPoint":{"@type":"ContactPoint","telephone":"+40743391581","contactType":"customer service","availableLanguage":["English","Romanian"]},"sameAs":["https://allinmediafactory.com"]}</script>
 </head>
 <body>
+<canvas id="warp-bg" aria-hidden="true"></canvas>
 <a class="skip-nav" href="#main">Skip to main content</a>
 
 
@@ -1270,7 +1270,6 @@
 <!-- ══ HERO ════════════════════════════════════════════════════ -->
 <section class="hero" id="main" aria-label="Hero section">
   <div class="hero-video-wrap">
-    <canvas id="warp-bg" aria-hidden="true"></canvas>
     <video class="hero-video" id="heroVideo" muted loop playsinline preload="none" width="1920" height="1080" aria-hidden="true"></video>
     <div class="hero-gradient"></div>
     <div class="hero-content">
@@ -1926,8 +1925,9 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   if (!canvas) return;
 
   var isMobile = window.matchMedia('(max-width:768px),(hover:none) and (pointer:coarse)').matches;
-  var MAX_DPR    = isMobile ? 0.75 : 1.0;
-  var FPS_CAP    = isMobile ? 24   : 30;
+  // fundal soft → randam la rezolutie mica (invizibil dar mult mai usor pe GPU)
+  var MAX_DPR    = isMobile ? 0.5 : 0.65;
+  var FPS_CAP    = isMobile ? 20   : 30;
   var MS_FRAME   = 1000 / FPS_CAP;
   var lastFrame  = 0;
 
@@ -2020,8 +2020,8 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   function resize() {
     if (!gl) return;
     var dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-    canvas.width  = Math.round(canvas.offsetWidth  * dpr);
-    canvas.height = Math.round(canvas.offsetHeight * dpr);
+    canvas.width  = Math.max(2, Math.round(window.innerWidth  * dpr));
+    canvas.height = Math.max(2, Math.round(window.innerHeight * dpr));
     gl.viewport(0, 0, canvas.width, canvas.height);
     // curata bufferul cu mov inchis ca sa nu apara "gunoi" pana la primul cadru
     gl.clearColor(C.c1[0], C.c1[1], C.c1[2], 1);

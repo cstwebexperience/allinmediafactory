@@ -71,7 +71,7 @@
     :focus { outline: none; }
     :focus-visible { outline: 2px solid rgba(139,92,246,.85); outline-offset: 3px; border-radius: 4px; }
     input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid rgba(124,58,237,.7); outline-offset: 0; }
-    html { background: var(--bg); }
+    html { background: #0a0513; }
     body {
       background: transparent;
       color: var(--text);
@@ -222,7 +222,7 @@
     .mobile-menu a:hover { color: rgba(200,170,255,.9); background: rgba(255,255,255,.05); }
     .mobile-menu a.mobile-cta { color: var(--purple); font-weight: 600; }
 
-    #warp-bg { position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0;background:radial-gradient(ellipse 120% 90% at 40% 55%,#2a0e55 0%,#150629 45%,#0a0413 100%); }
+    #warp-bg { position:fixed;inset:0;width:100vw;height:100vh;display:block;pointer-events:none;z-index:-1; }
 
     /* ── HERO ──────────────────────────────────────────────── */
     .hero { padding: 88px 16px 16px; }
@@ -1134,6 +1134,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"MarketingAgency","name":"All In Media","url":"https://allinmediafactory.com/ro/","logo":{"@type":"ImageObject","url":"https://allinmediafactory.com/logo.webp"},"description":"Agentie web design, SEO, reclame si automatizari business.","telephone":"+40743391581","contactPoint":{"@type":"ContactPoint","telephone":"+40743391581","contactType":"customer service","availableLanguage":["English","Romanian"]},"sameAs":["https://allinmediafactory.com"]}</script>
 </head>
 <body>
+<canvas id="warp-bg" aria-hidden="true"></canvas>
 <a class="skip-nav" href="#main">Skip to main content</a>
 
 
@@ -1190,7 +1191,6 @@
 <!-- ══ HERO ════════════════════════════════════════════════════ -->
 <section class="hero" id="main" aria-label="Hero section">
   <div class="hero-video-wrap">
-    <canvas id="warp-bg" aria-hidden="true"></canvas>
     <video class="hero-video" id="heroVideo" muted loop playsinline preload="none" width="1920" height="1080" aria-hidden="true"></video>
     <div class="hero-gradient"></div>
     <div class="hero-content">
@@ -1886,7 +1886,7 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   var canvas = document.getElementById('warp-bg');
   if (!canvas) return;
   var isMobile = window.matchMedia('(max-width:768px),(hover:none) and (pointer:coarse)').matches;
-  var MAX_DPR = isMobile ? 0.75 : 1.0, FPS_CAP = isMobile ? 24 : 30;
+  var MAX_DPR = isMobile ? 0.5 : 0.65, FPS_CAP = isMobile ? 20 : 30;
   var MS_FRAME = 1000 / FPS_CAP, lastFrame = 0;
   var VERT = '#version 300 es\nin vec4 position;\nvoid main(){gl_Position=position;}';
   var FRAG = [
@@ -1917,7 +1917,7 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
     uC3=gl.getUniformLocation(prog,'c3');uC4=gl.getUniformLocation(prog,'c4');
     return true;
   }
-  function resize(){if(!gl)return;var dpr=Math.min(window.devicePixelRatio||1,MAX_DPR);canvas.width=Math.round(canvas.offsetWidth*dpr);canvas.height=Math.round(canvas.offsetHeight*dpr);gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(C.c1[0],C.c1[1],C.c1[2],1);gl.clear(gl.COLOR_BUFFER_BIT);drawFrame(lastTime);}
+  function resize(){if(!gl)return;var dpr=Math.min(window.devicePixelRatio||1,MAX_DPR);canvas.width=Math.max(2,Math.round(window.innerWidth*dpr));canvas.height=Math.max(2,Math.round(window.innerHeight*dpr));gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(C.c1[0],C.c1[1],C.c1[2],1);gl.clear(gl.COLOR_BUFFER_BIT);drawFrame(lastTime);}
   function drawFrame(now){if(!gl||gl.isContextLost())return;gl.useProgram(prog);gl.uniform2f(uRes,canvas.width,canvas.height);gl.uniform1f(uTime,now*1e-3);gl.uniform3fv(uC1,C.c1);gl.uniform3fv(uC2,C.c2);gl.uniform3fv(uC3,C.c3);gl.uniform3fv(uC4,C.c4);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}
   function render(now){if(document.hidden||!gl||gl.isContextLost()){raf=null;return;}raf=requestAnimationFrame(render);if(now-lastFrame<MS_FRAME)return;lastFrame=now;lastTime=now;drawFrame(now);}
   new IntersectionObserver(function(e){if(e[0].isIntersecting){if(!raf&&gl&&!gl.isContextLost())raf=requestAnimationFrame(render);}else{if(raf){cancelAnimationFrame(raf);raf=null;}}},{threshold:0.01}).observe(canvas);
