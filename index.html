@@ -47,6 +47,7 @@
   <link rel="dns-prefetch" href="https://formsubmit.co" />
   <link rel="dns-prefetch" href="https://s.wordpress.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preload" as="image" href="video-poster.jpg" fetchpriority="high" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"></noscript>
@@ -70,7 +71,7 @@
     :focus { outline: none; }
     :focus-visible { outline: 2px solid rgba(139,92,246,.85); outline-offset: 3px; border-radius: 4px; }
     input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid rgba(124,58,237,.7); outline-offset: 0; }
-    html { background: #0a0513; }
+    html { background: var(--bg); }
     body {
       background: transparent;
       color: var(--text);
@@ -240,12 +241,6 @@
     .mobile-menu a:hover { color: rgba(200,170,255,.9); background: rgba(255,255,255,.05); }
     .mobile-menu a.mobile-cta { color: var(--purple); font-weight: 600; }
 
-    /* ── WARP SHADER ───────────────────────────────────────── */
-    #warp-bg {
-      position: fixed; inset: 0; width: 100vw; height: 100vh;
-      display: block; pointer-events: none; z-index: -1;
-    }
-
     /* ── HERO ──────────────────────────────────────────────── */
     .hero { padding: 88px 16px 16px; }
     .hero-video-wrap {
@@ -253,8 +248,7 @@
       aspect-ratio: 16/8; min-height: 520px; max-height: 88vh;
       border-radius: 36px; overflow: hidden; border: 1px solid rgba(255,255,255,.06);
     }
-    .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0; transition: opacity .9s ease; }
-    .hero-video.is-playing { opacity: 1; }
+    .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .hero-gradient {
       position: absolute; inset: 0;
       background: linear-gradient(0deg, rgba(10,10,10,.75) 0%, transparent 52%),
@@ -1215,7 +1209,6 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"MarketingAgency","name":"All In Media","url":"https://allinmediafactory.com/","logo":{"@type":"ImageObject","url":"https://allinmediafactory.com/logo.webp"},"description":"Web design, SEO, performance ads and business automation agency.","telephone":"+40743391581","contactPoint":{"@type":"ContactPoint","telephone":"+40743391581","contactType":"customer service","availableLanguage":["English","Romanian"]},"sameAs":["https://allinmediafactory.com"]}</script>
 </head>
 <body>
-<canvas id="warp-bg" aria-hidden="true"></canvas>
 <a class="skip-nav" href="#main">Skip to main content</a>
 
 
@@ -1270,7 +1263,7 @@
 <!-- ══ HERO ════════════════════════════════════════════════════ -->
 <section class="hero" id="main" aria-label="Hero section">
   <div class="hero-video-wrap">
-    <video class="hero-video" id="heroVideo" muted loop playsinline preload="none" width="1920" height="1080" aria-hidden="true"></video>
+    <video class="hero-video" id="heroVideo" muted loop playsinline preload="none" poster="video-poster.jpg" width="1920" height="1080" aria-hidden="true"></video>
     <div class="hero-gradient"></div>
     <div class="hero-content">
       <h1>We build.<br>We rank.<br>We deliver.</h1>
@@ -1600,7 +1593,6 @@
   function loadHeroVideo() {
     var v = document.getElementById('heroVideo');
     if (!v) return;
-    v.addEventListener('playing', function () { v.classList.add('is-playing'); }, { once: true });
     v.src = 'video-opt.mp4';
     v.play().catch(function () {});
   }
@@ -1919,159 +1911,6 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   audio.addEventListener('ended', setStopped);
 })();
 
-/* ── WARP SHADER BACKGROUND ── */
-(function () {
-  var canvas = document.getElementById('warp-bg');
-  if (!canvas) return;
-
-  var isMobile = window.matchMedia('(max-width:768px),(hover:none) and (pointer:coarse)').matches;
-  // fundal soft → randam la rezolutie mica (invizibil dar mult mai usor pe GPU)
-  var MAX_DPR    = isMobile ? 0.5 : 0.65;
-  var FPS_CAP    = isMobile ? 20   : 30;
-  var MS_FRAME   = 1000 / FPS_CAP;
-  var lastFrame  = 0;
-
-  var VERT = [
-    '#version 300 es',
-    'in vec4 position;',
-    'void main(){gl_Position=position;}'
-  ].join('\n');
-
-  var FRAG = [
-    '#version 300 es',
-    'precision mediump float;',
-    'out vec4 O;',
-    'uniform float time;',
-    'uniform vec2 res;',
-    'uniform vec3 c1,c2,c3,c4;',
-    '#define T time',
-    '#define R res',
-    'float smooth_check(vec2 p,float sc){',
-    '  vec2 g=floor(p*sc);',
-    '  float chk=mod(g.x+g.y,2.0);',
-    '  vec2 f=fract(p*sc);',
-    '  float soft=min(min(f.x,1.-f.x),min(f.y,1.-f.y));',
-    '  return mix(chk,1.-chk,smoothstep(0.44,0.56,soft));',
-    '}',
-    'void main(){',
-    '  vec2 uv=gl_FragCoord.xy/R;',
-    '  float asp=R.x/R.y;',
-    '  vec2 p=(uv*2.-1.)*vec2(asp,1.);',
-    '  float t=T*0.28;',
-    '  vec2 q=p;',
-    '  for(int i=0;i<5;i++){',
-    '    float fi=float(i)+1.;',
-    '    q+=0.26/fi*vec2(',
-    '      sin(fi*1.9+t*0.7+q.y*2.1+q.x*0.8),',
-    '      cos(fi*1.4+t*0.6+q.x*2.1-q.y*0.7)',
-    '    );',
-    '  }',
-    '  float chk=smooth_check(q,6.5);',
-    '  float r=length(p);',
-    '  float b1=sin(r*2.2-t*1.1)*0.5+0.5;',
-    '  float b2=cos(q.x*1.6+t*0.8)*0.5+0.5;',
-    '  float b3=sin(q.y*2.0-t*0.6)*0.5+0.5;',
-    '  vec3 col=mix(c1,c2,chk);',
-    '  col=mix(col,c3,b1*0.5);',
-    '  col=mix(col,c4,b2*0.3);',
-    '  col=mix(col,c1,b3*0.22);',
-    '  col=mix(col,vec3(0.03,0.01,0.07),smoothstep(0.55,1.5,r));',
-    '  O=vec4(clamp(col,0.,1.),1.);',
-    '}'
-  ].join('\n');
-
-  // Purple brand palette
-  var C = {
-    c1: [0.04, 0.02, 0.10],
-    c2: [0.28, 0.09, 0.55],
-    c3: [0.49, 0.23, 0.93],
-    c4: [0.62, 0.48, 0.96]
-  };
-
-  var gl, prog, uRes, uTime, uC1, uC2, uC3, uC4, raf = null, lastTime = 0;
-
-  function setup() {
-    gl = canvas.getContext('webgl2', { powerPreference: 'low-power', antialias: false, alpha: false });
-    if (!gl) { canvas.style.display = 'none'; return false; }
-    function mk(t, s) {
-      var sh = gl.createShader(t);
-      gl.shaderSource(sh, s); gl.compileShader(sh); return sh;
-    }
-    prog = gl.createProgram();
-    gl.attachShader(prog, mk(gl.VERTEX_SHADER, VERT));
-    gl.attachShader(prog, mk(gl.FRAGMENT_SHADER, FRAG));
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { canvas.style.display = 'none'; return false; }
-    var buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,1,-1,-1,1,1,1,-1]), gl.STATIC_DRAW);
-    var pos = gl.getAttribLocation(prog, 'position');
-    gl.enableVertexAttribArray(pos);
-    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-    uRes = gl.getUniformLocation(prog, 'res');
-    uTime = gl.getUniformLocation(prog, 'time');
-    uC1 = gl.getUniformLocation(prog, 'c1');
-    uC2 = gl.getUniformLocation(prog, 'c2');
-    uC3 = gl.getUniformLocation(prog, 'c3');
-    uC4 = gl.getUniformLocation(prog, 'c4');
-    return true;
-  }
-
-  function resize() {
-    if (!gl) return;
-    var dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-    canvas.width  = Math.max(2, Math.round(window.innerWidth  * dpr));
-    canvas.height = Math.max(2, Math.round(window.innerHeight * dpr));
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    // curata bufferul cu mov inchis ca sa nu apara "gunoi" pana la primul cadru
-    gl.clearColor(C.c1[0], C.c1[1], C.c1[2], 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    drawFrame(lastTime);
-  }
-
-  function drawFrame(now) {
-    if (!gl || gl.isContextLost()) return;
-    gl.useProgram(prog);
-    gl.uniform2f(uRes, canvas.width, canvas.height);
-    gl.uniform1f(uTime, now * 1e-3);
-    gl.uniform3fv(uC1, C.c1); gl.uniform3fv(uC2, C.c2);
-    gl.uniform3fv(uC3, C.c3); gl.uniform3fv(uC4, C.c4);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  }
-
-  function render(now) {
-    if (document.hidden || !gl || gl.isContextLost()) { raf = null; return; }
-    raf = requestAnimationFrame(render);
-    if (now - lastFrame < MS_FRAME) return;
-    lastFrame = now; lastTime = now;
-    drawFrame(now);
-  }
-
-  // Pause when hero not in viewport
-  new IntersectionObserver(function(entries) {
-    if (entries[0].isIntersecting) {
-      if (!raf && gl && !gl.isContextLost()) raf = requestAnimationFrame(render);
-    } else {
-      if (raf) { cancelAnimationFrame(raf); raf = null; }
-    }
-  }, { threshold: 0.01 }).observe(canvas);
-
-  canvas.addEventListener('webglcontextlost', function(e) {
-    e.preventDefault(); if (raf) { cancelAnimationFrame(raf); raf = null; }
-  });
-  canvas.addEventListener('webglcontextrestored', function() {
-    if (setup()) { resize(); if (!document.hidden) raf = requestAnimationFrame(render); }
-  });
-  document.addEventListener('visibilitychange', function() {
-    if (document.hidden) { if (raf) { cancelAnimationFrame(raf); raf = null; } }
-    else if (!raf && gl && !gl.isContextLost()) raf = requestAnimationFrame(render);
-  });
-  window.addEventListener('resize', resize, { passive: true });
-
-  if (!setup()) return;
-  resize();           // deseneaza imediat un cadru curat (fara flash)
-  raf = requestAnimationFrame(render);
-})();
 </script>
 
 </body>
