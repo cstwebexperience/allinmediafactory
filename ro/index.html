@@ -1136,7 +1136,61 @@
     .cookie-btn-decline:hover { border-color:rgba(255,255,255,.28); color:var(--text); }
     @media (max-width:600px) { #cookie-banner { padding:16px 20px; } .cookie-btns { width:100%; } .cookie-btn-accept,.cookie-btn-decline { flex:1; text-align:center; } }
   </style>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"MarketingAgency","name":"All In Media","url":"https://allinmediafactory.com/ro/","logo":{"@type":"ImageObject","url":"https://allinmediafactory.com/logo.webp"},"description":"Agentie web design, SEO, reclame si automatizari business.","telephone":"+40743391581","contactPoint":{"@type":"ContactPoint","telephone":"+40743391581","contactType":"customer service","availableLanguage":["English","Romanian"]},"sameAs":["https://allinmediafactory.com"]}</script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["ProfessionalService", "MarketingAgency"],
+        "@id": "https://allinmediafactory.com/#organization",
+        "name": "All In Media",
+        "alternateName": "All In Media Factory",
+        "url": "https://allinmediafactory.com/ro/",
+        "logo": { "@type": "ImageObject", "url": "https://allinmediafactory.com/logo.webp" },
+        "image": "https://allinmediafactory.com/logo.webp",
+        "description": "Agenție de marketing digital în Pitești: web design premium, SEO, reclame Facebook & Google, producție video cu filmări la locație și automatizări AI pentru afaceri.",
+        "slogan": "Creștem. Scalăm. Dominăm.",
+        "telephone": "+40758802020",
+        "email": "contact@allinmediafactory.com",
+        "priceRange": "€€",
+        "address": { "@type": "PostalAddress", "addressLocality": "Pitești", "addressRegion": "Argeș", "addressCountry": "RO" },
+        "areaServed": [
+          { "@type": "City", "name": "Pitești" },
+          { "@type": "AdministrativeArea", "name": "Argeș" },
+          { "@type": "Country", "name": "România" }
+        ],
+        "knowsAbout": ["Web Design", "SEO", "Google Ads", "Facebook Ads", "Producție video", "Filmare la locație", "Automatizări AI", "Marketing digital"],
+        "contactPoint": { "@type": "ContactPoint", "telephone": "+40758802020", "contactType": "customer service", "availableLanguage": ["Romanian", "English"] },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Servicii marketing digital",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Producție video & filmări la locație", "description": "Videoclipuri premium și filmări la locație pentru firme, cu rezultate virale." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Reclame Facebook & Google Ads", "description": "Campanii de performanță care aduc clienți care sună, nu doar afișări." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Web Design & creare site-uri", "description": "Site-uri de prezentare și magazine online premium, optimizate SEO." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO & optimizare Google", "description": "Poziționare în top Google pentru cuvinte cheie comerciale." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Automatizări business cu AI", "description": "Automatizarea proceselor repetitive pentru firme mici." } }
+          ]
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://allinmediafactory.com/#website",
+        "url": "https://allinmediafactory.com/ro/",
+        "name": "All In Media",
+        "inLanguage": "ro-RO",
+        "publisher": { "@id": "https://allinmediafactory.com/#organization" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Acasă", "item": "https://allinmediafactory.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Română", "item": "https://allinmediafactory.com/ro/" }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 <a class="skip-nav" href="#main">Skip to main content</a>

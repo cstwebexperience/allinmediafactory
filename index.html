@@ -1213,7 +1213,60 @@
       .cookie-btn-accept, .cookie-btn-decline { flex: 1; text-align: center; }
     }
   </style>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"MarketingAgency","name":"All In Media","url":"https://allinmediafactory.com/","logo":{"@type":"ImageObject","url":"https://allinmediafactory.com/logo.webp"},"description":"Web design, SEO, performance ads and business automation agency.","telephone":"+40743391581","contactPoint":{"@type":"ContactPoint","telephone":"+40743391581","contactType":"customer service","availableLanguage":["English","Romanian"]},"sameAs":["https://allinmediafactory.com"]}</script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["ProfessionalService", "MarketingAgency"],
+        "@id": "https://allinmediafactory.com/#organization",
+        "name": "All In Media",
+        "alternateName": "All In Media Factory",
+        "url": "https://allinmediafactory.com/",
+        "logo": { "@type": "ImageObject", "url": "https://allinmediafactory.com/logo.webp" },
+        "image": "https://allinmediafactory.com/logo.webp",
+        "description": "Digital marketing agency based in Romania: premium web design, SEO, Facebook & Google ads, on-location video production and AI automation for businesses worldwide.",
+        "slogan": "We build. We rank. We deliver.",
+        "telephone": "+40758802020",
+        "email": "contact@allinmediafactory.com",
+        "priceRange": "€€",
+        "address": { "@type": "PostalAddress", "addressLocality": "Pitești", "addressRegion": "Argeș", "addressCountry": "RO" },
+        "areaServed": [
+          { "@type": "Country", "name": "Romania" },
+          { "@type": "Place", "name": "Europe" },
+          { "@type": "Place", "name": "Worldwide" }
+        ],
+        "knowsAbout": ["Web Design", "SEO", "Google Ads", "Facebook Ads", "Video Production", "On-location Filming", "AI Automation", "Digital Marketing"],
+        "contactPoint": { "@type": "ContactPoint", "telephone": "+40758802020", "contactType": "customer service", "availableLanguage": ["English", "Romanian"] },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Digital marketing services",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Video production & on-location filming", "description": "Premium video and on-location filming for businesses, with viral-level results." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Facebook & Google Ads", "description": "Performance campaigns that bring clients who call, not just impressions." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Web Design & development", "description": "Premium business websites and online stores, SEO-ready by design." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO & Google optimization", "description": "Ranking in Google's top results for commercial keywords." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "AI business automation", "description": "Automating repetitive processes for small businesses." } }
+          ]
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://allinmediafactory.com/#website",
+        "url": "https://allinmediafactory.com/",
+        "name": "All In Media",
+        "inLanguage": "en-US",
+        "publisher": { "@id": "https://allinmediafactory.com/#organization" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://allinmediafactory.com/" }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 <a class="skip-nav" href="#main">Skip to main content</a>
