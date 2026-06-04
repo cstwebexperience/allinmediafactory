@@ -1805,13 +1805,14 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   btn.disabled = true;
   try {
     const fd = new FormData(this);
-    const res = await fetch('https://formsubmit.co/ajax/cstwebexperience@gmail.com', {
+    const body = Object.fromEntries(fd.entries());
+    const res = await fetch('/api/contact', {
       method: 'POST',
-      headers: { 'Accept': 'application/json' },
-      body: fd
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     });
     const json = await res.json();
-    if (json.success === 'true' || json.success === true) {
+    if (json.success === true) {
       if (typeof fbq === 'function') fbq('track', 'Lead');
       if (typeof gtag === 'function') gtag('event', 'generate_lead');
       btn.textContent = '✓ Mesaj trimis!';
