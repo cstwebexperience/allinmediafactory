@@ -20,6 +20,7 @@ ENDPOINT = "https://api.indexnow.org/indexnow"
 SITEMAPS = [
     f"https://{HOST}/sitemap-pages.xml",
     f"https://{HOST}/sitemap-blog.xml",
+    f"https://{HOST}/sitemap-local.xml",
 ]
 
 
