@@ -1,52 +1,70 @@
-const nodemailer = require('nodemailer');
-
+// Vercel serverless function — trimite emailul de contact prin Resend
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://allinmediafactory.com');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not allowed' });
 
   try {
-    const { name, email, phone, service, message, mesaj } = req.body || {};
+    // body poate veni deja parsat (Vercel) sau ca string
+    let body = req.body;
+    if (typeof body === 'string') { try { body = JSON.parse(body); } catch { body = {}; } }
+    body = body || {};
 
-    if (!name?.trim() || !email?.trim()) {
+    // suporta atat campurile EN cat si RO
+    const name    = (body.name || body.nume || '').trim();
+    const email   = (body.email || '').trim();
+    const phone   = (body.phone || body.telefon || '').trim();
+    const service = (body.service || body.serviciu || '—').trim();
+    const message = (body.message || body.mesaj || '—').trim();
+
+    if (!name || !email) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });
     }
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-      },
-    });
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) return res.status(500).json({ success: false, error: 'Email not configured' });
 
-    const msg = message || mesaj || '—';
-    const svc = service || '—';
+    const FROM = process.env.MAIL_FROM || 'All In Media <onboarding@resend.dev>';
+    const TO   = (process.env.MAIL_TO || 'cstwebexperience@gmail.com')
+                   .split(',').map(s => s.trim()).filter(Boolean);
 
-    await transporter.sendMail({
-      from: `"All In Media Site" <${process.env.GMAIL_USER}>`,
-      to: 'contact@allinmediafactory.com',
-      replyTo: email.trim(),
-      subject: `Mesaj nou de pe site — ${svc}`,
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#f9f9f9;padding:32px;border-radius:12px;">
-          <h2 style="margin:0 0 24px;color:#7c3aed">Mesaj nou — All In Media</h2>
-          <table style="width:100%;border-collapse:collapse">
-            <tr><td style="padding:8px 0;color:#666;width:120px">Nume</td><td style="padding:8px 0;font-weight:600">${name.trim()}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Email</td><td style="padding:8px 0"><a href="mailto:${email.trim()}">${email.trim()}</a></td></tr>
-            <tr><td style="padding:8px 0;color:#666">Telefon</td><td style="padding:8px 0">${phone?.trim() || '—'}</td></tr>
-            <tr><td style="padding:8px 0;color:#666">Serviciu</td><td style="padding:8px 0">${svc}</td></tr>
-          </table>
-          <div style="margin-top:20px;padding:16px;background:#fff;border-radius:8px;border:1px solid #eee">
-            <p style="margin:0;color:#333;line-height:1.6">${msg.replace(/\n/g, '<br>')}</p>
-          </div>
-          <p style="margin-top:20px;font-size:12px;color:#999">Trimis de pe allinmediafactory.com</p>
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+    const html = `
+      <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#f9f9f9;padding:32px;border-radius:12px;">
+        <h2 style="margin:0 0 24px;color:#7c3aed">Mesaj nou — All In Media</h2>
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:8px 0;color:#666;width:120px">Nume</td><td style="padding:8px 0;font-weight:600">${esc(name)}</td></tr>
+          <tr><td style="padding:8px 0;color:#666">Email</td><td style="padding:8px 0"><a href="mailto:${esc(email)}">${esc(email)}</a></td></tr>
+          <tr><td style="padding:8px 0;color:#666">Telefon</td><td style="padding:8px 0">${esc(phone) || '—'}</td></tr>
+          <tr><td style="padding:8px 0;color:#666">Serviciu</td><td style="padding:8px 0">${esc(service)}</td></tr>
+        </table>
+        <div style="margin-top:20px;padding:16px;background:#fff;border-radius:8px;border:1px solid #eee">
+          <p style="margin:0;color:#333;line-height:1.6">${esc(message).replace(/\n/g,'<br>')}</p>
         </div>
-      `,
+        <p style="margin-top:20px;font-size:12px;color:#999">Trimis de pe allinmediafactory.com</p>
+      </div>`;
+
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: FROM,
+        to: TO,
+        reply_to: email,
+        subject: `Mesaj nou de pe site — ${service}`,
+        html,
+      }),
     });
+
+    if (!r.ok) {
+      const detail = await r.text();
+      console.error('Resend error:', r.status, detail);
+      return res.status(502).json({ success: false, error: 'Mail provider error' });
+    }
 
     return res.status(200).json({ success: true });
   } catch (err) {

@@ -244,6 +244,7 @@
     #warp-bg {
       position: absolute; inset: 0; width: 100%; height: 100%;
       display: block; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse 120% 90% at 40% 55%, #2a0e55 0%, #150629 45%, #0a0413 100%);
     }
 
     /* ── HERO ──────────────────────────────────────────────── */
@@ -1563,10 +1564,6 @@
     <button class="cf-close" id="cfClose">&times;</button>
     <h2 class="cf-title">Contact Us</h2>
     <form class="cf-form" id="cfForm">
-      <input type="hidden" name="_subject" value="New inquiry — All In Media" />
-      <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_cc" value="contact@allinmediafactory.com" />
       <input name="name"    placeholder="Your name"    required aria-label="Your name" />
       <input name="email"   type="email" placeholder="Email" required aria-label="Email address" />
       <input name="phone" type="tel"   placeholder="Phone (optional)" aria-label="Phone number" />
@@ -1846,13 +1843,14 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   btn.disabled = true;
   try {
     const fd = new FormData(this);
-    const res = await fetch('https://formsubmit.co/ajax/cstwebexperience@gmail.com', {
+    const payload = Object.fromEntries(fd.entries());
+    const res = await fetch('/api/contact', {
       method: 'POST',
-      headers: { 'Accept': 'application/json' },
-      body: fd
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
     const json = await res.json();
-    if (json.success === 'true' || json.success === true) {
+    if (json.success === true) {
       if (typeof fbq === 'function') fbq('track', 'Lead');
       if (typeof gtag === 'function') gtag('event', 'generate_lead');
       btn.textContent = '✓ Message sent!';
@@ -1988,7 +1986,7 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
     c4: [0.62, 0.48, 0.96]
   };
 
-  var gl, prog, uRes, uTime, uC1, uC2, uC3, uC4, raf = null;
+  var gl, prog, uRes, uTime, uC1, uC2, uC3, uC4, raf = null, lastTime = 0;
 
   function setup() {
     gl = canvas.getContext('webgl2', { powerPreference: 'low-power', antialias: false, alpha: false });
@@ -2023,19 +2021,28 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
     canvas.width  = Math.round(canvas.offsetWidth  * dpr);
     canvas.height = Math.round(canvas.offsetHeight * dpr);
     gl.viewport(0, 0, canvas.width, canvas.height);
+    // curata bufferul cu mov inchis ca sa nu apara "gunoi" pana la primul cadru
+    gl.clearColor(C.c1[0], C.c1[1], C.c1[2], 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    drawFrame(lastTime);
   }
 
-  function render(now) {
-    if (document.hidden || !gl || gl.isContextLost()) { raf = null; return; }
-    raf = requestAnimationFrame(render);
-    if (now - lastFrame < MS_FRAME) return;
-    lastFrame = now;
+  function drawFrame(now) {
+    if (!gl || gl.isContextLost()) return;
     gl.useProgram(prog);
     gl.uniform2f(uRes, canvas.width, canvas.height);
     gl.uniform1f(uTime, now * 1e-3);
     gl.uniform3fv(uC1, C.c1); gl.uniform3fv(uC2, C.c2);
     gl.uniform3fv(uC3, C.c3); gl.uniform3fv(uC4, C.c4);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  function render(now) {
+    if (document.hidden || !gl || gl.isContextLost()) { raf = null; return; }
+    raf = requestAnimationFrame(render);
+    if (now - lastFrame < MS_FRAME) return;
+    lastFrame = now; lastTime = now;
+    drawFrame(now);
   }
 
   // Pause when hero not in viewport
@@ -2060,7 +2067,7 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   window.addEventListener('resize', resize, { passive: true });
 
   if (!setup()) return;
-  resize();
+  resize();           // deseneaza imediat un cadru curat (fara flash)
   raf = requestAnimationFrame(render);
 })();
 </script>

@@ -222,7 +222,7 @@
     .mobile-menu a:hover { color: rgba(200,170,255,.9); background: rgba(255,255,255,.05); }
     .mobile-menu a.mobile-cta { color: var(--purple); font-weight: 600; }
 
-    #warp-bg { position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0; }
+    #warp-bg { position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0;background:radial-gradient(ellipse 120% 90% at 40% 55%,#2a0e55 0%,#150629 45%,#0a0413 100%); }
 
     /* ── HERO ──────────────────────────────────────────────── */
     .hero { padding: 88px 16px 16px; }
@@ -1525,10 +1525,6 @@
     <button class="cf-close" id="cfClose">&times;</button>
     <h2 class="cf-title">Contactează-ne</h2>
     <form class="cf-form" id="cfForm">
-      <input type="hidden" name="_subject" value="Cerere nouă — All In Media" />
-      <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_cc" value="contact@allinmediafactory.com" />
       <input name="nume"    placeholder="Numele tău"    required aria-label="Numele tău" />
       <input name="email"   type="email" placeholder="Email" required aria-label="Email address" />
       <input name="telefon" type="tel"   placeholder="Telefon (opțional)" aria-label="Număr de telefon" />
@@ -1808,13 +1804,14 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   btn.disabled = true;
   try {
     const fd = new FormData(this);
-    const res = await fetch('https://formsubmit.co/ajax/cstwebexperience@gmail.com', {
+    const payload = Object.fromEntries(fd.entries());
+    const res = await fetch('/api/contact', {
       method: 'POST',
-      headers: { 'Accept': 'application/json' },
-      body: fd
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
     const json = await res.json();
-    if (json.success === 'true' || json.success === true) {
+    if (json.success === true) {
       if (typeof fbq === 'function') fbq('track', 'Lead');
       if (typeof gtag === 'function') gtag('event', 'generate_lead');
       btn.textContent = '✓ Mesaj trimis!';
@@ -1903,7 +1900,7 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
     'col=mix(col,vec3(0.03,0.01,0.07),smoothstep(0.55,1.5,r));O=vec4(clamp(col,0.,1.),1.);}',
   ].join('\n');
   var C={c1:[0.04,0.02,0.10],c2:[0.28,0.09,0.55],c3:[0.49,0.23,0.93],c4:[0.62,0.48,0.96]};
-  var gl,prog,uRes,uTime,uC1,uC2,uC3,uC4,raf=null;
+  var gl,prog,uRes,uTime,uC1,uC2,uC3,uC4,raf=null,lastTime=0;
   function setup(){
     gl=canvas.getContext('webgl2',{powerPreference:'low-power',antialias:false,alpha:false});
     if(!gl){canvas.style.display='none';return false;}
@@ -1918,8 +1915,9 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
     uC3=gl.getUniformLocation(prog,'c3');uC4=gl.getUniformLocation(prog,'c4');
     return true;
   }
-  function resize(){if(!gl)return;var dpr=Math.min(window.devicePixelRatio||1,MAX_DPR);canvas.width=Math.round(canvas.offsetWidth*dpr);canvas.height=Math.round(canvas.offsetHeight*dpr);gl.viewport(0,0,canvas.width,canvas.height);}
-  function render(now){if(document.hidden||!gl||gl.isContextLost()){raf=null;return;}raf=requestAnimationFrame(render);if(now-lastFrame<MS_FRAME)return;lastFrame=now;gl.useProgram(prog);gl.uniform2f(uRes,canvas.width,canvas.height);gl.uniform1f(uTime,now*1e-3);gl.uniform3fv(uC1,C.c1);gl.uniform3fv(uC2,C.c2);gl.uniform3fv(uC3,C.c3);gl.uniform3fv(uC4,C.c4);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}
+  function resize(){if(!gl)return;var dpr=Math.min(window.devicePixelRatio||1,MAX_DPR);canvas.width=Math.round(canvas.offsetWidth*dpr);canvas.height=Math.round(canvas.offsetHeight*dpr);gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(C.c1[0],C.c1[1],C.c1[2],1);gl.clear(gl.COLOR_BUFFER_BIT);drawFrame(lastTime);}
+  function drawFrame(now){if(!gl||gl.isContextLost())return;gl.useProgram(prog);gl.uniform2f(uRes,canvas.width,canvas.height);gl.uniform1f(uTime,now*1e-3);gl.uniform3fv(uC1,C.c1);gl.uniform3fv(uC2,C.c2);gl.uniform3fv(uC3,C.c3);gl.uniform3fv(uC4,C.c4);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}
+  function render(now){if(document.hidden||!gl||gl.isContextLost()){raf=null;return;}raf=requestAnimationFrame(render);if(now-lastFrame<MS_FRAME)return;lastFrame=now;lastTime=now;drawFrame(now);}
   new IntersectionObserver(function(e){if(e[0].isIntersecting){if(!raf&&gl&&!gl.isContextLost())raf=requestAnimationFrame(render);}else{if(raf){cancelAnimationFrame(raf);raf=null;}}},{threshold:0.01}).observe(canvas);
   canvas.addEventListener('webglcontextlost',function(e){e.preventDefault();if(raf){cancelAnimationFrame(raf);raf=null;}});
   canvas.addEventListener('webglcontextrestored',function(){if(setup()){resize();if(!document.hidden)raf=requestAnimationFrame(render);}});
