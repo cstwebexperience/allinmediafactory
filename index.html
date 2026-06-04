@@ -1560,7 +1560,6 @@
       <input type="hidden" name="_subject" value="New inquiry — All In Media" />
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_cc" value="contact@allinmediafactory.com" />
       <input name="name"    placeholder="Your name"    required aria-label="Your name" />
       <input name="email"   type="email" placeholder="Email" required aria-label="Email address" />
       <input name="phone" type="tel"   placeholder="Phone (optional)" aria-label="Phone number" />
@@ -1840,7 +1839,7 @@ document.getElementById('cfForm').addEventListener('submit', async function(e) {
   btn.disabled = true;
   try {
     const fd = new FormData(this);
-    const res = await fetch('https://formsubmit.co/ajax/cstwebexperience@gmail.com', {
+    const res = await fetch('https://formsubmit.co/ajax/contact@allinmediafactory.com', {
       method: 'POST',
       headers: { 'Accept': 'application/json' },
       body: fd
