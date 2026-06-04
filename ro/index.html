@@ -3,30 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SCHLNLVNTP"></script>
+  <!-- Analytics & Pixel — incarcate amanat pentru performanta -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-SCHLNLVNTP');
-  </script>
-  <!-- Meta Pixel Code -->
-  <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
+    !function(f,b,e,v,n){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];}(window,document);
     fbq('init', '738403359254401');
     fbq('track', 'PageView');
+    (function(){
+      var done = false;
+      function loadTrackers(){
+        if (done) return; done = true;
+        var a = document.createElement('script'); a.async = true;
+        a.src = 'https://www.googletagmanager.com/gtag/js?id=G-SCHLNLVNTP';
+        document.head.appendChild(a);
+        var b = document.createElement('script'); b.async = true;
+        b.src = 'https://connect.facebook.net/en_US/fbevents.js';
+        document.head.appendChild(b);
+      }
+      ['scroll','click','touchstart','keydown','mousemove'].forEach(function(ev){
+        window.addEventListener(ev, loadTrackers, { once: true, passive: true });
+      });
+      window.addEventListener('load', function(){ setTimeout(loadTrackers, 3500); }, { once: true });
+    })();
   </script>
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=738403359254401&ev=PageView&noscript=1"/></noscript>
-  <!-- End Meta Pixel Code -->
   <title>All In Media – Agenție de Marketing Digital</title>
   <meta name="description" content="All In Media – Agentie de marketing digital: web design premium, SEO, reclame si automatizari. Transformam branduri in lideri de piata." />
   <link rel="canonical" href="https://allinmediafactory.com/ro/" />
