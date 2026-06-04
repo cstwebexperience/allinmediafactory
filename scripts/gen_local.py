@@ -88,7 +88,8 @@ def page(serv_slug, loc_slug):
         f"{nume} este {L['context']}, asa ca firmele de aici — {ind_str} — au nevoie de o prezenta online care le aduce clienti, nu doar de un site sau o pagina lasata in paragina. "
         f"Pretul porneste {s['pret']}, iar pentru o localitate ca {nume} avantajul e ca pe online concurenta e inca slaba: cine se misca acum prinde primele pozitii inainte sa se trezeasca ceilalti. "
         f"Lucram cu firme din toata zona {judet} si avem rezultate locale demonstrabile — clienti reali pe pozitia 1-2 in Google in judetul Arges. "
-        f"Indiferent ca esti in {L['landmark']} sau in alta parte din {nume}, te ajutam sa fii gasit de clientii care cauta exact ce oferi tu."
+        f"Indiferent ca esti in {L['landmark']} sau in alta parte din {nume}, te ajutam sa fii gasit de clientii care cauta exact ce oferi tu. "
+        f"Poti suna direct la All In Media Factory: 0758 80 20 20."
     )
     secs = "".join(f"<li>{esc(x)}</li>" for x in s["sections"])
     # siblings in same county for internal linking
@@ -105,7 +106,7 @@ def page(serv_slug, loc_slug):
     rel = " · ".join(rel_links)
 
     faq = [
-        (f"Cât costă {s['kw']} în {nume}?", f"Serviciul porneste {s['pret']}, in functie de complexitate si de obiectivele tale. Pentru firme din {nume} si zona {judet}, iti facem o oferta clara dupa o discutie scurta, fara surprize."),
+        (f"Cât costă {s['kw']} în {nume}?", f"Serviciul porneste {s['pret']}, in functie de complexitate si de obiectivele tale. Pentru firme din {nume} si zona {judet}, iti facem o oferta clara dupa o discutie scurta, fara surprize. Suna la 0758 80 20 20."),
         (f"Lucrați cu firme mici din {nume}?", f"Da. Lucram cu firme de toate marimile din {nume} si {judet}, inclusiv afaceri de familie si firme mici. Strategia corecta conteaza mai mult decat bugetul — avem clienti mici pe pozitia 1-2 in Google."),
         (f"De ce să aleg o agenție pentru {s['kw']} în {nume}?", f"Pentru ca pe plan local concurenta online e inca slaba in {nume}, iar o agentie care stie ce face te urca rapid. In plus, oferim integrat site, reclame, SEO si video — totul sub un singur acoperis."),
     ]
@@ -120,7 +121,7 @@ def page(serv_slug, loc_slug):
 
     ld = '''<script type="application/ld+json">
 { "@context": "https://schema.org", "@graph": [
-  { "@type": "Service", "name": %s, "serviceType": %s, "provider": { "@type": "Organization", "name": "All In Media Factory", "url": "%s/" }, "areaServed": { "@type": "City", "name": %s }, "description": %s },
+  { "@type": "Service", "name": %s, "serviceType": %s, "provider": { "@type": "Organization", "name": "All In Media Factory", "url": "%s/", "telephone": "+40758802020" }, "areaServed": { "@type": "City", "name": %s }, "description": %s },
   { "@type": "BreadcrumbList", "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Acasă", "item": "%s/" },
     { "@type": "ListItem", "position": 2, "name": "Servicii", "item": "%s/servicii/" },
@@ -176,7 +177,7 @@ def page(serv_slug, loc_slug):
       <div class="cta">
         <h2>Vrei mai mulți clienți în {esc(nume)}?</h2>
         <p>Hai să vorbim 15 minute. Îți spunem exact ce ai de făcut.</p>
-        <a class="btn" href="{BASE}/ro/#contact">Cere ofertă gratuită</a>
+        <a class="btn" href="tel:+40758802020">Sună: 0758 80 20 20</a>
         <a class="btn ghost" href="https://wa.me/40743391581">WhatsApp</a>
       </div>
       <div class="related">Vezi și: {rel}</div>
