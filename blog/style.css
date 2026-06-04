@@ -1,0 +1,49 @@
+/* All In Media — blog shared styles (on-brand dark theme) */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--text:#f5f0eb;--muted:rgba(245,240,235,.6);--purple:#7c3aed;--purple-h:#6d28d9;--border:rgba(255,255,255,.1);--card:rgba(255,255,255,.03)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px}
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(20px);background:rgba(8,8,10,.7);border-bottom:1px solid var(--border)}
+.nav-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 22px}
+.nav-in img{height:30px}
+.nav-cta{font-size:14px;font-weight:600;background:var(--purple);padding:9px 18px;border-radius:100px;transition:background .2s}
+.nav-cta:hover{background:var(--purple-h)}
+.crumbs{font-size:13px;color:var(--muted);padding-top:34px}
+.crumbs a:hover{color:var(--text)}
+h1{font-size:clamp(30px,5vw,46px);font-weight:800;line-height:1.12;letter-spacing:-.02em;margin:18px 0 14px}
+.lead{font-size:19px;color:var(--muted);margin-bottom:14px}
+.meta{font-size:13px;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:26px;margin-bottom:34px}
+.meta b{color:var(--purple)}
+article h2{font-size:clamp(23px,3.5vw,30px);font-weight:700;letter-spacing:-.01em;margin:42px 0 14px}
+article h3{font-size:20px;font-weight:600;margin:30px 0 10px}
+article p{margin:0 0 18px;font-size:17px}
+article ul,article ol{margin:0 0 20px;padding-left:22px}
+article li{margin-bottom:9px;font-size:17px}
+article strong{color:#fff}
+.case{background:linear-gradient(140deg,rgba(124,58,237,.14),rgba(124,58,237,.04));border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:26px;margin:30px 0}
+.case .big{font-size:38px;font-weight:800;color:#fff;line-height:1}
+.case .big span{color:var(--purple)}
+.case p{margin:8px 0 0;font-size:15px;color:var(--muted)}
+.price{width:100%;border-collapse:collapse;margin:22px 0;font-size:15px}
+.price th,.price td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--border)}
+.price th{color:var(--muted);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.price td:last-child{color:#fff;font-weight:600;white-space:nowrap}
+.faq{margin-top:18px}
+.faq details{border:1px solid var(--border);border-radius:12px;padding:0 18px;margin-bottom:12px;background:var(--card)}
+.faq summary{cursor:pointer;font-weight:600;padding:16px 0;font-size:16px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';color:var(--purple);font-size:22px;line-height:1}
+.faq details[open] summary::after{content:'\2013'}
+.faq details p{padding:0 0 18px;margin:0;color:var(--muted);font-size:16px}
+.cta{background:linear-gradient(140deg,rgba(124,58,237,.18),rgba(124,58,237,.05));border:1px solid rgba(124,58,237,.3);border-radius:18px;padding:34px 28px;text-align:center;margin:48px 0 20px}
+.cta h2{margin:0 0 8px}
+.cta p{color:var(--muted);margin-bottom:20px}
+.btn{display:inline-block;background:var(--purple);color:#fff;font-weight:700;padding:14px 30px;border-radius:100px;font-size:16px;transition:background .2s,transform .2s}
+.btn:hover{background:var(--purple-h);transform:translateY(-2px)}
+.btn.ghost{background:transparent;border:1px solid var(--border);margin-left:8px}
+.related{border-top:1px solid var(--border);margin-top:40px;padding-top:24px}
+.related a{color:var(--purple);font-weight:600}
+footer{border-top:1px solid var(--border);margin-top:50px;padding:30px 0;text-align:center;color:var(--muted);font-size:14px}
+@media(max-width:600px){.btn.ghost{margin-left:0;margin-top:10px}}
