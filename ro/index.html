@@ -1621,8 +1621,15 @@
   function loadHeroVideo() {
     var v = document.getElementById('heroVideo');
     if (!v) return;
-    v.src = '../video-opt.mp4';
-    v.play().catch(function () {});
+    v.muted = true; v.defaultMuted = true; v.playsInline = true;
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    var mobile = window.matchMedia('(max-width:768px)').matches;
+    v.src = mobile ? '../video-opt-mobile.mp4' : '../video-opt.mp4';
+    function tryPlay() { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+    tryPlay();
+    var evs = ['touchstart', 'click', 'scroll', 'keydown'];
+    function onInteract() { tryPlay(); evs.forEach(function (e) { window.removeEventListener(e, onInteract); }); }
+    evs.forEach(function (e) { window.addEventListener(e, onInteract, { once: true, passive: true }); });
   }
   if (document.readyState === 'complete') {
     loadHeroVideo();
