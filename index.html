@@ -254,7 +254,8 @@
       aspect-ratio: 16/8; min-height: 520px; max-height: 88vh;
       border-radius: 36px; overflow: hidden; border: 1px solid rgba(255,255,255,.06);
     }
-    .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0; transition: opacity .9s ease; }
+    .hero-video.is-playing { opacity: 1; }
     .hero-gradient {
       position: absolute; inset: 0;
       background: linear-gradient(0deg, rgba(10,10,10,.75) 0%, transparent 52%),
@@ -1600,6 +1601,7 @@
   function loadHeroVideo() {
     var v = document.getElementById('heroVideo');
     if (!v) return;
+    v.addEventListener('playing', function () { v.classList.add('is-playing'); }, { once: true });
     v.src = 'video-opt.mp4';
     v.play().catch(function () {});
   }
