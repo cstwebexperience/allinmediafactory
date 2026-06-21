@@ -1478,12 +1478,11 @@
       if (!resultsEl || !boostBtn) return;
       var hint = boostBtn.parentNode.querySelector('.serp-hint');
       var rows = [
-        { t:'Cele mai bune agenții de marketing în 2026 — Ghid', u:'topfirme.ro › marketing', d:'Comparativ cu prețuri, servicii și recenzii pentru agențiile de top din acest an.' },
-        { t:'Agenție Marketing Digital | Servicii Complete', u:'digital-pro.ro', d:'SEO, Google Ads și administrare social media pentru afaceri în creștere.' },
-        { t:'Marketing Online pentru Afaceri Mici', u:'start-marketing.ro', d:'Pachete accesibile de promovare pentru firme locale și startup-uri.' },
-        { t:'Top 10 Agenții de Publicitate — Clasament', u:'business-review.ro › top-10', d:'Un clasament al agențiilor de publicitate după rezultate reale.' },
-        { mine:true, t:'Site-ul tău', u:'www.site-ul-tau.ro', d:'Aici ești tu. Te urcăm pe locul 1 în Google — trafic real, clienți reali.' },
-        { t:'Servicii SEO și Promovare Web', u:'seo-expert.ro', d:'SEO tehnic, link building și conținut care rankează în timp.' }
+        { t:'Cele mai bune agenții de marketing — Ghid 2026', u:'exemplu-ghid.ro › marketing', d:'Comparativ cu prețuri, servicii și recenzii pentru agențiile de top.' },
+        { t:'Agenție Marketing Digital | Servicii Complete', u:'firma-exemplu.ro', d:'SEO, Google Ads și administrare social media pentru afaceri în creștere.' },
+        { t:'Marketing Online pentru Afaceri Mici', u:'site-demo.ro', d:'Pachete accesibile de promovare pentru firme locale și startup-uri.' },
+        { t:'Top 10 Agenții de Publicitate — Clasament', u:'exemplu-clasament.ro › top-10', d:'Un clasament al agențiilor de publicitate după rezultate reale.' },
+        { mine:true, t:'Site-ul tău', u:'www.site-ul-tau.ro', d:'Aici ești tu. Te urcăm pe locul 1 în Google — trafic real, clienți reali.' }
       ];
       rows.forEach(function(r,i){ r._id = r.mine ? 'mine' : ('c'+i); });
       function mineIndex(){ for (var i=0;i<rows.length;i++){ if(rows[i].mine) return i; } return -1; }

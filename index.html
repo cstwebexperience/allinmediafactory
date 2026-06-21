@@ -1464,12 +1464,11 @@
       if (!resultsEl || !boostBtn) return;
       var hint = boostBtn.parentNode.querySelector('.serp-hint');
       var rows = [
-        { t:'Best Marketing Agencies in 2026 — Full Guide', u:'topreviews.com › marketing', d:'Compare prices, services and reviews for the leading marketing agencies this year.' },
-        { t:'Digital Marketing Agency | Full-Service Online', u:'digital-pro.com', d:'SEO, Google Ads and social media management for growing businesses.' },
-        { t:'Online Marketing for Small Business', u:'start-marketing.com', d:'Affordable promotion packages for local businesses and startups.' },
-        { t:'Top 10 Advertising Agencies — Ranking', u:'business-review.com › top-10', d:'A data-driven ranking of advertising agencies by real client results.' },
-        { mine:true, t:'Your site', u:'www.your-site.com', d:'This is you. We push you to #1 on Google — real traffic, real clients.' },
-        { t:'SEO & Web Promotion Services', u:'seo-expert.com', d:'Technical SEO, link building and content that ranks over time.' }
+        { t:'Best Marketing Agencies — 2026 Guide', u:'example-guide.com › marketing', d:'Compare prices, services and reviews for the leading marketing agencies.' },
+        { t:'Digital Marketing Agency | Full-Service', u:'example-company.com', d:'SEO, Google Ads and social media management for growing businesses.' },
+        { t:'Online Marketing for Small Business', u:'demo-site.com', d:'Affordable promotion packages for local businesses and startups.' },
+        { t:'Top 10 Advertising Agencies — Ranking', u:'sample-ranking.com › top-10', d:'A data-driven ranking of advertising agencies by real client results.' },
+        { mine:true, t:'Your site', u:'www.your-site.com', d:'This is you. We push you to #1 on Google — real traffic, real clients.' }
       ];
       rows.forEach(function(r,i){ r._id = r.mine ? 'mine' : ('c'+i); });
       function mineIndex(){ for (var i=0;i<rows.length;i++){ if(rows[i].mine) return i; } return -1; }
