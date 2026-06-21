@@ -398,6 +398,12 @@
       transform: translate(-50%,-50%) scale(1.14);
       background: rgba(180,130,255,.88);
     }
+    /* Video care ruleaza inline, mut, in fiecare telefon */
+    .vp-phone-embed {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      border: 0; pointer-events: none; z-index: 1;
+    }
+    .vp-iphone-mockup[data-embedded] .vp-phone-play { display: none; }
 
     /* ── RESULT CARDS ─────────────────────────────────────── */
     .vp-results {
@@ -1832,6 +1838,38 @@ document.addEventListener('click', e => {
     if (IS_MOBILE) { window.location.href = 'https://www.youtube.com/watch?v=' + ytId; return; }
     openZoom('https://www.youtube-nocookie.com/embed/' + ytId + '?rel=0&modestbranding=1');
   });
+
+  /* ── AUTOPLAY MUT INLINE pe fiecare telefon ── */
+  (function () {
+    var mockups = document.querySelectorAll('.vp-iphone-mockup[data-yt-id]');
+    if (!mockups.length) return;
+    function mountEmbed(mockup) {
+      if (mockup.dataset.embedded) return;
+      var id = mockup.dataset.ytId;
+      var screen = mockup.querySelector('.vp-iphone-screen');
+      if (!screen) return;
+      mockup.dataset.embedded = '1';
+      var iframe = document.createElement('iframe');
+      iframe.className = 'vp-phone-embed';
+      iframe.title = 'Short';
+      iframe.loading = 'lazy';
+      iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+      iframe.src = 'https://www.youtube-nocookie.com/embed/' + id +
+        '?autoplay=1&mute=1&loop=1&playlist=' + id +
+        '&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3';
+      screen.appendChild(iframe);
+    }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { mountEmbed(e.target); io.unobserve(e.target); }
+        });
+      }, { rootMargin: '250px' });
+      mockups.forEach(function (m) { io.observe(m); });
+    } else {
+      mockups.forEach(mountEmbed);
+    }
+  })();
 
   zoomClose.addEventListener('click', closeZoom);
   phoneZoom.addEventListener('click', e => { if (e.target === phoneZoom) closeZoom(); });
