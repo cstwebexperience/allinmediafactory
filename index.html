@@ -1410,17 +1410,106 @@
     <h2 class="s-subtitle reveal" style="--d:90ms">Traffic. Real.</h2>
     <p class="s-desc reveal" style="--d:110ms">We put your business on <strong>page 1 of Google</strong> and keep it there. Keyword strategy, technical SEO and link building that compounds over time.</p>
 
-    <div class="single-site reveal" style="--d:140ms">
-      <a href="https://www.agentieseo.net/" target="_blank" rel="noopener" class="site-card">
-        <div class="site-card-thumb">
-          <img src="assets/agentieseo-thumb.jpg" alt="AgentieSEO" loading="lazy" decoding="async" />
+    <style>
+    /* ── SEO RANK DEMO (interactiv) ───────────────────────── */
+    .serp-demo { max-width: 580px; margin: 6px auto 0; }
+    .serp-window { background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06); text-align:left; }
+    .serp-bar { display:flex; align-items:center; gap:12px; padding:15px 18px; border-bottom:1px solid #ebebeb; }
+    .serp-logo { font:500 20px/1 Arial,sans-serif; letter-spacing:-1px; }
+    .serp-logo .b{color:#4285F4}.serp-logo .r{color:#EA4335}.serp-logo .y{color:#FBBC05}.serp-logo .b2{color:#4285F4}.serp-logo .g{color:#34A853}.serp-logo .r2{color:#EA4335}
+    .serp-input { flex:1; display:flex; align-items:center; gap:9px; background:#f1f3f4; border-radius:999px; padding:9px 15px; color:#5f6368; font:14px/1 Arial,sans-serif; }
+    .serp-input svg { width:16px; height:16px; flex-shrink:0; }
+    .serp-input span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .serp-results { padding:6px 0; }
+    .serp-row { padding:13px 20px; font-family:Arial,sans-serif; transition:transform .55s cubic-bezier(.16,1,.3,1), background .3s; will-change:transform; }
+    .serp-row + .serp-row { border-top:1px solid #f4f4f4; }
+    .serp-row-title { color:#1a0dab; font-size:16px; font-weight:500; margin:0 0 3px; display:flex; align-items:center; gap:8px; }
+    .serp-row-url { color:#006621; font-size:12.5px; margin-bottom:3px; }
+    .serp-row-desc { color:#4d5156; font-size:12.5px; line-height:1.5; }
+    .serp-pos { display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; padding:0 6px; border-radius:999px; background:#eef0f3; color:#5f6368; font-size:12px; font-weight:700; flex-shrink:0; transition:background .3s; }
+    .serp-mine { background:linear-gradient(90deg, rgba(124,58,237,.10), rgba(124,58,237,.02)); box-shadow:inset 3px 0 0 #7c3aed; }
+    .serp-mine .serp-row-title { color:#6d28d9; font-weight:700; }
+    .serp-mine .serp-pos { background:#7c3aed; color:#fff; }
+    .serp-cta-wrap { display:flex; flex-direction:column; align-items:center; gap:11px; margin-top:22px; }
+    .serp-boost { display:inline-flex; align-items:center; gap:9px; background:linear-gradient(135deg,#7c3aed,#a855f7); color:#fff; border:0; border-radius:999px; padding:14px 28px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 10px 30px rgba(124,58,237,.45); transition:transform .2s, box-shadow .2s; }
+    .serp-boost:hover { transform:translateY(-2px); box-shadow:0 14px 38px rgba(124,58,237,.6); }
+    .serp-boost:active { transform:scale(.97); }
+    .serp-boost[disabled] { background:linear-gradient(135deg,#16a34a,#22c55e); cursor:default; box-shadow:0 10px 30px rgba(34,197,94,.4); }
+    .serp-hint { color:rgba(255,255,255,.55); font-size:13px; text-align:center; }
+    @media (max-width:560px){ .serp-row-title{font-size:14.5px} .serp-row-url,.serp-row-desc{font-size:12px} .serp-row{padding:12px 16px} }
+    </style>
+    <div class="serp-demo reveal" style="--d:140ms">
+      <div class="serp-window">
+        <div class="serp-bar">
+          <span class="serp-logo"><span class="b">G</span><span class="r">o</span><span class="y">o</span><span class="b2">g</span><span class="g">l</span><span class="r2">e</span></span>
+          <div class="serp-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span>marketing agency that brings clients</span>
+          </div>
         </div>
-        <div class="site-card-info">
-          <span class="site-card-domain">agentieseo.net</span>
-          <span class="site-card-arrow">→</span>
-        </div>
-      </a>
+        <div class="serp-results" id="serpResults"></div>
+      </div>
+      <div class="serp-cta-wrap">
+        <button class="serp-boost" id="serpBoost" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          <span>Boost SEO</span>
+        </button>
+        <span class="serp-hint">Tap to climb your site to #1 on Google</span>
+      </div>
     </div>
+    <script>
+    (function () {
+      var resultsEl = document.getElementById('serpResults');
+      var boostBtn  = document.getElementById('serpBoost');
+      if (!resultsEl || !boostBtn) return;
+      var hint = boostBtn.parentNode.querySelector('.serp-hint');
+      var rows = [
+        { t:'Best Marketing Agencies in 2026 — Full Guide', u:'topreviews.com › marketing', d:'Compare prices, services and reviews for the leading marketing agencies this year.' },
+        { t:'Digital Marketing Agency | Full-Service Online', u:'digital-pro.com', d:'SEO, Google Ads and social media management for growing businesses.' },
+        { t:'Online Marketing for Small Business', u:'start-marketing.com', d:'Affordable promotion packages for local businesses and startups.' },
+        { t:'Top 10 Advertising Agencies — Ranking', u:'business-review.com › top-10', d:'A data-driven ranking of advertising agencies by real client results.' },
+        { mine:true, t:'Your site', u:'www.your-site.com', d:'This is you. We push you to #1 on Google — real traffic, real clients.' },
+        { t:'SEO & Web Promotion Services', u:'seo-expert.com', d:'Technical SEO, link building and content that ranks over time.' }
+      ];
+      rows.forEach(function(r,i){ r._id = r.mine ? 'mine' : ('c'+i); });
+      function mineIndex(){ for (var i=0;i<rows.length;i++){ if(rows[i].mine) return i; } return -1; }
+      function render(){
+        resultsEl.innerHTML = '';
+        rows.forEach(function (r, i) {
+          var div = document.createElement('div');
+          div.className = 'serp-row' + (r.mine ? ' serp-mine' : '');
+          div.dataset.id = r._id;
+          div.innerHTML =
+            '<div class="serp-row-title"><span class="serp-pos">'+(i+1)+'</span>'+r.t+'</div>'+
+            '<div class="serp-row-url">'+r.u+'</div>'+
+            '<div class="serp-row-desc">'+r.d+'</div>';
+          resultsEl.appendChild(div);
+        });
+      }
+      render();
+      boostBtn.addEventListener('click', function () {
+        var idx = mineIndex();
+        if (idx <= 0) return;
+        var first = {};
+        Array.prototype.forEach.call(resultsEl.children, function(ch){ first[ch.dataset.id] = ch.getBoundingClientRect().top; });
+        var tmp = rows[idx-1]; rows[idx-1] = rows[idx]; rows[idx] = tmp;
+        render();
+        Array.prototype.forEach.call(resultsEl.children, function(ch){
+          var dy = first[ch.dataset.id] - ch.getBoundingClientRect().top;
+          if (dy) {
+            ch.style.transition = 'none';
+            ch.style.transform = 'translateY('+dy+'px)';
+            requestAnimationFrame(function(){ ch.style.transition=''; ch.style.transform=''; });
+          }
+        });
+        if (mineIndex() === 0) {
+          boostBtn.disabled = true;
+          boostBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span>#1 on Google</span>';
+          if (hint) hint.textContent = "That's exactly what we do for you. Real.";
+        }
+      });
+    })();
+    </script>
 
     <div class="media-marquee reveal" style="--d:190ms">
       <div class="media-marquee-track">
